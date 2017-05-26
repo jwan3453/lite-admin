@@ -1,0 +1,26 @@
+{
+  "extends": [
+    "eslint-config-airbnb"
+  ],
+  "globals": {
+    "IS_TABLET": true
+  },
+  "rules": {
+    "import/prefer-default-export": 0,
+    "global-require": 0,
+    "class-methods-use-this": 0,
+    "react/forbid-prop-types": 0,
+    "no-mixed-operators": 0,
+    "react/jsx-filename-extension": [
+      "error",
+      {
+        "extensions": [
+          ".jsx",
+          ".js"
+        ]
+      }
+    ],
+    "react/prefer-stateless-function": 0
+  },
+  "parser": "babel-eslint"
+}

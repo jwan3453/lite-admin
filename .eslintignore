@@ -1,0 +1,8 @@
+scripts/*
+build/*
+config/*
+node_modules/*
+static/*
+public/*
+server.js
+webpack.config.js
