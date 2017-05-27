@@ -22,9 +22,7 @@ export function room(
         filters: action.filters,
       });
     case Room.FETCH:
-      return assign({}, state, {
-        loading: true,
-      });
+    case Room.ADD_STUDENT:
     case RoomTypes.FETCH:
       return assign({}, state, {
         loading: true,
@@ -44,6 +42,8 @@ export function room(
         loading: false,
         rooms: action.response,
       });
+    case Room.ADD_STUDENT_SUCCESS:
+    case Room.ADD_STUDENT_FAIL:
     case RoomTypes.FETCH_FAIL:
     case Room.FETCH_FAIL:
     case Rooms.FETCH_FAIL:

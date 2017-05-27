@@ -6,7 +6,7 @@ export function student(
     loading: false,
     search: {
       filters: {},
-      result: [],
+      result: {},
     },
     manage: {
       filters: {},

@@ -1,39 +1,39 @@
 import React, { Component } from 'react';
 import { Table } from 'antd';
 import { connect } from 'react-redux';
-import moment from 'moment';
 
-import SearchForm from './SearchForm';
-
-import crmStatus from '../../../common/crmStatus';
-import { fetchAdmins } from '../../../app/actions/admin';
-import { fetchStudents } from '../../../app/actions/student';
+import { searchStudent } from '../../../app/actions/student';
 
 class StudentList extends Component {
   static propTypes = {
     dispatch: React.PropTypes.func.isRequired,
     loading: React.PropTypes.bool.isRequired,
-    adminUsers: React.PropTypes.array.isRequired,
     filters: React.PropTypes.object.isRequired,
     students: React.PropTypes.object.isRequired,
+    onSelectedRowsChange: React.PropTypes.func.isRequired,
   };
   static defaultProps = {
-    adminUsers: [],
     filters: {},
     students: {},
+    onSelectedRowsChange: () => {},
   };
   componentWillMount() {
     const { dispatch, filters } = this.props;
-    dispatch(fetchAdmins());
-    dispatch(fetchStudents(filters));
+    dispatch(searchStudent(filters));
   }
+
   handleChange = (pagination) => {
     const { dispatch, filters } = this.props;
-    dispatch(fetchStudents(Object.assign(filters, {
+    dispatch(searchStudent(Object.assign(filters, {
       page: pagination.current,
       pageSize: pagination.pageSize,
     })));
   }
+
+  handleSelectChange = (selectedRowKeys) => {
+    this.props.onSelectedRowsChange(selectedRowKeys);
+  };
+
   render() {
     const { students } = this.props;
     const columns = [
@@ -55,52 +55,9 @@ class StudentList extends Component {
         key: 'nickname',
       },
       {
-        title: '所属组',
-        dataIndex: 'groupName',
-        key: 'groupName',
-      },
-      {
-        title: '性别',
-        dataIndex: 'gender',
-        key: 'gender',
-        render: gender => (['', '男', '女'][gender]),
-      },
-      {
-        title: '年龄',
-        dataIndex: 'age',
-        key: 'age',
-      },
-      {
-        title: '城市',
-        dataIndex: 'city',
-        key: 'city',
-      },
-      {
-        title: '助教',
-        dataIndex: 'crmAssistantId',
-        key: 'crmAssistantId',
-      },
-      {
-        title: '跟进类型',
-        dataIndex: 'crmStatus',
-        key: 'crmType',
-        render: crmStatusId => crmStatus[crmStatusId],
-      },
-      {
         title: '课程级别',
         dataIndex: 'level',
         key: 'level',
-      },
-      {
-        title: '注册渠道',
-        dataIndex: 'source',
-        key: 'source',
-      },
-      {
-        title: '注册时间',
-        dataIndex: 'registerAt',
-        key: 'registerAt',
-        render: registerAt => moment(registerAt * 1000).format('Y-MM-DD HH:mm'),
       },
     ];
 
@@ -108,18 +65,19 @@ class StudentList extends Component {
       total: students.total || 0,
       pageSize: students.pageSize || 10,
       current: students.page || 1,
-      showSizeChanger: true,
-      showTotal: total => `总共${total}条`,
+      simple: true,
     };
 
     const dataSource = students.result || [];
+
+    const rowSelection = {
+      type: 'radio',
+      onChange: this.handleSelectChange,
+    };
     return (
       <div>
-        <SearchForm
-          onSearch={filters => console.log(filters)}
-          assistants={this.props.adminUsers}
-        />
         <Table
+          size="small"
           loading={this.props.loading}
           style={{ marginTop: 16 }}
           columns={columns}
@@ -127,6 +85,7 @@ class StudentList extends Component {
           rowKey="id"
           pagination={pagination}
           onChange={this.handleChange}
+          rowSelection={rowSelection}
         />
       </div>
     );
@@ -134,15 +93,14 @@ class StudentList extends Component {
 }
 
 function mapStateToProps(state) {
-  const { student, admin } = state;
-  const { loading, manage } = student;
-  const { filters, result } = manage;
+  const { student } = state;
+  const { loading, search } = student;
+  const { filters, result } = search;
 
   return {
     loading,
     filters,
     students: result,
-    adminUsers: admin.users,
   };
 }
 

@@ -34,6 +34,10 @@ export const Room = {
   FETCH: 'room_fetch',
   FETCH_SUCCESS: 'room_fetch_success',
   FETCH_FAIL: 'room_fetch_fail',
+
+  ADD_STUDENT: 'add_student',
+  ADD_STUDENT_SUCCESS: 'add_student_success',
+  ADD_STUDENT_FAIL: 'add_student_fail',
 };
 
 export const RoomTypes = {

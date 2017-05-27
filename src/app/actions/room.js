@@ -36,3 +36,16 @@ export function fetchRoom(roomId) {
     },
   };
 }
+
+export function addStudent(roomId, studentId) {
+  return {
+    [CALL_JQ_API]: {
+      types: [Room.ADD_STUDENT, Room.ADD_STUDENT_SUCCESS, Room.ADD_STUDENT_FAIL],
+      uri: `/admin/schedules/rooms/${roomId}`,
+      method: 'POST',
+      body: {
+        studentId,
+      },
+    },
+  };
+}
