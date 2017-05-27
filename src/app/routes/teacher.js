@@ -7,34 +7,40 @@ import TeacherWithdraw from '../../components/Teacher/Withdraw';
 export default [
   {
     path: 'teacher',
+    breadcrumbName: '老师管理',
     navigatorName: '老师管理',
     navigatorIcon: 'customer-service',
     childRoutes: [
       {
+        breadcrumbName: '简历列表',
         navigatorName: '简历列表',
         navigatorIcon: 'contacts',
         path: 'resume',
         component: TeacherResume,
       },
       {
-        navigatorName: '老师信息',
+        breadcrumbName: '老师列表',
+        navigatorName: '老师列表',
         navigatorIcon: 'customer-service',
-        path: 'teacher',
+        path: 'manage',
         component: Teacher,
       },
       {
+        breadcrumbName: '老师账单',
         navigatorName: '老师账单',
         navigatorIcon: 'wallet',
         path: 'bill',
         component: TeacherBill,
       },
       {
+        breadcrumbName: '老师奖金',
         navigatorName: '老师奖金',
         navigatorIcon: 'red-envelope',
         path: 'bonus',
         component: TeacherBonus,
       },
       {
+        breadcrumbName: '老师提现',
         navigatorName: '老师提现',
         navigatorIcon: 'bank',
         path: 'withdraw',
