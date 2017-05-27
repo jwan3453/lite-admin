@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Table } from 'antd';
 import { connect } from 'react-redux';
 import moment from 'moment';
-import _ from 'lodash';
 
 import SearchForm from './SearchForm';
 
@@ -28,21 +27,13 @@ class StudentList extends Component {
     dispatch(fetchAdmins());
     dispatch(fetchStudents(filters));
   }
-  handleSearch = (filters) => {
-    const { dispatch } = this.props;
-    dispatch(fetchStudents(filters));
-  };
   handleChange = (pagination) => {
     const { dispatch, filters } = this.props;
-    dispatch(
-      fetchStudents(
-        Object.assign(filters, {
-          page: pagination.current,
-          pageSize: pagination.pageSize,
-        }),
-      ),
-    );
-  };
+    dispatch(fetchStudents(Object.assign(filters, {
+      page: pagination.current,
+      pageSize: pagination.pageSize,
+    })));
+  }
   render() {
     const { students } = this.props;
     const columns = [
@@ -72,7 +63,7 @@ class StudentList extends Component {
         title: '性别',
         dataIndex: 'gender',
         key: 'gender',
-        render: gender => ['', '男', '女'][gender],
+        render: gender => (['', '男', '女'][gender]),
       },
       {
         title: '年龄',
@@ -93,13 +84,7 @@ class StudentList extends Component {
         title: '跟进类型',
         dataIndex: 'crmStatus',
         key: 'crmType',
-        render: (crmStatusId) => {
-          const status = _.find(crmStatus, { value: Number(crmStatusId) });
-          if (status) {
-            return status.name;
-          }
-          return '';
-        },
+        render: crmStatusId => crmStatus[crmStatusId],
       },
       {
         title: '课程级别',
@@ -119,10 +104,9 @@ class StudentList extends Component {
       },
     ];
 
-    const pageSize = students.pageSize || 10;
     const pagination = {
       total: students.total || 0,
-      pageSize,
+      pageSize: students.pageSize || 10,
       current: students.page || 1,
       showSizeChanger: true,
       showTotal: total => `总共${total}条`,
@@ -132,9 +116,8 @@ class StudentList extends Component {
     return (
       <div>
         <SearchForm
-          onSearch={this.handleSearch}
+          onSearch={filters => console.log(filters)}
           assistants={this.props.adminUsers}
-          pageSize={pageSize}
         />
         <Table
           loading={this.props.loading}

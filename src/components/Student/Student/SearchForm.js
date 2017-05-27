@@ -12,6 +12,9 @@ import {
   AutoComplete,
 } from 'antd';
 
+import levels from '../../../common/levels';
+import crmStatus from '../../../common/crmStatus';
+
 const FormItem = Form.Item;
 
 class StudentSearchForm extends Component {
@@ -19,6 +22,7 @@ class StudentSearchForm extends Component {
     form: React.PropTypes.object.isRequired,
     onSearch: React.PropTypes.func.isRequired,
     assistants: React.PropTypes.array.isRequired,
+    pageSize: React.PropTypes.number.isRequired,
   };
   static defaultProps = {
     assistants: [],
@@ -27,14 +31,45 @@ class StudentSearchForm extends Component {
     visible: false,
     expand: false,
     assistants: [],
+    pageSize: 10,
   };
 
   handleSearch = (e) => {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       const filters = {};
-      console.log('Received values of form: ', values);
-      console.log(filters);
+      if (values.id) {
+        filters.id = values.id;
+      }
+      if (values.registerRange && values.registerRange.length === 2) {
+        filters.registerStart = values.registerRange[0].format('Y-MM-DD');
+        filters.registerEnd = values.registerRange[1].format('Y-MM-DD');
+      }
+      if (values.age) {
+        filters.age = values.age;
+      }
+      if (values.level >= 0) {
+        filters.level = values.level;
+      }
+      if (values.crmAssistantId) {
+        filters.crmAssistantId = values.crmAssistantId;
+      }
+      if (values.crmStatus >= 0) {
+        filters.crmStatus = values.crmStatus;
+      }
+      if (values.source) {
+        filters.source = values.source;
+      }
+      if (values.city) {
+        filters.city = values.city;
+      }
+      if (values.mobile) {
+        filters.mobile = values.mobile;
+      }
+      if (values.mobileSuffix) {
+        filters.mobileSuffix = values.mobileSuffix;
+      }
+      filters.pageSize = this.props.pageSize;
       this.props.onSearch(filters);
     });
   };
@@ -118,7 +153,13 @@ class StudentSearchForm extends Component {
               })(
                 <Select size="default">
                   <Select.Option value="-1">全部</Select.Option>
-                  <Select.Option value="1">L1</Select.Option>
+                  <Select.Option value="0">未分级</Select.Option>
+                  {levels.map(level => (
+                    <Select.Option key={level.value} value={level.value}>
+                      {level.name}
+                    </Select.Option>
+                  ))}
+
                   <Select.Option value="2">L2</Select.Option>
                 </Select>,
               )}
@@ -137,7 +178,7 @@ class StudentSearchForm extends Component {
           </Col>
           <Col span={6}>
             <FormItem label="助教" {...formItemLayout}>
-              {getFieldDecorator('assistantId', {
+              {getFieldDecorator('crmAssistantId', {
                 rules: [
                   {
                     required: false,
@@ -157,7 +198,7 @@ class StudentSearchForm extends Component {
           </Col>
           <Col span={6}>
             <FormItem label="渠道来源" {...formItemLayout}>
-              {getFieldDecorator('sourceFlag', {
+              {getFieldDecorator('source', {
                 rules: [
                   {
                     required: false,
@@ -210,8 +251,11 @@ class StudentSearchForm extends Component {
               })(
                 <Select size="default">
                   <Select.Option value="-1">全部</Select.Option>
-                  <Select.Option value="0">新注册</Select.Option>
-                  <Select.Option value="1">已联系</Select.Option>
+                  {crmStatus.map(status => (
+                    <Select.Option key={status.value} value={status.value}>
+                      {status.name}
+                    </Select.Option>
+                  ))}
                 </Select>,
               )}
             </FormItem>
