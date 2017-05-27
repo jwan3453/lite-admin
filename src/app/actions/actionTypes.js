@@ -8,6 +8,10 @@ export const Student = {
   SEARCH: 'student_search',
   SEARCH_SUCCESS: 'student_search_success',
   SEARCH_FAIL: 'student_search_fail',
+
+  FETCH: 'student_fetch',
+  FETCH_SUCCESS: 'student_fetch_success',
+  FETCH_FAIL: 'student_fetch_fail',
 };
 
 export const Teacher = {
@@ -24,6 +28,12 @@ export const Rooms = {
   FETCH: 'rooms_fetch',
   FETCH_SUCCESS: 'rooms_fetch_success',
   FETCH_FAIL: 'rooms_fetch_fail',
+};
+
+export const Room = {
+  FETCH: 'room_fetch',
+  FETCH_SUCCESS: 'room_fetch_success',
+  FETCH_FAIL: 'room_fetch_fail',
 };
 
 export const RoomTypes = {

@@ -1,24 +1,41 @@
 import React, { Component } from 'react';
 import { Table } from 'antd';
 import { connect } from 'react-redux';
+import moment from 'moment';
+
 import SearchForm from './SearchForm';
 
+import crmStatus from '../../../common/crmStatus';
 import { fetchAdmins } from '../../../app/actions/admin';
+import { fetchStudents } from '../../../app/actions/student';
 
 class StudentList extends Component {
   static propTypes = {
     dispatch: React.PropTypes.func.isRequired,
     loading: React.PropTypes.bool.isRequired,
     adminUsers: React.PropTypes.array.isRequired,
+    filters: React.PropTypes.object.isRequired,
+    students: React.PropTypes.object.isRequired,
   };
   static defaultProps = {
     adminUsers: [],
+    filters: {},
+    students: {},
   };
   componentWillMount() {
-    const { dispatch } = this.props;
+    const { dispatch, filters } = this.props;
     dispatch(fetchAdmins());
+    dispatch(fetchStudents(filters));
+  }
+  handleChange = (pagination) => {
+    const { dispatch, filters } = this.props;
+    dispatch(fetchStudents(Object.assign(filters, {
+      page: pagination.current,
+      pageSize: pagination.pageSize,
+    })));
   }
   render() {
+    const { students } = this.props;
     const columns = [
       {
         title: 'ID',
@@ -27,7 +44,7 @@ class StudentList extends Component {
         width: 100,
       },
       {
-        title: '手机号',
+        title: '手机尾号',
         dataIndex: 'mobileSuffix',
         key: 'mobileSuffix',
         width: 100,
@@ -44,8 +61,9 @@ class StudentList extends Component {
       },
       {
         title: '性别',
-        dataIndex: 'sex',
-        key: 'sex',
+        dataIndex: 'gender',
+        key: 'gender',
+        render: gender => (['', '男', '女'][gender]),
       },
       {
         title: '年龄',
@@ -59,13 +77,14 @@ class StudentList extends Component {
       },
       {
         title: '助教',
-        dataIndex: 'assistantName',
-        key: 'assistantName',
+        dataIndex: 'crmAssistantId',
+        key: 'crmAssistantId',
       },
       {
         title: '跟进类型',
-        dataIndex: 'crmType',
+        dataIndex: 'crmStatus',
         key: 'crmType',
+        render: crmStatusId => crmStatus[crmStatusId],
       },
       {
         title: '课程级别',
@@ -81,10 +100,19 @@ class StudentList extends Component {
         title: '注册时间',
         dataIndex: 'registerAt',
         key: 'registerAt',
+        render: registerAt => moment(registerAt * 1000).format('Y-MM-DD HH:mm'),
       },
     ];
 
-    const dataSource = [];
+    const pagination = {
+      total: students.total || 0,
+      pageSize: students.pageSize || 10,
+      current: students.page || 1,
+      showSizeChanger: true,
+      showTotal: total => `总共${total}条`,
+    };
+
+    const dataSource = students.result || [];
     return (
       <div>
         <SearchForm
@@ -97,8 +125,8 @@ class StudentList extends Component {
           columns={columns}
           dataSource={dataSource}
           rowKey="id"
-          pagination={false}
-          bordered
+          pagination={pagination}
+          onChange={this.handleChange}
         />
       </div>
     );
@@ -107,9 +135,13 @@ class StudentList extends Component {
 
 function mapStateToProps(state) {
   const { student, admin } = state;
+  const { loading, manage } = student;
+  const { filters, result } = manage;
 
   return {
-    loading: student.loading,
+    loading,
+    filters,
+    students: result,
     adminUsers: admin.users,
   };
 }

@@ -35,7 +35,7 @@ export default () => next => (action) => {
       assign({}, action, {
         type: failureType,
         code: 'token.timeout',
-        error: '登录超时',
+        message: '登录超时',
       }),
     );
   }
@@ -87,7 +87,8 @@ export default () => next => (action) => {
         next(
           assign({}, action, {
             type: failureType,
-            error: error.message || 'unknown_error',
+            code: error.code || 'unknown.error',
+            message: error.message,
           }),
         ),
     );

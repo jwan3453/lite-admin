@@ -40,11 +40,10 @@ class StudentSearchForm extends Component {
   };
 
   handleSearchAssistant = (value) => {
-    if (value.length < 3) {
+    if (value.length < 2) {
       this.setState({ assistants: [] });
       return;
     }
-    console.log(this.props.assistants);
     const assistants = this.props.assistants.filter((assistant) => {
       const name = `${assistant.username || ''}`;
       return name.toLowerCase().indexOf(value.toLowerCase()) >= 0;

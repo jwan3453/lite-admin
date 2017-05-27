@@ -12,6 +12,7 @@ import {
 } from 'antd';
 
 import CourseCascader from '../CourseCascader';
+import ScheduleTimes from '../../../common/scheduleTimes';
 
 const FormItem = Form.Item;
 
@@ -28,16 +29,18 @@ class CreateScheduleForm extends React.Component {
   };
   state = {
     confirmDirty: false,
-    startTimeUsePreset: false,
+    startTimeUsePreset: true,
     autoCompleteResult: [],
   };
   handleSubmit = (e) => {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
-      // console.log(values);
+      console.log(values);
       if (!err) {
         const dateString = values.date.format('YYYY-MM-DD');
-        const timeString = values.startTimeUsePreset ? values.startTimePreset : values.startTime.format('HH:mm');
+        const timeString = values.startTimeUsePreset
+          ? values.startTimePreset
+          : values.startTime.format('HH:mm');
         const beginString = `${dateString} ${timeString}:00`;
         const beginAt = moment(beginString).unix();
         const endAt = moment(beginString).add(values.lifeTime, 'm').unix();
@@ -124,10 +127,16 @@ class CreateScheduleForm extends React.Component {
                 message: 'Please select your habitual residence!',
               },
             ],
-          })(<CourseCascader courses={this.props.courses} changeOnSelect={false} />)}
+          })(
+            <CourseCascader
+              courses={this.props.courses}
+              changeOnSelect={false}
+            />,
+          )}
         </FormItem>
         <FormItem {...formItemLayout} label="是否内部">
           {getFieldDecorator('isInternal', {
+            initialValue: false,
             rules: [
               { required: true, message: 'Please input your phone number!' },
             ],
@@ -145,6 +154,7 @@ class CreateScheduleForm extends React.Component {
         </FormItem>
         <FormItem {...formItemLayout} label="模版时间">
           {getFieldDecorator('startTimeUsePreset', {
+            initialValue: this.state.startTimeUsePreset,
             rules: [
               { required: false, message: 'Please input the captcha you got!' },
             ],
@@ -167,9 +177,9 @@ class CreateScheduleForm extends React.Component {
             ],
           })(
             <Select size="large">
-              <Select.Option value="20:00">20:00</Select.Option>
-              <Select.Option value="10:00">10:00</Select.Option>
-              <Select.Option value="18:00">18:00</Select.Option>
+              {ScheduleTimes.map(time => (
+                <Select.Option key={time} value={time}>{time}</Select.Option>
+              ))}
             </Select>,
           )}
         </FormItem>

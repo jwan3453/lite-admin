@@ -1,17 +1,18 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Table, Row, Col, Icon } from 'antd';
+import { Table, Row, Col, Icon, Modal, Spin, Message } from 'antd';
 import moment from 'moment';
 import _ from 'lodash';
 
 import './index.less';
 
-import { fetchRooms, fetchRoomTypes } from '../../../app/actions/room';
+import { fetchRooms, fetchRoom, fetchRoomTypes } from '../../../app/actions/room';
 import { fetchCourses } from '../../../app/actions/course';
 import { createSchedule } from '../../../app/actions/schedule';
 import { fetchTeachers } from '../../../app/actions/teacher';
 
 import SearchForm from './SearchForm';
+import RoomInfo from '../../Common/RoomInfo';
 
 class ScheduleCalendar extends Component {
   static propTypes = {
@@ -20,6 +21,7 @@ class ScheduleCalendar extends Component {
     courses: React.PropTypes.array,
     roomTypes: React.PropTypes.array,
     rooms: React.PropTypes.array,
+    roomInfo: React.PropTypes.object,
     teachers: React.PropTypes.array,
     coursesLoaded: React.PropTypes.bool.isRequired,
     loading: React.PropTypes.bool.isRequired,
@@ -28,12 +30,14 @@ class ScheduleCalendar extends Component {
     filters: {},
     courses: [],
     rooms: [],
+    roomInfo: {},
     roomTypes: [],
     teachers: [],
   };
   state = {
     width: 0,
     height: 0,
+    roomVisible: false,
   };
 
   componentWillMount() {
@@ -74,15 +78,39 @@ class ScheduleCalendar extends Component {
     return `${name}-${lesson.name || lessonId}`;
   };
 
+  getRoomModalLessonName = () => {
+    const { roomInfo } = this.props;
+    if (!_.isEmpty(roomInfo.schedule)) {
+      return this.getLessonShortName(roomInfo.schedule.courseId, roomInfo.schedule.lessonId);
+    }
+    return '';
+  };
+
   handleSearch = (filters) => {
     const { dispatch } = this.props;
     dispatch(fetchRooms(filters));
   };
 
   handleCreateSchedule = (data) => {
-    const { dispatch } = this.props;
-    dispatch(createSchedule(data));
+    const { dispatch, filters } = this.props;
+    dispatch(createSchedule(data)).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+      } else {
+        dispatch(fetchRooms(filters));
+      }
+    });
   };
+
+  handleRoomClick = (roomId) => {
+    const { dispatch } = this.props;
+    if (roomId) {
+      this.setState({
+        roomVisible: true,
+      });
+      dispatch(fetchRoom(roomId));
+    }
+  }
 
   buildRowIndexes = () => {
     const rowIndexes = [];
@@ -181,7 +209,11 @@ class ScheduleCalendar extends Component {
             teacherClassName += ' schedule-teacher-gray';
           }
           return (
-            <Col className="schedule-item" key={room.id}>
+            <Col
+              className="schedule-item"
+              key={room.id}
+              onClick={() => this.handleRoomClick(room.id)}
+            >
               <div className="calendar-schedule">
                 <span className="schedule-lesson">
                   {this.getLessonShortName(room.courseId, room.lessonId)}
@@ -209,6 +241,7 @@ class ScheduleCalendar extends Component {
       this.state.width - 210,
     );
     const yScroll = this.state.height - 275;
+    const roomModalLessonName = this.getRoomModalLessonName();
 
     return (
       <div>
@@ -229,6 +262,20 @@ class ScheduleCalendar extends Component {
           bordered
           scroll={{ x: xScroll, y: yScroll }}
         />
+        <Modal
+          visible={this.state.roomVisible}
+          title={`房间：${this.props.roomInfo.id || ''} (${roomModalLessonName})`}
+          footer={null}
+          onCancel={() => this.setState({ roomVisible: false })}
+          width={700}
+        >
+          <Spin spinning={this.props.loading}>
+            <RoomInfo
+              roomInfo={this.props.roomInfo}
+              lessonName={roomModalLessonName}
+            />
+          </Spin>
+        </Modal>
       </div>
     );
   }
@@ -236,7 +283,7 @@ class ScheduleCalendar extends Component {
 
 function mapStateToProps(state) {
   const { room, course, teacher } = state;
-  const { filters, rooms, roomTypes } = room;
+  const { filters, rooms, roomInfo, roomTypes } = room;
   const { courses, loaded } = course;
   const { teachers } = teacher;
 
@@ -244,6 +291,7 @@ function mapStateToProps(state) {
     loading: room.loading || course.loading,
     filters,
     rooms,
+    roomInfo,
     roomTypes,
     courses,
     teachers,

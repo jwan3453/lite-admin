@@ -1,4 +1,4 @@
-import { Rooms, RoomTypes } from './actionTypes';
+import { Rooms, Room, RoomTypes } from './actionTypes';
 import { CALL_JQ_API } from '../middlewares/jqApi';
 
 export function fetchRooms(filters) {
@@ -22,6 +22,16 @@ export function fetchRoomTypes() {
     [CALL_JQ_API]: {
       types: [RoomTypes.FETCH, RoomTypes.FETCH_SUCCESS, RoomTypes.FETCH_FAIL],
       uri: '/admin/schedules/roomTypes',
+      method: 'GET',
+    },
+  };
+}
+
+export function fetchRoom(roomId) {
+  return {
+    [CALL_JQ_API]: {
+      types: [Room.FETCH, Room.FETCH_SUCCESS, Room.FETCH_FAIL],
+      uri: `/admin/schedules/rooms/${roomId}`,
       method: 'GET',
     },
   };
