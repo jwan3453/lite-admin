@@ -25,6 +25,7 @@ class ScheduleCalendar extends Component {
     teachers: React.PropTypes.array,
     coursesLoaded: React.PropTypes.bool.isRequired,
     loading: React.PropTypes.bool.isRequired,
+    dimensions: React.PropTypes.object.isRequired,
   };
   static defaultProps = {
     filters: {},
@@ -33,26 +34,21 @@ class ScheduleCalendar extends Component {
     roomInfo: {},
     roomTypes: [],
     teachers: [],
+    dimensions: {
+      width: 0,
+      height: 0,
+    },
   };
   state = {
-    width: 0,
-    height: 0,
     roomVisible: false,
   };
 
-  componentWillMount() {
-    this.updateDimensions();
-  }
   componentDidMount() {
-    global.window.addEventListener('resize', this.updateDimensions);
     const { dispatch, filters, coursesLoaded } = this.props;
     if (!coursesLoaded) dispatch(fetchCourses());
     dispatch(fetchRoomTypes());
     dispatch(fetchRooms(filters));
     dispatch(fetchTeachers());
-  }
-  componentWillUnmount() {
-    global.window.removeEventListener('resize', this.updateDimensions);
   }
 
   getLessonShortName = (courseId, lessonId) => {
@@ -111,7 +107,13 @@ class ScheduleCalendar extends Component {
       });
       dispatch(fetchRoom(roomId));
     }
-  }
+  };
+
+  hideRoomModal = () => {
+    this.setState({
+      roomVisible: false,
+    });
+  };
 
   buildRowIndexes = () => {
     const rowIndexes = [];
@@ -187,17 +189,6 @@ class ScheduleCalendar extends Component {
     return table;
   };
 
-  updateDimensions = () => {
-    const documentElement = global.document.documentElement;
-    const body = global.document.getElementsByTagName('body')[0];
-    const w = global.window;
-    const width =
-      w.innerWidth || documentElement.clientWidth || body.clientWidth;
-    const height =
-      w.innerHeight || documentElement.clientHeight || body.clientHeight;
-    this.setState({ width, height });
-  };
-
   renderTableCell(rooms) {
     if (_.isEmpty(rooms)) {
       return <span />;
@@ -235,13 +226,14 @@ class ScheduleCalendar extends Component {
   }
 
   render() {
+    const { dimensions } = this.props;
     const columns = this.buildColumns();
     const dataSource = this.buildTableData(columns);
     const xScroll = Math.max(
       (columns.length - 1) * 250 + 80,
-      this.state.width - 210,
+      dimensions.width - 210,
     );
-    const yScroll = this.state.height - 275;
+    const yScroll = dimensions.height - 275;
     const roomModalLessonName = this.getRoomModalLessonName();
 
     return (
@@ -267,12 +259,12 @@ class ScheduleCalendar extends Component {
           visible={this.state.roomVisible}
           title={`房间：${this.props.roomInfo.id || ''} (${roomModalLessonName})`}
           footer={null}
-          onCancel={() => this.setState({ roomVisible: false })}
+          onCancel={this.hideRoomModal}
           width={700}
         >
           <Spin spinning={this.props.loading}>
             <RoomInfo
-              roomInfo={this.props.roomInfo}
+              onHide={this.hideRoomModal}
               lessonName={roomModalLessonName}
             />
           </Spin>
@@ -283,10 +275,11 @@ class ScheduleCalendar extends Component {
 }
 
 function mapStateToProps(state) {
-  const { room, course, teacher } = state;
+  const { room, course, teacher, system } = state;
   const { filters, rooms, roomInfo, roomTypes } = room;
   const { courses, loaded } = course;
   const { teachers } = teacher;
+  const { dimensions } = system;
 
   return {
     loading: room.loading || course.loading,
@@ -297,6 +290,7 @@ function mapStateToProps(state) {
     courses,
     teachers,
     coursesLoaded: loaded,
+    dimensions,
   };
 }
 

@@ -1,3 +1,7 @@
+export const System = {
+  UPDATE_DIMENSIONS: 'update_dimensions',
+};
+
 export const Admin = {
   FETCH: 'admin_fetch',
   FETCH_SUCCESS: 'admin_fetch_success',
@@ -35,6 +39,10 @@ export const Room = {
   FETCH_SUCCESS: 'room_fetch_success',
   FETCH_FAIL: 'room_fetch_fail',
 
+  DELETE: 'room_delete',
+  DELETE_SUCCESS: 'room_delete_success',
+  DELETE_FAIL: 'room_delete_fail',
+
   ADD_STUDENT: 'add_student',
   ADD_STUDENT_SUCCESS: 'add_student_success',
   ADD_STUDENT_FAIL: 'add_student_fail',
@@ -49,7 +57,11 @@ export const RoomTypes = {
 export const Schedule = {
   CREATE: 'schedule_create',
   CREATE_SUCCESS: 'schedule_create_success',
-  CREARE_FAIL: 'schedule_create_fail',
+  CREATE_FAIL: 'schedule_create_fail',
+
+  ADD_ROOM: 'add_room',
+  ADD_ROOM_SUCCESS: 'add_room_success',
+  ADD_ROOM_FAIL: 'add_room_fail',
 };
 
 export const Courses = {

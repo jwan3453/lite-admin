@@ -37,6 +37,16 @@ export function fetchRoom(roomId) {
   };
 }
 
+export function deleteRoom(roomId) {
+  return {
+    [CALL_JQ_API]: {
+      types: [Room.DELETE, Room.DELETE_SUCCESS, Room.DELETE_FAIL],
+      uri: `/admin/schedules/rooms/${roomId}`,
+      method: 'DELETE',
+    },
+  };
+}
+
 export function addStudent(roomId, studentId) {
   return {
     [CALL_JQ_API]: {

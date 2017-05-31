@@ -14,6 +14,7 @@ class StudentAppointments extends Component {
     studentAppointments: React.PropTypes.array.isRequired,
   };
   static defaultProps = {
+    dispatch: () => {},
     roomId: 0,
     studentAppointments: [],
   };

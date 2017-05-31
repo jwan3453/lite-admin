@@ -1,22 +1,25 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import { Tabs, Button } from 'antd';
 
 import RoomBasicInfo from './basicInfo';
 import StudentAppointments from './studentAppointments';
 import OperationLogs from './operationLogs';
 
-class RoomInfo extends Component {
+export default class RoomInfo extends Component {
   static propTypes = {
     roomInfo: React.PropTypes.object.isRequired,
     lessonName: React.PropTypes.string.isRequired,
+    onHide: React.PropTypes.func.isRequired,
+    onCopySchedule: React.PropTypes.func.isRequired,
   };
   static defaultProps = {
     roomInfo: {},
     lessonName: '',
+    onHide: () => {},
+    onCopySchedule: () => {},
   };
   render() {
-    const { roomInfo, lessonName } = this.props;
+    const { roomInfo, lessonName, onHide, onCopySchedule } = this.props;
     const studentAppointments = roomInfo.studentAppointments || [];
     const operationLogs = roomInfo.operationLogs || [];
     return (
@@ -27,7 +30,12 @@ class RoomInfo extends Component {
         }
       >
         <Tabs.TabPane tab="基础信息" key="basic">
-          <RoomBasicInfo roomInfo={roomInfo} lessonName={lessonName} />
+          <RoomBasicInfo
+            roomInfo={roomInfo}
+            lessonName={lessonName}
+            onHide={onHide}
+            onCopySchedule={onCopySchedule}
+          />
         </Tabs.TabPane>
         <Tabs.TabPane tab="学生预约" key="studentAppointments">
           <StudentAppointments roomId={roomInfo.id} studentAppointments={studentAppointments} />
@@ -39,5 +47,3 @@ class RoomInfo extends Component {
     );
   }
 }
-
-export default connect()(RoomInfo);

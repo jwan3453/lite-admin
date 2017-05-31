@@ -8,7 +8,12 @@ import auth from '../common/auth';
 import appRoutes from '../app/routes';
 import './App.less';
 
+import { receiveDimensions } from '../app/actions/system';
+
 class App extends React.PureComponent {
+  static propTypes = {
+    dispatch: React.PropTypes.func.isRequired,
+  };
   static menuItems = null;
   static buildMenuTree(routes, basePath = []) {
     return routes.map((route) => {
@@ -46,6 +51,13 @@ class App extends React.PureComponent {
     if (App.menuItems === null) {
       App.menuItems = App.buildMenuTree(appRoutes[0].childRoutes);
     }
+    this.updateDimensions();
+  }
+  componentDidMount() {
+    global.window.addEventListener('resize', this.updateDimensions);
+  }
+  componentWillUnmount() {
+    global.window.removeEventListener('resize', this.updateDimensions);
   }
 
   handleLogout = () => {
@@ -59,13 +71,28 @@ class App extends React.PureComponent {
         this.props.router.replace('/login');
       },
     });
-  }
+  };
 
   handleOpenChange(openKeys) {
     this.setState({
       openKeys: openKeys.filter(key => this.state.openKeys.indexOf(key) === -1),
     });
   }
+
+  updateDimensions = () => {
+    const { dispatch } = this.props;
+    const documentElement = global.document.documentElement;
+    const body = global.document.getElementsByTagName('body')[0];
+    const w = global.window;
+    const width =
+      w.innerWidth || documentElement.clientWidth || body.clientWidth;
+    const height =
+      w.innerHeight || documentElement.clientHeight || body.clientHeight;
+    dispatch(receiveDimensions({
+      width,
+      height,
+    }));
+  };
 
   renderTopMenuItem(item) {
     return (

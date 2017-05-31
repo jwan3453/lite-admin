@@ -1,6 +1,7 @@
 import { routerReducer as routing } from 'react-router-redux';
 import { combineReducers } from 'redux';
 
+import * as systemReducers from './system';
 import * as roomReducers from './room';
 import * as scheduleReducers from './schedule';
 import * as courseReducers from './course';
@@ -10,6 +11,7 @@ import * as adminReducers from './admin';
 
 const rootReducer = combineReducers({
   routing,
+  ...systemReducers,
   ...roomReducers,
   ...scheduleReducers,
   ...courseReducers,

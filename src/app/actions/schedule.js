@@ -7,10 +7,22 @@ export function createSchedule(params) {
   return {
     params,
     [CALL_JQ_API]: {
-      types: [Schedule.CREATE, Schedule.CREATE_SUCCESS, Schedule.CREARE_FAIL],
+      types: [Schedule.CREATE, Schedule.CREATE_SUCCESS, Schedule.CREATE_FAIL],
       uri: '/admin/schedules',
       method: 'POST',
       body: params,
+    },
+  };
+}
+
+export function addRoom(scheduleId) {
+  return {
+    scheduleId,
+    [CALL_JQ_API]: {
+      types: [Schedule.ADD_ROOM, Schedule.ADD_ROOM_SUCCESS, Schedule.ADD_ROOM_FAIL],
+      uri: `/admin/schedules/${scheduleId}/room`,
+      method: 'POST',
+      body: [],
     },
   };
 }

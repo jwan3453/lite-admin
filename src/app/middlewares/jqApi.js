@@ -13,6 +13,10 @@ function buildQueryString(params) {
   return `?${componets.join('&')}`;
 }
 
+function getNonce() {
+  return global.window.prompt('请输入动态验证码');
+}
+
 export const CALL_JQ_API = Symbol('Call JQ API');
 
 export default () => next => (action) => {
@@ -21,8 +25,8 @@ export default () => next => (action) => {
     return next(action);
   }
 
-  const { types, uri, method } = action[CALL_JQ_API];
-  const { body } = action[CALL_JQ_API];
+  const { types, uri, method, nonce } = action[CALL_JQ_API];
+  const body = action[CALL_JQ_API].body || {};
   const [requestType, successType, failureType] = types;
   next(
     assign({}, action, {
@@ -41,12 +45,18 @@ export default () => next => (action) => {
   }
 
   const token = auth.getAccessToken();
-  const bodyString = method.toUpperCase() === 'GET'
-    ? null
-    : JSON.stringify(body);
-  const queryString = method.toUpperCase() === 'GET'
-    ? buildQueryString(body)
-    : '';
+  if (nonce) {
+    Object.assign(body, {
+      nonce: getNonce(),
+    });
+  }
+  const withBody = method.toUpperCase() === 'POST' || method.toUpperCase() === 'PUT';
+  const bodyString = withBody
+    ? JSON.stringify(body)
+    : null;
+  const queryString = withBody
+    ? ''
+    : buildQueryString(body);
   return global.fetch(API_ROOT + uri + queryString, {
     method,
     headers: {
@@ -83,13 +93,17 @@ export default () => next => (action) => {
             type: successType,
           }),
         ),
-      error =>
-        next(
+      (error) => {
+        if (error.code === 'nonce.error') {
+          global.localStorage.removeItem('nonce');
+        }
+        return next(
           assign({}, action, {
             type: failureType,
             code: error.code || 'unknown.error',
             message: error.message,
           }),
-        ),
+        );
+      },
     );
 };
