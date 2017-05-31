@@ -9,9 +9,9 @@ export const Student = {
   SEARCH_SUCCESS: 'student_search_success',
   SEARCH_FAIL: 'student_search_fail',
 
-  FETCH: 'student_fetch',
-  FETCH_SUCCESS: 'student_fetch_success',
-  FETCH_FAIL: 'student_fetch_fail',
+  MANAGE: 'student_manage',
+  MANAGE_SUCCESS: 'student_manage_success',
+  MANAGE_FAIL: 'student_manage_fail',
 };
 
 export const Teacher = {

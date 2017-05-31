@@ -97,6 +97,7 @@ class ScheduleCalendar extends Component {
       if (result.code) {
         Message.error(result.message);
       } else {
+        Message.success('创建成功');
         dispatch(fetchRooms(filters));
       }
     });

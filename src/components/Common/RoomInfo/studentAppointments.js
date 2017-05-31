@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Table, Row, Col, Button, Modal } from 'antd';
+import { Table, Row, Col, Button, Modal, Message } from 'antd';
 import moment from 'moment';
 
 import FindStudentModal from '../FindStudentModal';
@@ -33,9 +33,15 @@ class StudentAppointments extends Component {
     const { dispatch, roomId } = this.props;
     const { selectedStudents } = this.state;
     if (roomId && selectedStudents.length) {
-      selectedStudents.map(studentId => dispatch(addStudent(roomId, studentId)));
+      selectedStudents.map(studentId =>
+        dispatch(addStudent(roomId, studentId)).then((result) => {
+          if (result.code) {
+            Message.error(result.message);
+          }
+        }),
+      );
     }
-  }
+  };
   render() {
     const columns = [
       {

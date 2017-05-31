@@ -8,7 +8,7 @@ import SearchForm from './SearchForm';
 
 import crmStatus from '../../../common/crmStatus';
 import { fetchAdmins } from '../../../app/actions/admin';
-import { fetchStudents } from '../../../app/actions/student';
+import { manageStudent } from '../../../app/actions/student';
 
 class StudentList extends Component {
   static propTypes = {
@@ -26,16 +26,16 @@ class StudentList extends Component {
   componentWillMount() {
     const { dispatch, filters } = this.props;
     dispatch(fetchAdmins());
-    dispatch(fetchStudents(filters));
+    dispatch(manageStudent(filters));
   }
   handleSearch = (filters) => {
     const { dispatch } = this.props;
-    dispatch(fetchStudents(filters));
+    dispatch(manageStudent(filters));
   };
   handleChange = (pagination) => {
     const { dispatch, filters } = this.props;
     dispatch(
-      fetchStudents(
+      manageStudent(
         Object.assign(filters, {
           page: pagination.current,
           pageSize: pagination.pageSize,

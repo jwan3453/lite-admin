@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table } from 'antd';
+import { Table, Input, Icon } from 'antd';
 import { connect } from 'react-redux';
 
 import { searchStudent } from '../../../app/actions/student';
@@ -21,17 +21,26 @@ class StudentList extends Component {
     const { dispatch, filters } = this.props;
     dispatch(searchStudent(filters));
   }
-
-  handleChange = (pagination) => {
+  handleChangePage = (pagination) => {
     const { dispatch, filters } = this.props;
-    dispatch(searchStudent(Object.assign(filters, {
-      page: pagination.current,
-      pageSize: pagination.pageSize,
-    })));
-  }
-
+    dispatch(
+      searchStudent(
+        Object.assign(filters, {
+          page: pagination.current,
+          pageSize: pagination.pageSize,
+        }),
+      ),
+    );
+  };
   handleSelectChange = (selectedRowKeys) => {
     this.props.onSelectedRowsChange(selectedRowKeys);
+  };
+
+  handleSearch = (value) => {
+    const { dispatch } = this.props;
+    dispatch(searchStudent({
+      searchText: value,
+    }));
   };
 
   render() {
@@ -76,6 +85,12 @@ class StudentList extends Component {
     };
     return (
       <div>
+        <Input.Search
+          size="default"
+          onSearch={this.handleSearch}
+          prefix={<Icon type="mobile" style={{ fontSize: 13 }} />}
+          placeholder="手机尾号 或 手机号"
+        />
         <Table
           size="small"
           loading={this.props.loading}
@@ -84,7 +99,7 @@ class StudentList extends Component {
           dataSource={dataSource}
           rowKey="id"
           pagination={pagination}
-          onChange={this.handleChange}
+          onChange={this.handleChangePage}
           rowSelection={rowSelection}
         />
       </div>

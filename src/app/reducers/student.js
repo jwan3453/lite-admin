@@ -24,14 +24,14 @@ export function student(
         },
       });
     }
-    case Student.FETCH:
+    case Student.MANAGE:
       return assign({}, state, {
         loading: true,
         manage: {
           filters: action.filters,
         },
       });
-    case Student.FETCH_SUCCESS:
+    case Student.MANAGE_SUCCESS:
       return assign({}, state, {
         loading: false,
         manage: {
@@ -47,7 +47,7 @@ export function student(
           result: action.response,
         },
       });
-    case Student.FETCH_FAIL:
+    case Student.MANAGE_FAIL:
     case Student.SEARCH_FAIL:
       return assign({}, state, {
         loading: false,
