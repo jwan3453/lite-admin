@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { Table } from 'antd';
+import { Table, Modal, Spin } from 'antd';
 import { connect } from 'react-redux';
 import moment from 'moment';
 import _ from 'lodash';
 
 import SearchForm from './SearchForm';
+import StudentInfo from '../../Common/StudentInfo';
 
 import crmStatus from '../../../common/crmStatus';
 import { fetchAdmins } from '../../../app/actions/admin';
@@ -22,6 +23,10 @@ class StudentList extends Component {
     adminUsers: [],
     filters: {},
     students: {},
+  };
+  state = {
+    currentStudent: null,
+    studentInfoModalVisible: false,
   };
   componentWillMount() {
     const { dispatch, filters } = this.props;
@@ -43,6 +48,13 @@ class StudentList extends Component {
       ),
     );
   };
+  handleShowStudentInfo = (studentInfo) => {
+    this.setState({
+      currentStudent: studentInfo,
+      studentInfoModalVisible: true,
+    });
+  };
+
   render() {
     const { students } = this.props;
     const columns = [
@@ -50,39 +62,53 @@ class StudentList extends Component {
         title: 'ID',
         dataIndex: 'id',
         key: 'id',
-        width: 100,
+        width: 80,
+        render: (text, record, index) => (
+          <a
+            role="button"
+            tabIndex={index}
+            onClick={() => this.handleShowStudentInfo(record)}
+          >
+            [ {text} ]
+          </a>
+        ),
       },
       {
         title: '手机尾号',
         dataIndex: 'mobileSuffix',
         key: 'mobileSuffix',
-        width: 100,
+        width: 80,
       },
       {
         title: '昵称',
         dataIndex: 'nickname',
         key: 'nickname',
-      },
-      {
-        title: '所属组',
-        dataIndex: 'groupName',
-        key: 'groupName',
+        width: 100,
       },
       {
         title: '性别',
         dataIndex: 'gender',
         key: 'gender',
+        width: 60,
         render: gender => ['', '男', '女'][gender],
       },
       {
         title: '年龄',
         dataIndex: 'age',
         key: 'age',
+        width: 60,
       },
       {
         title: '城市',
         dataIndex: 'city',
         key: 'city',
+        width: 80,
+      },
+      {
+        title: '所属组',
+        dataIndex: 'groupName',
+        key: 'groupName',
+        width: 100,
       },
       {
         title: '助教',
@@ -129,6 +155,7 @@ class StudentList extends Component {
     };
 
     const dataSource = students.result || [];
+    const student = this.state.currentStudent || {};
     return (
       <div>
         <SearchForm
@@ -145,6 +172,17 @@ class StudentList extends Component {
           pagination={pagination}
           onChange={this.handleChange}
         />
+        <Modal
+          visible={this.state.studentInfoModalVisible}
+          title={`学生信息 ${student.nickname}`}
+          footer={null}
+          onCancel={() => this.setState({ studentInfoModalVisible: false })}
+          width={700}
+        >
+          <Spin spinning={this.props.loading}>
+            <StudentInfo student={student} />
+          </Spin>
+        </Modal>
       </div>
     );
   }

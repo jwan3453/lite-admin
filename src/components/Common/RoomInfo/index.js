@@ -21,6 +21,7 @@ class RoomInfo extends Component {
     const operationLogs = roomInfo.operationLogs || [];
     return (
       <Tabs
+        size="small"
         tabBarExtraContent={
           <Button size="small" icon="enter">进入房间</Button>
         }

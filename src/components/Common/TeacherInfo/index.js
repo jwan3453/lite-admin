@@ -7,7 +7,7 @@ import BasicInfo from './basicinfo';
 class TeacherInfo extends Component {
   render() {
     return (
-      <Tabs>
+      <Tabs size="small">
         <Tabs.TabPane tab="基础信息" key="basic">
           <BasicInfo />
         </Tabs.TabPane>
