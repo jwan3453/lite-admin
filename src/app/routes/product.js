@@ -5,13 +5,15 @@ import Refund from '../../components/Product/Refund';
 export default [
   {
     path: 'product',
+    breadcrumbName: '产品',
     navigatorName: '产品',
     navigatorIcon: 'shopping-cart',
     childRoutes: [
       {
-        navigatorName: '产品',
+        breadcrumbName: '产品列表',
+        navigatorName: '产品列表',
         navigatorIcon: 'shopping-cart',
-        path: 'product',
+        path: 'manage',
         component: Product,
       },
       {
