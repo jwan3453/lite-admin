@@ -17,6 +17,7 @@ export default [
         component: Product,
       },
       {
+        breadcrumbName: '订单',
         navigatorName: '订单',
         navigatorIcon: 'pay-circle-o',
         path: 'bill',
