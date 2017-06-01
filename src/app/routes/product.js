@@ -24,6 +24,7 @@ export default [
         component: Bill,
       },
       {
+        breadcrumbName: '退款',
         navigatorName: '退款',
         navigatorIcon: 'bank',
         path: 'refund',
