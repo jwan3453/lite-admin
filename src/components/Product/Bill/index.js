@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Table } from 'antd';
+import { Table, Button, Modal } from 'antd';
 import SearchForm from './SearchForm';
+import RefundForm from './RefundForm/';
 
 class Bills extends Component {
   static propTypes = {
@@ -13,10 +14,26 @@ class Bills extends Component {
   };
 
   state = {
+    dialogVisible: false,
   };
 
   handleSearch = (filters) => {
     console.log(filters);
+  };
+
+  handleRefund = () => {
+    const form = this.refundForm.form;
+    form.validateFields((errors) => {
+      if (!errors) {
+        //  todo if form is valid, then dispatch an ation
+      }
+    });
+  };
+
+  handleRequestRefund = () => {
+    this.setState({
+      dialogVisible: true,
+    });
   };
 
   render() {
@@ -93,6 +110,9 @@ class Bills extends Component {
       },
       {
         title: '操作',
+        render: () => (
+          <Button onClick={() => this.handleRequestRefund()}>申请退款</Button>
+        ),
       },
     ];
 
@@ -109,8 +129,19 @@ class Bills extends Component {
           dataSource={dataSource}
           rowKey="id"
           pagination={pagination}
-          onChange={this.handleChange}
         />
+        <Modal
+          title="退款申请"
+          visible={this.state.dialogVisible}
+          onOk={this.handleRefund}
+          onCancel={() => this.setState({ dialogVisible: false })}
+        >
+          <RefundForm
+            ref={(node) => {
+              this.refundForm = node;
+            }}
+          />
+        </Modal>
       </div>
     );
   }
