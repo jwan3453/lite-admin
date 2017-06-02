@@ -12,6 +12,8 @@ import {
 import moment from 'moment';
 import _ from 'lodash';
 import crmStatus from '../../../common/crmStatus';
+
+import GiftForm from './giftForm';
 import BasicProfileForm from './basicProfileForm';
 
 class StudentBasicInfo extends Component {
@@ -140,7 +142,7 @@ class StudentBasicInfo extends Component {
           visible={this.state.giftDialogVisible}
           onOk={this.handleSendGift}
           onCancel={() => this.setState({ giftDialogVisible: false })}
-        >gift form here</Modal>
+        ><GiftForm /></Modal>
       </div>
     );
   }
