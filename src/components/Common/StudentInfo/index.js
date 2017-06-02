@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { Tabs } from 'antd';
 
 import StudentBasicInfo from './basicInfo';
+import Schedule from './schedule';
 
 class StudentInfo extends Component {
   render() {
@@ -12,7 +13,7 @@ class StudentInfo extends Component {
           <StudentBasicInfo />
         </Tabs.TabPane>
         <Tabs.TabPane tab="预约记录" key="user-schedule">
-          todo
+          <Schedule />
         </Tabs.TabPane>
         <Tabs.TabPane tab="入学问卷" key="entry-questionair">
           todo
