@@ -2,12 +2,14 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Tabs } from 'antd';
 
+import StudentBasicInfo from './basicInfo';
+
 class StudentInfo extends Component {
   render() {
     return (
-      <Tabs size="small">
+      <Tabs size="small" style={{ paddingBottom: '40px' }}>
         <Tabs.TabPane tab="基础信息" key="basic">
-          basic
+          <StudentBasicInfo />
         </Tabs.TabPane>
         <Tabs.TabPane tab="预约记录" key="user-schedule">
           todo

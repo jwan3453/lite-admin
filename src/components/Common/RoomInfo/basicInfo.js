@@ -12,7 +12,6 @@ class RoomBasicInfo extends Component {
     lessonName: React.PropTypes.string.isRequired,
     filters: React.PropTypes.object.isRequired,
     onHide: React.PropTypes.func.isRequired,
-    onCopySchedule: React.PropTypes.func.isRequired,
   };
   static defaultProps = {
     dispatch: () => {},
