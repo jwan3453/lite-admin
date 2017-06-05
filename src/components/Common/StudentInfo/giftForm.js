@@ -155,3 +155,4 @@ class GiftForm extends Component {
 }
 
 export default Form.create()(GiftForm);
+

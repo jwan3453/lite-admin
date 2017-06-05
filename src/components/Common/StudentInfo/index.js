@@ -4,6 +4,7 @@ import { Tabs } from 'antd';
 
 import StudentBasicInfo from './basicInfo';
 import Schedule from './schedule';
+import Question from './question';
 
 class StudentInfo extends Component {
   render() {
@@ -16,7 +17,7 @@ class StudentInfo extends Component {
           <Schedule />
         </Tabs.TabPane>
         <Tabs.TabPane tab="入学问卷" key="entry-questionair">
-          todo
+          <Question />
         </Tabs.TabPane>
         <Tabs.TabPane tab="学习进度" key="user-progress">
           todo
@@ -39,3 +40,4 @@ class StudentInfo extends Component {
 }
 
 export default connect()(StudentInfo);
+
