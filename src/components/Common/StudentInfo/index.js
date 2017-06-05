@@ -6,6 +6,7 @@ import StudentBasicInfo from './basicInfo';
 import Schedule from './schedule';
 import Question from './question';
 import LessonStatus from './lessonStatus';
+import UserProduct from './userProduct';
 
 class StudentInfo extends Component {
   render() {
@@ -24,7 +25,7 @@ class StudentInfo extends Component {
           <LessonStatus />
         </Tabs.TabPane>
         <Tabs.TabPane tab="课时包" key="product">
-          todo
+          <UserProduct />
         </Tabs.TabPane>
         <Tabs.TabPane tab="奖学金" key="scholarship">
           todo
