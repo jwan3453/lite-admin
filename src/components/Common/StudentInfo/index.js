@@ -5,6 +5,7 @@ import { Tabs } from 'antd';
 import StudentBasicInfo from './basicInfo';
 import Schedule from './schedule';
 import Question from './question';
+import LessonStatus from './lessonStatus';
 
 class StudentInfo extends Component {
   render() {
@@ -20,7 +21,7 @@ class StudentInfo extends Component {
           <Question />
         </Tabs.TabPane>
         <Tabs.TabPane tab="学习进度" key="user-progress">
-          todo
+          <LessonStatus />
         </Tabs.TabPane>
         <Tabs.TabPane tab="课时包" key="product">
           todo
