@@ -2,22 +2,27 @@ import React, { Component } from 'react';
 import { Table, Button, Icon, Modal, Message } from 'antd';
 import { connect } from 'react-redux';
 
-import { createProduct } from '../../../app/actions/product';
+import { createProduct, fetchProducts } from '../../../app/actions/product';
 import CreateProductForm from './CreateProductForm';
 
 class ProductList extends Component {
   static propTypes = {
     dispatch: React.PropTypes.func.isRequired,
-    products: React.PropTypes.object.isRequired,
     loading: React.PropTypes.bool.isRequired,
+    products: React.PropTypes.array,
   };
   static defaultProps = {
-    products: {},
+    products: [],
   };
 
   state = {
     visible: false,
   };
+
+  componentDidMount() {
+    const { dispatch } = this.props;
+    dispatch(fetchProducts());
+  }
 
   handleEdit(product) {
     console.log(product);
@@ -70,13 +75,13 @@ class ProductList extends Component {
       },
       {
         title: '获得课时',
-        dataIndex: 'hours',
-        key: 'hours',
+        dataIndex: 'lessonCount',
+        key: 'lessonCount',
       },
       {
         title: '总销量',
-        dataIndex: 'sales',
-        key: 'sales',
+        dataIndex: 'totalSale',
+        key: 'totalSale',
       },
       {
         title: '总金额',
@@ -128,30 +133,10 @@ class ProductList extends Component {
   }
 }
 
-function mapStateToProps() {
+function mapStateToProps(state) {
+  const { product } = state;
   return {
-    products: {
-      result: [
-        {
-          id: 27,
-          name: '暑假团购课时',
-          price: 148,
-          quota: 1,
-          hours: 12,
-          sales: 40597,
-          sum: 6008356,
-        },
-        {
-          id: 28,
-          name: '暑假团购课时',
-          price: 148,
-          quota: 1,
-          hours: 12,
-          sales: 40597,
-          sum: 6008356,
-        },
-      ],
-    },
+    products: product.manage.result,
   };
 }
 

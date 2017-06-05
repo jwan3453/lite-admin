@@ -34,17 +34,24 @@ class CreateProductForm extends React.Component {
   handleSubmit = (e) => {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
-      const product = _.omit(values, ['buyingRange', 'lessonTimeRange', 'lessonLifeTime']);
+      const product = _.omit(values, [
+        'buyingRange',
+        'lessonTimeRange',
+        'lessonLifeTime',
+      ]);
       if (values.lessonValidityType === LESSON_VALIDITY_LIFE_TIME) {
         product.lessonLifeTime = values.lessonLifeTime;
       }
+
       if (values.lessonValidityType === LESSON_VALIDITY_START_END) {
         product.lessonStartDate = values.lessonTimeRange[0].format(dateFormat);
         product.lessonEndDate = values.lessonTimeRange[1].format(dateFormat);
       }
 
-      product.buyingStartDate = values.buyingRange[0].format(dateFormat);
-      product.buyingEndDate = values.buyingRange[1].format(dateFormat);
+      if (values.buyingRange) {
+        product.buyingStartDate = values.buyingRange[0].format(dateFormat);
+        product.buyingEndDate = values.buyingRange[1].format(dateFormat);
+      }
 
       this.props.onSubmit(product);
     });
@@ -108,10 +115,16 @@ class CreateProductForm extends React.Component {
             rules: [{ required: true }],
           })(<InputNumber min={1} size="large" />)}
         </FormItem>
+        <FormItem {...formItemLayout} label="限购数量">
+          {getFieldDecorator('maxBuyLimit', {
+            initialValue: 1,
+            rules: [{ required: false }],
+          })(<InputNumber min={0} size="large" />)}
+        </FormItem>
 
         <FormItem {...formItemLayout} label="归属产品">
           {getFieldDecorator('parent', {
-            initialValue: '',
+            initialValue: '0',
             rules: [{ required: false }],
           })(
             <Select size="large">

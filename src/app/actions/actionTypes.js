@@ -76,9 +76,14 @@ export const Course = {
   FETCH_FAIL: 'course_fetch_fail',
 };
 
-
 export const Product = {
   CREATE: 'product_create',
   CREATE_SUCCESS: 'product_create_success',
   CREATE_FAIL: 'product_create_fail',
+};
+
+export const Products = {
+  FETCH: 'products_fetch',
+  FETCH_SUCCESS: 'products_fetch_success',
+  FETCH_FAIL: 'products_fetch_fail',
 };
