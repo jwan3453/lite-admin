@@ -1,9 +1,13 @@
 import React, { Component } from 'react';
-import { Table, Button } from 'antd';
+import { Table, Button, Icon, Modal, Message } from 'antd';
 import { connect } from 'react-redux';
+
+import { createProduct } from '../../../app/actions/product';
+import CreateProductForm from './CreateProductForm';
 
 class ProductList extends Component {
   static propTypes = {
+    dispatch: React.PropTypes.func.isRequired,
     products: React.PropTypes.object.isRequired,
     loading: React.PropTypes.bool.isRequired,
   };
@@ -11,9 +15,24 @@ class ProductList extends Component {
     products: {},
   };
 
+  state = {
+    visible: false,
+  };
+
   handleEdit(product) {
     console.log(product);
   }
+
+  handleCreateProduct = (data) => {
+    const { dispatch } = this.props;
+    dispatch(createProduct(data)).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+      } else {
+        Message.success('创建成功');
+      }
+    });
+  };
 
   render() {
     const { products } = this.props;
@@ -75,6 +94,15 @@ class ProductList extends Component {
 
     return (
       <div>
+        <Button
+          ghost
+          type="primary"
+          size="default"
+          onClick={() => this.setState({ visible: true })}
+        >
+          <Icon type="plus" />
+          新增产品
+        </Button>
         <Table
           loading={this.props.loading}
           style={{ marginTop: 16 }}
@@ -83,6 +111,18 @@ class ProductList extends Component {
           rowKey="id"
           pagination={pagination}
         />
+        <Modal
+          maskClosable={false}
+          visible={this.state.visible}
+          title="新增产品"
+          footer={null}
+          onCancel={() => this.setState({ visible: false })}
+        >
+          <CreateProductForm
+            products={this.props.products.result}
+            onSubmit={this.handleCreateProduct}
+          />
+        </Modal>
       </div>
     );
   }

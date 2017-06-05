@@ -12,7 +12,10 @@ class RoomBasicInfo extends Component {
     lessonName: React.PropTypes.string.isRequired,
     filters: React.PropTypes.object.isRequired,
     onHide: React.PropTypes.func.isRequired,
-    // onCopySchedule: React.PropTypes.func.isRequired,
+<<<<<<< HEAD
+=======
+    onCopySchedule: React.PropTypes.func.isRequired,
+>>>>>>> roomModal增加增加房间、删除房间操作
   };
   static defaultProps = {
     dispatch: () => {},

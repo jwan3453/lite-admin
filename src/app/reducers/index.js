@@ -8,6 +8,7 @@ import * as courseReducers from './course';
 import * as teacherReducers from './teacher';
 import * as studentReducers from './student';
 import * as adminReducers from './admin';
+import * as productReducers from './product';
 
 const rootReducer = combineReducers({
   routing,
@@ -18,6 +19,7 @@ const rootReducer = combineReducers({
   ...teacherReducers,
   ...studentReducers,
   ...adminReducers,
+  ...productReducers,
 });
 
 export default rootReducer;
