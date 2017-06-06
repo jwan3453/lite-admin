@@ -101,6 +101,7 @@ class UserProduct extends React.Component {
     return (
       <div>
         <Table
+          size="small"
           rowKey="id"
           loading={loading}
           columns={columns}

@@ -143,6 +143,7 @@ class LessonStatus extends React.Component {
         </div>
         <div>
           <Table
+            size="small"
             rowKey="id"
             pagination={false}
             columns={columns}

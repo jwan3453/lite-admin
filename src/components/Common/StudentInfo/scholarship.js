@@ -4,7 +4,7 @@ import {
   Table,
   Row,
   Col,
-  Card,
+  Alert,
 } from 'antd';
 import moment from 'moment';
 
@@ -65,16 +65,17 @@ class Scholarship extends React.Component {
       <div>
         <Row gutter={16}>
           <Col span={8}>
-            <Card title="总额">{summary.total.toFixed(2)}</Card>
+            <Alert message={`总额 ${summary.total.toFixed(2)}`} type="info" />
           </Col>
           <Col span={8}>
-            <Card title="剩余">{summary.left.toFixed(2)}</Card>
+            <Alert message={`剩余 ${summary.left.toFixed(2)}`} type="info" />
           </Col>
           <Col span={8}>
-            <Card title="已兑换课时">{summary.used}</Card>
+            <Alert message={`已兑换 ${summary.used} 课时`} type="info" />
           </Col>
         </Row>
         <Table
+          size="small"
           loading={loading}
           rowKey="id"
           columns={columns}

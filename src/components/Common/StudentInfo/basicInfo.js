@@ -123,10 +123,6 @@ class StudentBasicInfo extends Component {
                 />
               </Tooltip>
             </Col>
-            <Col {...labelProps}>总奖学金：</Col>
-            <Col {...contentProps}>{studentInfo.scholarship.sum}</Col>
-            <Col {...labelProps}>可用奖学金：</Col>
-            <Col {...contentProps}>{studentInfo.scholarship.available}</Col>
           </Row>
         </Spin>
         <Modal
