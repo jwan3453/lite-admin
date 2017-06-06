@@ -7,6 +7,7 @@ import Question from './question';
 import LessonStatus from './lessonStatus';
 import StudentProduct from './studentProduct';
 import Scholarship from './scholarship';
+import UserTicket from './userTicket';
 
 export default class StudentInfo extends Component {
   static propTypes = {
@@ -35,7 +36,7 @@ export default class StudentInfo extends Component {
           <Scholarship studentId={studentId} />
         </Tabs.TabPane>
         <Tabs.TabPane tab="工单" key="ticket">
-          todo
+          <UserTicket />
         </Tabs.TabPane>
         <Tabs.TabPane tab="CRM跟进" key="crm">
           todo
