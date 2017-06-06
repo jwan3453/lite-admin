@@ -16,6 +16,14 @@ export const Student = {
   MANAGE: 'student_manage',
   MANAGE_SUCCESS: 'student_manage_success',
   MANAGE_FAIL: 'student_manage_fail',
+
+  FETCH: 'fetch',
+  FETCH_SUCCESS: 'fetch_success',
+  FETCH_FAIL: 'fetch_fail',
+
+  FETCH_MOBILE: 'fetch_mobile',
+  FETCH_MOBILE_SUCCESS: 'fetch_mobile_success',
+  FETCH_MOBILE_FAIL: 'fetch_mobile_fail',
 };
 
 export const Teacher = {

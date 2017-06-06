@@ -12,6 +12,14 @@ export function student(
       filters: {},
       result: [],
     },
+    studentInfo: {
+      studentId: 0,
+      result: {},
+    },
+    mobile: {
+      studentId: 0,
+      result: null,
+    },
   },
   action = {},
 ) {
@@ -31,6 +39,20 @@ export function student(
           filters: action.filters,
         },
       });
+    case Student.FETCH:
+      return assign({}, state, {
+        loading: true,
+        studentInfo: {
+          studentId: action.studentId,
+        },
+      });
+    case Student.FETCH_MOBILE:
+      return assign({}, state, {
+        loading: true,
+        mobile: {
+          studentId: action.studentId,
+        },
+      });
     case Student.MANAGE_SUCCESS:
       return assign({}, state, {
         loading: false,
@@ -47,8 +69,26 @@ export function student(
           result: action.response,
         },
       });
+    case Student.FETCH_SUCCESS:
+      return assign({}, state, {
+        loading: false,
+        studentInfo: {
+          studentId: action.studentId,
+          result: action.response,
+        },
+      });
+    case Student.FETCH_MOBILE_SUCCESS:
+      return assign({}, state, {
+        loading: false,
+        mobile: {
+          studentId: action.studentId,
+          result: action.response,
+        },
+      });
     case Student.MANAGE_FAIL:
     case Student.SEARCH_FAIL:
+    case Student.FETCH_FAIL:
+    case Student.FETCH_MOBILE_FAIL:
       return assign({}, state, {
         loading: false,
       });
