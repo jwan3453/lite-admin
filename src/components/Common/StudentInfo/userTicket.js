@@ -5,6 +5,7 @@ import {
   Button,
   Table,
   Modal,
+  Popconfirm,
 } from 'antd';
 import moment from 'moment';
 
@@ -41,17 +42,27 @@ class UserTicket extends React.Component {
 
   state = {
     dialogVisible: false,
+    ticket: {},
   };
 
-  showDialog = () => {
+  showDialog = (ticket = {}) => {
     this.setState({
       dialogVisible: true,
+      ticket,
     });
   };
 
-  handleCreateTicket = () => {
+  updateTicket = () => {
+    //  todo
+  };
+
+  createTicket = () => {
     //  todo create a new ticket
-  }
+  };
+
+  removeTicket = () => {
+    //  todo
+  };
 
   render() {
     const { dialogVisible } = this.state;
@@ -119,10 +130,22 @@ class UserTicket extends React.Component {
       {
         title: '操作',
         key: 'actions',
-        render: () => (
+        render: (text, ticket) => (
           <div>
-            <Button icon="edit" style={{ marginRight: 8 }} />
-            <Button icon="delete" />
+            <Button
+              icon="edit"
+              style={{ marginRight: 8 }}
+              onClick={() => this.showDialog(ticket)}
+            />
+            <Popconfirm
+              title="确认删除？"
+              placement="top"
+              okText="确定"
+              cancelText="取消"
+              onConfirm={() => this.removeTicket(ticket)}
+            >
+              <Button icon="delete" />
+            </Popconfirm>
           </div>
         ),
       },
@@ -131,7 +154,7 @@ class UserTicket extends React.Component {
     return (
       <div>
         <Button
-          onClick={this.showDialog}
+          onClick={() => { this.showDialog(); }}
         >新建工单</Button>
         <Table
           rowKey="id"
@@ -144,7 +167,7 @@ class UserTicket extends React.Component {
         <Modal
           title="工单"
           visible={dialogVisible}
-          onOk={this.handleCreateTicket}
+          onOk={this.createTicket}
           onCancel={() => this.setState({ dialogVisible: false })}
         >
           <TicketForm />
