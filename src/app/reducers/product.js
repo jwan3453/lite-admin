@@ -6,7 +6,7 @@ export function product(
     loading: false,
     manage: {
       filters: {},
-      result: [],
+      result: {},
     },
   },
   action = {},

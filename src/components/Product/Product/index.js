@@ -9,11 +9,11 @@ class ProductList extends Component {
   static propTypes = {
     dispatch: React.PropTypes.func.isRequired,
     loading: React.PropTypes.bool.isRequired,
-    products: React.PropTypes.array,
+    products: React.PropTypes.object,
     filters: React.PropTypes.object,
   };
   static defaultProps = {
-    products: [],
+    products: {},
     filters: {},
   };
 
@@ -153,6 +153,7 @@ function mapStateToProps(state) {
   return {
     products: product.manage.result,
     filters: product.manage.filters,
+    loading: product.loading,
   };
 }
 
