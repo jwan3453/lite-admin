@@ -154,7 +154,28 @@ class UserTicket extends React.Component {
     return (
       <div>
         <Button
-          onClick={() => { this.showDialog(); }}
+          onClick={() => {
+            this.showDialog({
+              id: 0,
+              subject: '',
+              user: {
+                id: 0,
+                name: '',
+              },
+              type: 6,
+              assignee: {
+                id: 0,
+                name: '0',
+              },
+              submitter: {
+                id: 0,
+                name: '',
+              },
+              status: 1,
+              ctime: (new Date()).getTime(),
+              comment: '',
+            });
+          }}
         >新建工单</Button>
         <Table
           rowKey="id"
