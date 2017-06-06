@@ -14,10 +14,12 @@ class TicketForm extends React.Component {
   static propTypes = {
     form: React.PropTypes.object.isRequired,
     assignees: React.PropTypes.array,
+    ticket: React.PropTypes.object,
   };
 
   static defaultProps = {
     assignees: [],
+    ticket: {},
   };
 
   render() {
@@ -29,6 +31,7 @@ class TicketForm extends React.Component {
 
     const {
       assignees,
+      ticket,
     } = this.props;
 
     return (
@@ -39,7 +42,7 @@ class TicketForm extends React.Component {
         >
           {
             getFieldDecorator('type', {
-              initialValue: 0,
+              initialValue: ticket.type,
               rules: [
                 {
                   required: false,
@@ -62,6 +65,7 @@ class TicketForm extends React.Component {
         >
           {
             getFieldDecorator('subject', {
+              initialValue: ticket.subject,
               rules: [
                 {
                   required: true,
@@ -76,7 +80,7 @@ class TicketForm extends React.Component {
         >
           {
             getFieldDecorator('userId', {
-              initialValue: '5',
+              initialValue: ticket.user.id,
               rules: [
                 {
                   required: true,
@@ -91,6 +95,7 @@ class TicketForm extends React.Component {
         >
           {
             getFieldDecorator('assignee', {
+              initialValue: ticket.assignee.id,
               rules: [
                 {
                   required: false,
@@ -113,7 +118,7 @@ class TicketForm extends React.Component {
         >
           {
             getFieldDecorator('ctime', {
-              initialValue: `${moment().format('YYYY-MM-DD hh:mm:ss')}`,
+              initialValue: `${moment(ticket.ctime || (new Date())).format('YYYY-MM-DD hh:mm:ss')}`,
               rules: [
                 {
                   required: false,
@@ -128,6 +133,7 @@ class TicketForm extends React.Component {
         >
           {
             getFieldDecorator('status', {
+              initialValue: ticket.status,
               rules: [
                 {
                   required: false,
@@ -150,6 +156,7 @@ class TicketForm extends React.Component {
         >
           {
             getFieldDecorator('comment', {
+              initialValue: ticket.comment,
               rules: [
                 {
                   required: true,

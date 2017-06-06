@@ -170,7 +170,9 @@ class UserTicket extends React.Component {
           onOk={this.createTicket}
           onCancel={() => this.setState({ dialogVisible: false })}
         >
-          <TicketForm />
+          <TicketForm
+            ticket={this.state.ticket}
+          />
         </Modal>
       </div>
     );
