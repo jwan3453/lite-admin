@@ -101,7 +101,7 @@ export default () => next => (action) => {
           assign({}, action, {
             type: failureType,
             code: error.code || 'unknown.error',
-            message: error.message,
+            message: error.message || 'unknown.error',
           }),
         );
       },

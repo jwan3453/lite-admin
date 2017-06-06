@@ -1,6 +1,6 @@
 import { assign } from 'lodash';
 import moment from 'moment';
-import { Rooms, Room, RoomTypes } from '../actions/actionTypes';
+import { Rooms, Room, RoomTypes, StudentAppointment, TeacherAppointment } from '../actions/actionTypes';
 
 export function room(
   state = {
@@ -24,6 +24,9 @@ export function room(
     case Room.FETCH:
     case Room.ADD_STUDENT:
     case RoomTypes.FETCH:
+    case TeacherAppointment.UPDATE:
+    case StudentAppointment.UPDATE:
+    case StudentAppointment.CHANGE_ROOM:
       return assign({}, state, {
         loading: true,
       });
@@ -43,10 +46,16 @@ export function room(
         rooms: action.response,
       });
     case Room.ADD_STUDENT_SUCCESS:
+    case TeacherAppointment.UPDATE_SUCCESS:
+    case StudentAppointment.UPDATE_SUCCESS:
     case Room.ADD_STUDENT_FAIL:
     case RoomTypes.FETCH_FAIL:
     case Room.FETCH_FAIL:
     case Rooms.FETCH_FAIL:
+    case TeacherAppointment.UPDATE_FAIL:
+    case StudentAppointment.UPDATE_FAIL:
+    case StudentAppointment.CHANGE_ROOM_SUCCESS:
+    case StudentAppointment.CHANGE_ROOM_FAIL:
       return assign({}, state, {
         loading: false,
       });

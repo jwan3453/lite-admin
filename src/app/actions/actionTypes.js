@@ -39,6 +39,10 @@ export const Room = {
   FETCH_SUCCESS: 'room_fetch_success',
   FETCH_FAIL: 'room_fetch_fail',
 
+  UPDATE: 'room_update',
+  UPDATE_SUCCESS: 'room_update_success',
+  UPDATE_FAIL: 'room_update_fail',
+
   DELETE: 'room_delete',
   DELETE_SUCCESS: 'room_delete_success',
   DELETE_FAIL: 'room_delete_fail',
@@ -46,6 +50,10 @@ export const Room = {
   ADD_STUDENT: 'add_student',
   ADD_STUDENT_SUCCESS: 'add_student_success',
   ADD_STUDENT_FAIL: 'add_student_fail',
+
+  UPDATE_TEACHER: 'update_teacher',
+  UPDATE_TEACHER_SUCCESS: 'update_teacher_success',
+  UPDATE_TEACHER_FAIL: 'update_teacher_fail',
 };
 
 export const RoomTypes = {
@@ -59,9 +67,43 @@ export const Schedule = {
   CREATE_SUCCESS: 'schedule_create_success',
   CREATE_FAIL: 'schedule_create_fail',
 
+  COPY: 'schedule_copy',
+
   ADD_ROOM: 'add_room',
   ADD_ROOM_SUCCESS: 'add_room_success',
   ADD_ROOM_FAIL: 'add_room_fail',
+
+  SET_INTERNAL: 'set_internal',
+  SET_INTERNAL_SUCCESS: 'set_internal_SUCCESS',
+  SET_INTERNAL_FAIL: 'set_internal_FAIL',
+
+  FETCH_ROOMS: 'fetch_rooms',
+  FETCH_ROOMS_SUCCESS: 'fetch_rooms_success',
+  FETCH_ROOMS_FAIL: 'fetch_rooms_fail',
+};
+
+export const TeacherAppointment = {
+  FETCH: 'fetch',
+  FETCH_SUCCESS: 'fetch_success',
+  FETCH_FAIL: 'fetch_fail',
+
+  UPDATE: 'update',
+  UPDATE_SUCCESS: 'update_success',
+  UPDATE_FAIL: 'update_fail',
+};
+
+export const StudentAppointment = {
+  FETCH: 'fetch',
+  FETCH_SUCCESS: 'fetch_success',
+  FETCH_FAIL: 'fetch_fail',
+
+  UPDATE: 'update',
+  UPDATE_SUCCESS: 'update_success',
+  UPDATE_FAIL: 'update_fail',
+
+  CHANGE_ROOM: 'change_room',
+  CHANGE_ROOM_SUCCESS: 'change_room_success',
+  CHANGE_ROOM_FAIL: 'change_room_fail',
 };
 
 export const Courses = {

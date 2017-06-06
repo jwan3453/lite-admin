@@ -6,7 +6,9 @@ import * as roomReducers from './room';
 import * as scheduleReducers from './schedule';
 import * as courseReducers from './course';
 import * as teacherReducers from './teacher';
+import * as teacherAppointmentReducers from './teacherAppointment';
 import * as studentReducers from './student';
+import * as studentAppointmentReducers from './studentAppointment';
 import * as adminReducers from './admin';
 import * as productReducers from './product';
 
@@ -17,7 +19,9 @@ const rootReducer = combineReducers({
   ...scheduleReducers,
   ...courseReducers,
   ...teacherReducers,
+  ...teacherAppointmentReducers,
   ...studentReducers,
+  ...studentAppointmentReducers,
   ...adminReducers,
   ...productReducers,
 });

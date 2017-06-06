@@ -1,4 +1,3 @@
-import moment from 'moment';
 import React, { Component } from 'react';
 import {
   Form,
@@ -12,12 +11,12 @@ import {
   Input,
   Radio,
   Modal,
-  AutoComplete,
 } from 'antd';
 
 import DateRange, { getDateRange } from '../../../common/dateRange';
 import CreateScheduleForm from '../../Common/CreateScheduleForm';
 import CourseCascader from '../../Common/CourseCascader';
+import TeacherAutoComplete from '../../Common/TeacherAutoComplete';
 
 const FormItem = Form.Item;
 const dateFormat = 'YYYY-MM-DD';
@@ -29,15 +28,19 @@ class ScheduleCalendarSearchForm extends Component {
     teachers: React.PropTypes.array,
     roomTypes: React.PropTypes.array,
     onSearch: React.PropTypes.func.isRequired,
+    onSwitchVisible: React.PropTypes.func.isRequired,
     onCreateSchedule: React.PropTypes.func.isRequired,
+    scheduleVisible: React.PropTypes.bool.isRequired,
+    copiedSchedule: React.PropTypes.object,
   };
   static defaultProps = {
     teachers: [],
     courses: [],
     roomTypes: [],
+    scheduleVisible: false,
+    copiedSchedule: {},
   };
   state = {
-    visible: false,
     expand: false,
     dateRangeKey: '-1',
     teachers: [],
@@ -57,41 +60,41 @@ class ScheduleCalendarSearchForm extends Component {
         dateRange = values.dateRange;
       } else if (values.dateRangeKey) {
         dateRange = getDateRange(values.dateRangeKey);
-        dateRange[1] = dateRange[1].add(-1, 'day');
       }
-      filters.startDate = dateRange[0].format(dateFormat);
-      filters.endDate = dateRange[1].format(dateFormat);
+      if (dateRange[0].diff(dateRange[1], 'day') > 7) {
+        Message.error('时间区间不能超过一周');
+      } else {
+        filters.startDate = dateRange[0].format(dateFormat);
+        filters.endDate = dateRange[1].format(dateFormat);
 
-      if (values.courseCascader) {
-        const [courseId, chapterId, lessonId] = values.courseCascader;
-        if (courseId > 0) filters.courseId = courseId;
-        if (chapterId > 0) filters.chapterId = chapterId;
-        if (lessonId > 0) filters.lessonId = lessonId;
+        if (values.courseCascader) {
+          const [courseId, chapterId, lessonId] = values.courseCascader;
+          if (courseId > 0) filters.courseId = courseId;
+          if (chapterId > 0) filters.chapterId = chapterId;
+          if (lessonId > 0) filters.lessonId = lessonId;
+        }
+
+        if (values.studentCount) {
+          filters.studentCount = values.studentCount;
+        }
+
+        if (values.isInternal >= 0) {
+          filters.isInternal = values.isInternal;
+        }
+
+        if (values.roomTypeId) {
+          filters.roomTypeId = values.roomTypeId;
+        }
+
+        if (values.teacherId) {
+          filters.teacherId = values.teacherId;
+        }
+
+        if (values.hasTeacher) {
+          filters.hasTeacher = values.hasTeacher;
+        }
+        this.props.onSearch(filters);
       }
-
-      if (values.studentCount) {
-        filters.studentCount = values.studentCount;
-      }
-
-      if (values.isInternal >= 0) {
-        filters.isInternal = values.isInternal;
-      }
-
-      if (values.roomTypeId) {
-        filters.roomTypeId = values.roomTypeId;
-      }
-
-      if (values.teacherId) {
-        filters.teacherId = values.teacherId;
-      }
-
-      if (values.hasTeacher) {
-        filters.hasTeacher = values.hasTeacher;
-      }
-
-      console.log('Received values of form: ', values);
-      console.log(filters);
-      this.props.onSearch(filters);
     });
   };
 
@@ -99,50 +102,29 @@ class ScheduleCalendarSearchForm extends Component {
     this.props.form.resetFields();
   };
 
-  handleDateRangeKeyChange = (value) => {
-    this.setState({
-      dateRangeKey: value,
+  handleDateRangeChange = () => {
+    const { form } = this.props;
+    form.setFields({
+      dateRangeKey: {
+        value: '-1',
+        error: null,
+      },
     });
   };
 
-  handleDateRangeChange = (dates) => {
-    const range = moment(dates[1]).diff(moment(dates[0]), 'd');
-    if (range >= 7) {
-      Message.error('时间区间不能超过一周');
-    } else {
-      this.setState({
-        dateRangeKey: '-1',
-      });
-    }
-  };
-
-  handleSearchTeacher = (value) => {
-    if (value.length < 3) {
-      this.setState({ teachers: [] });
-      return;
-    }
-    const teachers = this.props.teachers.filter((teacher) => {
-      const name = `${teacher.username || ''} ${teacher.nickname || ''}`;
-      return name.toLowerCase().indexOf(value.toLowerCase()) >= 0;
+  handleDateRangeKeyChange = (dateRangeKey) => {
+    const { form } = this.props;
+    const dateRange = getDateRange(dateRangeKey);
+    form.setFields({
+      dateRange: {
+        value: dateRange,
+        error: null,
+      },
     });
-    this.setState({ teachers });
-  };
-
-  handleScheduleTimeChange = (value) => {
-    this.setState({ scheduleTime: value });
-  };
-
-  handleCourseChange = (value) => {
-    console.log('course changed:', value);
   };
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const children = this.state.teachers.map(teacher => (
-      <AutoComplete.Option key={`${teacher.id}`}>
-        {teacher.username}
-      </AutoComplete.Option>
-    ));
 
     return (
       <Form className="jiuqu-search-form" onSubmit={this.handleSearch}>
@@ -158,7 +140,7 @@ class ScheduleCalendarSearchForm extends Component {
                   },
                 ],
               })(
-                <Select size="default">
+                <Select size="default" onChange={this.handleDateRangeKeyChange}>
                   <Select.Option key={-1} value={'-1'}>自定义</Select.Option>
                   {DateRange.map(range => (
                     <Select.Option key={range.k} value={range.k}>
@@ -172,6 +154,7 @@ class ScheduleCalendarSearchForm extends Component {
           <Col span={8}>
             <FormItem>
               {getFieldDecorator('dateRange', {
+                initialValue: getDateRange(),
                 rules: [
                   {
                     required: false,
@@ -181,6 +164,7 @@ class ScheduleCalendarSearchForm extends Component {
                 <DatePicker.RangePicker
                   style={{ width: '100%' }}
                   size="default"
+                  onChange={this.handleDateRangeChange}
                 />,
               )}
             </FormItem>
@@ -234,7 +218,6 @@ class ScheduleCalendarSearchForm extends Component {
               })(
                 <CourseCascader
                   courses={this.props.courses}
-                  onChange={this.handleCourseChange}
                   size="default"
                   changeOnSelect
                 />,
@@ -254,7 +237,7 @@ class ScheduleCalendarSearchForm extends Component {
                 <Input
                   size="default"
                   type="text"
-                  placeholder="人数(x|(>,>=,<.<=)x|x-y)"
+                  placeholder="人数(x-y)"
                 />,
               )}
             </FormItem>
@@ -268,14 +251,11 @@ class ScheduleCalendarSearchForm extends Component {
                   },
                 ],
               })(
-                <AutoComplete
+                <TeacherAutoComplete
                   size="default"
                   placeholder="老师账户名"
-                  dataSource={this.state.teachers}
-                  onSearch={this.handleSearchTeacher}
-                >
-                  {children}
-                </AutoComplete>,
+                  teachers={this.props.teachers}
+                />,
               )}
             </FormItem>
           </Col>
@@ -308,7 +288,7 @@ class ScheduleCalendarSearchForm extends Component {
                   ghost
                   type="primary"
                   size="default"
-                  onClick={() => this.setState({ visible: true })}
+                  onClick={this.props.onSwitchVisible}
                 >
                   排课
                 </Button>
@@ -335,15 +315,16 @@ class ScheduleCalendarSearchForm extends Component {
         </Row>
         <Modal
           maskClosable={false}
-          visible={this.state.visible}
+          visible={this.props.scheduleVisible}
           title="新的排课"
           footer={null}
-          onCancel={() => this.setState({ visible: false })}
+          onCancel={this.props.onSwitchVisible}
         >
           <CreateScheduleForm
             roomTypes={this.props.roomTypes}
             courses={this.props.courses}
             onSubmit={this.handleCreateSchedule}
+            copiedSchedule={this.props.copiedSchedule}
           />
         </Modal>
       </Form>

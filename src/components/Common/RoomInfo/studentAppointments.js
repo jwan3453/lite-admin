@@ -1,27 +1,45 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Table, Row, Col, Button, Modal, Message } from 'antd';
+import { Table, Row, Col, Button, Modal, Message, Popconfirm, Tooltip } from 'antd';
 import moment from 'moment';
+import _ from 'lodash';
+
+import {
+  STUDENT_APPOINTMENT_CREATED,
+  STUDENT_APPOINTMENT_CONFIRMED,
+  STUDENT_APPOINTMENT_CANCELED,
+  STUDENT_APPOINTMENT_FINISHED,
+  STUDENT_APPOINTMENT_ABSENT,
+  STUDENT_APPOINTMENT_EXCEPTED,
+  studentAppointmentsStatus,
+} from '../../../common/studentAppointment';
 
 import FindStudentModal from '../FindStudentModal';
+import ScheduleRooms from './scheduleRooms';
 
-import { addStudent } from '../../../app/actions/room';
+import { fetchScheduleRooms } from '../../../app/actions/schedule';
+import { fetchRoom, addStudent } from '../../../app/actions/room';
+import { updateStudentAppointment, changeRoom } from '../../../app/actions/studentAppointment';
 
 class StudentAppointments extends Component {
   static propTypes = {
     dispatch: React.PropTypes.func.isRequired,
+    scheduleId: React.PropTypes.number.isRequired,
     roomId: React.PropTypes.number.isRequired,
     studentAppointments: React.PropTypes.array.isRequired,
-  };
-  static defaultProps = {
-    dispatch: () => {},
-    roomId: 0,
-    studentAppointments: [],
+    loading: React.PropTypes.bool.isRequired,
   };
   state = {
     findStudentModalVisible: false,
     selectedStudents: [],
+    changeStudentAppointmentId: 0,
+    changeRoomVisible: false,
+    exceptionVisble: false,
   };
+  componentWillMount() {
+    const { dispatch, scheduleId } = this.props;
+    dispatch(fetchScheduleRooms(scheduleId));
+  }
   handleApplyAddStudent = () => {
     this.setState({
       findStudentModalVisible: true,
@@ -43,6 +61,39 @@ class StudentAppointments extends Component {
       );
     }
   };
+  handleUpdateStudentAppointment = (studentAppointmentId, statusId) => {
+    const { dispatch } = this.props;
+    dispatch(updateStudentAppointment(studentAppointmentId, statusId)).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+      } else {
+        Message.success('标记成功');
+      }
+    });
+  };
+  handleUpdateAllStudentAppointments = (statusId) => {
+    const { dispatch, roomId, studentAppointments } = this.props;
+    const promises = [];
+    studentAppointments.map(studentAppointment =>
+      promises.push(dispatch(updateStudentAppointment(studentAppointment.id, statusId))),
+    );
+    global.Promise.all(promises).then(() => {
+      Message.success('成功发起标记');
+      dispatch(fetchRoom(roomId));
+    });
+  };
+  handleChangeRoom = (toRoomId) => {
+    const { dispatch, roomId } = this.props;
+    dispatch(changeRoom(this.state.changeStudentAppointmentId, toRoomId)).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+      } else {
+        dispatch(fetchRoom(roomId));
+      }
+    });
+  };
+  handleSendClassroomReview = () => {};
+  handleSendException = () => {};
   render() {
     const columns = [
       {
@@ -64,19 +115,112 @@ class StudentAppointments extends Component {
         title: '状态',
         key: 'status',
         dataIndex: 'status',
+        render: (statusId) => {
+          const status = _.find(studentAppointmentsStatus, { value: Number(statusId) }) || {};
+          return status.text || statusId;
+        },
       },
       {
         title: '预约时间',
         key: 'createdAt',
         dataIndex: 'createdAt',
-        render: createdAt => moment(createdAt * 1000).format('Y-MM-DD HH:mm'),
+        render: createdAt => moment.unix(createdAt).format('Y-MM-DD HH:mm'),
       },
       {
         title: '操作',
         key: 'operation',
-        render: () => <div />,
+        render: (studentAppointment) => {
+          const btnProps = {
+            size: 'small',
+            type: 'primary',
+            ghost: true,
+            disabled: (Number(studentAppointment.status) !== STUDENT_APPOINTMENT_CREATED &&
+              studentAppointment.status !== STUDENT_APPOINTMENT_CONFIRMED
+            ),
+            shape: 'circle',
+            style: { margin: '0 2px' },
+          };
+          return (<div>
+            <Popconfirm
+              title="确认修改？"
+              onConfirm={() =>
+                this.handleUpdateStudentAppointment(
+                  studentAppointment.id,
+                  STUDENT_APPOINTMENT_FINISHED,
+                )}
+            >
+              <Tooltip title="标记完成">
+                <Button {...btnProps} icon="check" />
+              </Tooltip>
+            </Popconfirm>
+            <Popconfirm
+              title="确认修改？"
+              onConfirm={() =>
+                this.handleUpdateStudentAppointment(
+                  studentAppointment.id,
+                  STUDENT_APPOINTMENT_ABSENT,
+                )}
+            >
+              <Tooltip title="标记缺席">
+                <Button {...btnProps} icon="cross" />
+              </Tooltip>
+            </Popconfirm>
+            <Popconfirm
+              title="确认修改？"
+              onConfirm={() =>
+                this.handleUpdateStudentAppointment(
+                  studentAppointment.id,
+                  STUDENT_APPOINTMENT_EXCEPTED,
+                )}
+            >
+              <Tooltip title="标记异常">
+                <Button {...btnProps} icon="exclamation" />
+              </Tooltip>
+            </Popconfirm>
+            <Tooltip title="更换房间">
+              <Button
+                {...btnProps}
+                icon="swap"
+                onClick={() => this.setState({
+                  changeStudentAppointmentId: studentAppointment.id,
+                  changeRoomVisible: true,
+                })}
+              />
+            </Tooltip>
+            <Popconfirm
+              title="确认删除预约？"
+              onConfirm={() =>
+                this.handleUpdateStudentAppointment(
+                  studentAppointment.id,
+                  STUDENT_APPOINTMENT_CANCELED,
+                )}
+            >
+              <Tooltip title="取消预约">
+                <Button {...btnProps} icon="delete" />
+              </Tooltip>
+            </Popconfirm>
+            <Tooltip title="发送异常">
+              <Button {...btnProps} icon="exception" />
+            </Tooltip>
+            <Popconfirm
+              title="确认发送提醒？"
+            >
+              <Tooltip title="紧急提醒">
+                <Button {...btnProps} icon="bell" />
+              </Tooltip>
+            </Popconfirm>
+            <Popconfirm
+              title="确认补发课后评价通知？"
+            >
+              <Tooltip title="补发评价">
+                <Button {...btnProps} icon="file" />
+              </Tooltip>
+            </Popconfirm>
+          </div>);
+        },
       },
     ];
+    const btnDisabled = this.props.studentAppointments.length === 0;
     return (
       <div>
         <Row type="flex" gutter={16} style={{ marginBottom: 10 }}>
@@ -90,16 +234,29 @@ class StudentAppointments extends Component {
             </Button>
           </Col>
           <Col>
-            <Button size="small" icon="check">全部标记完成</Button>
+            <Popconfirm
+              title="确认全部标记完成？"
+              onConfirm={() =>
+                this.handleUpdateAllStudentAppointments(STUDENT_APPOINTMENT_FINISHED)}
+            >
+              <Button size="small" icon="check" disabled={btnDisabled}>全部标记完成</Button>
+            </Popconfirm>
           </Col>
           <Col>
-            <Button size="small" icon="exception">全部标记异常</Button>
+            <Popconfirm
+              title="确认全部标记完成？"
+              onConfirm={() =>
+                this.handleUpdateAllStudentAppointments(STUDENT_APPOINTMENT_EXCEPTED)}
+            >
+              <Button size="small" icon="exception" disabled={btnDisabled}>全部标记异常</Button>
+            </Popconfirm>
           </Col>
           <Col>
-            <Button size="small" icon="notification">全部发送异常通知</Button>
+            <Button size="small" icon="notification" disabled={btnDisabled}>全部发送异常通知</Button>
           </Col>
         </Row>
         <Table
+          loading={this.props.loading}
           columns={columns}
           dataSource={this.props.studentAppointments}
           rowKey="id"
@@ -115,9 +272,26 @@ class StudentAppointments extends Component {
             onSelectedRowsChange={this.handleSelectedStudentsChange}
           />
         </Modal>
+        <Modal
+          title="更换房间"
+          visible={this.state.changeRoomVisible}
+          onCancel={() => this.setState({ changeRoomVisible: false })}
+          footer={null}
+        >
+          <ScheduleRooms
+            roomId={this.props.roomId}
+            onChange={this.handleChangeRoom}
+          />
+        </Modal>
       </div>
     );
   }
 }
 
-export default connect()(StudentAppointments);
+export default connect((state) => {
+  const { room } = state;
+  const { loading } = room;
+  return {
+    loading,
+  };
+})(StudentAppointments);

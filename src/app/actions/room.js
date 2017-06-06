@@ -37,6 +37,18 @@ export function fetchRoom(roomId) {
   };
 }
 
+export function updateRoom(roomId, room) {
+  return {
+    [CALL_JQ_API]: {
+      types: [Room.FETCH, Room.FETCH_SUCCESS, Room.FETCH_FAIL],
+      uri: `/admin/schedules/rooms/${roomId}`,
+      method: 'POST',
+      body: room,
+    },
+  };
+}
+
+
 export function deleteRoom(roomId) {
   return {
     [CALL_JQ_API]: {
@@ -56,6 +68,19 @@ export function addStudent(roomId, studentId) {
       body: {
         studentId,
       },
+    },
+  };
+}
+
+export function updateTeacher(roomId, teacherId, reason) {
+  const body = { teacherId };
+  if (reason) body.reason = reason;
+  return {
+    [CALL_JQ_API]: {
+      types: [Room.UPDATE_TEACHER, Room.UPDATE_TEACHER_SUCCESS, Room.UPDATE_TEACHER_FAIL],
+      uri: `/admin/schedules/rooms/${roomId}/teacher`,
+      method: 'POST',
+      body,
     },
   };
 }

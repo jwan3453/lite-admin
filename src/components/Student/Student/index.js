@@ -141,7 +141,7 @@ class StudentList extends Component {
         title: '注册时间',
         dataIndex: 'registerAt',
         key: 'registerAt',
-        render: registerAt => moment(registerAt * 1000).format('Y-MM-DD HH:mm'),
+        render: registerAt => moment.unix(registerAt).format('Y-MM-DD HH:mm'),
       },
     ];
 

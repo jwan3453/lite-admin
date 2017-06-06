@@ -6,9 +6,11 @@ import _ from 'lodash';
 
 import './index.less';
 
+import TeacherStatus from '../../../common/teacherStatus';
+
 import { fetchRooms, fetchRoom, fetchRoomTypes } from '../../../app/actions/room';
 import { fetchCourses } from '../../../app/actions/course';
-import { createSchedule } from '../../../app/actions/schedule';
+import { createSchedule, copySchedule } from '../../../app/actions/schedule';
 import { fetchTeachers } from '../../../app/actions/teacher';
 
 import SearchForm from './SearchForm';
@@ -26,6 +28,7 @@ class ScheduleCalendar extends Component {
     coursesLoaded: React.PropTypes.bool.isRequired,
     loading: React.PropTypes.bool.isRequired,
     dimensions: React.PropTypes.object.isRequired,
+    copiedSchedule: React.PropTypes.object,
   };
   static defaultProps = {
     filters: {},
@@ -38,8 +41,10 @@ class ScheduleCalendar extends Component {
       width: 0,
       height: 0,
     },
+    copiedSchedule: {},
   };
   state = {
+    scheduleVisible: false,
     roomVisible: false,
   };
 
@@ -87,6 +92,18 @@ class ScheduleCalendar extends Component {
     dispatch(fetchRooms(filters));
   };
 
+  handleCopySchedule = (schedule) => {
+    const { dispatch } = this.props;
+    this.setState({
+      scheduleVisible: true,
+    });
+    dispatch(copySchedule(schedule));
+  };
+  handleScheduleVisible = () => {
+    this.setState({
+      scheduleVisible: !this.state.scheduleVisible,
+    });
+  };
   handleCreateSchedule = (data) => {
     const { dispatch, filters } = this.props;
     dispatch(createSchedule(data)).then((result) => {
@@ -126,8 +143,8 @@ class ScheduleCalendar extends Component {
     return rowIndexes.sort();
   };
 
-  buildColumns = () => {
-    const rowIndexes = this.buildRowIndexes().map(index => ({
+  buildColumns = (rowIndexes) => {
+    const filters = rowIndexes.map(index => ({
       text: index,
       value: index,
     }));
@@ -138,9 +155,9 @@ class ScheduleCalendar extends Component {
         dataIndex: 'time',
         key: 'time',
         fixed: 'left',
-        filters: rowIndexes,
+        filters,
         filterMultiple: true,
-        onFilter: (filters, rowData) => filters.indexOf(rowData.time) >= 0,
+        onFilter: (value, record) => value.indexOf(record.time) >= 0,
       },
     ];
 
@@ -164,8 +181,7 @@ class ScheduleCalendar extends Component {
     return columns;
   };
 
-  buildTableData = (columns) => {
-    const rowIndexes = this.buildRowIndexes();
+  buildTableData = (rowIndexes, columns) => {
     const table = [];
     rowIndexes.forEach((rowIndex) => {
       const row = { time: rowIndex };
@@ -183,7 +199,9 @@ class ScheduleCalendar extends Component {
       const dateTitle = startTime.format('MM-DD');
       const timeTitle = startTime.format('HH:mm');
 
-      table[rowIndexes.indexOf(timeTitle)][dateTitle].push(room);
+      if (table[rowIndexes.indexOf(timeTitle)][dateTitle]) {
+        table[rowIndexes.indexOf(timeTitle)][dateTitle].push(room);
+      }
     });
 
     return table;
@@ -196,9 +214,18 @@ class ScheduleCalendar extends Component {
     return (
       <Row type="flex" gutter={16}>
         {rooms.map((room) => {
-          let teacherClassName = 'schedule-teacher';
-          if (!room.teacherId) {
-            teacherClassName += ' schedule-teacher-gray';
+          let teacherName = '未分配';
+          let teacher = {};
+          if (room.teacherId) {
+            teacher = _.find(this.props.teachers, { id: room.teacherId }) || {};
+            teacherName = teacher.username || `Teacher:${room.teacherId}`;
+          }
+          let teacherBackgroundColor;
+          if (!_.isEmpty(teacher)) {
+            const teacherStatus = _.find(TeacherStatus, { value: teacher.statusId });
+            if (teacherStatus) {
+              teacherBackgroundColor = teacherStatus.color;
+            }
           }
           return (
             <Col
@@ -210,8 +237,11 @@ class ScheduleCalendar extends Component {
                 <span className="schedule-lesson">
                   {this.getLessonShortName(room.courseId, room.lessonId)}
                 </span>
-                <span className={teacherClassName}>
-                  {room.teacherId > 0 ? room.teacherId : '未分配'}
+                <span
+                  className="schedule-teacher"
+                  style={teacherBackgroundColor ? { backgroundColor: teacherBackgroundColor } : {}}
+                >
+                  {teacherName}
                 </span>
                 <span className="schedule-student">
                   {room.studentCount}/{room.maxStudentCount}
@@ -226,9 +256,10 @@ class ScheduleCalendar extends Component {
   }
 
   render() {
-    const { dimensions } = this.props;
-    const columns = this.buildColumns();
-    const dataSource = this.buildTableData(columns);
+    const { courses, teachers, roomTypes, roomInfo, dimensions, copiedSchedule } = this.props;
+    const rowIndexes = this.buildRowIndexes();
+    const columns = this.buildColumns(rowIndexes);
+    const dataSource = this.buildTableData(rowIndexes, columns);
     const xScroll = Math.max(
       (columns.length - 1) * 250 + 80,
       dimensions.width - 210,
@@ -238,12 +269,31 @@ class ScheduleCalendar extends Component {
 
     return (
       <div>
+        <Modal
+          visible={this.state.roomVisible}
+          title={`房间：${roomInfo.id || ''} (${roomModalLessonName})`}
+          footer={null}
+          onCancel={this.hideRoomModal}
+          width={720}
+        >
+          <Spin spinning={this.props.loading}>
+            <RoomInfo
+              lessonName={roomModalLessonName}
+              onHide={this.hideRoomModal}
+              onCopySchedule={this.handleCopySchedule}
+              roomInfo={roomInfo}
+            />
+          </Spin>
+        </Modal>
         <SearchForm
-          courses={this.props.courses}
-          teachers={this.props.teachers}
-          roomTypes={this.props.roomTypes}
+          courses={courses}
+          teachers={teachers}
+          roomTypes={roomTypes}
           onSearch={this.handleSearch}
           onCreateSchedule={this.handleCreateSchedule}
+          onSwitchVisible={this.handleScheduleVisible}
+          scheduleVisible={this.state.scheduleVisible}
+          copiedSchedule={copiedSchedule}
         />
         <Table
           loading={this.props.loading}
@@ -255,27 +305,14 @@ class ScheduleCalendar extends Component {
           bordered
           scroll={{ x: xScroll, y: yScroll }}
         />
-        <Modal
-          visible={this.state.roomVisible}
-          title={`房间：${this.props.roomInfo.id || ''} (${roomModalLessonName})`}
-          footer={null}
-          onCancel={this.hideRoomModal}
-          width={700}
-        >
-          <Spin spinning={this.props.loading}>
-            <RoomInfo
-              onHide={this.hideRoomModal}
-              lessonName={roomModalLessonName}
-            />
-          </Spin>
-        </Modal>
       </div>
     );
   }
 }
 
 function mapStateToProps(state) {
-  const { room, course, teacher, system } = state;
+  const { schedule, room, course, teacher, system } = state;
+  const { copiedSchedule } = schedule;
   const { filters, rooms, roomInfo, roomTypes } = room;
   const { courses, loaded } = course;
   const { teachers } = teacher;
@@ -284,6 +321,7 @@ function mapStateToProps(state) {
   return {
     loading: room.loading || course.loading,
     filters,
+    copiedSchedule,
     rooms,
     roomInfo,
     roomTypes,

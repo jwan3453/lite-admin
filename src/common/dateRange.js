@@ -29,79 +29,79 @@ export function getDateRange(key = 'today') {
     case 'lastMonth':
       return [
         moment().subtract(1, 'month').startOf('month'),
-        moment().startOf('month'),
+        moment().startOf('month').add(-1, 'day'),
       ];
     case 'thisMonth':
       return [
         moment().startOf('month'),
-        moment().add(1, 'month').startOf('month'),
+        moment().add(1, 'month').startOf('month').add(-1, 'day'),
       ];
     case 'lastWeek':
       return [
         getMonday().add(-1, 'weeks'),
-        getMonday(),
+        getMonday().add(-1, 'day'),
       ];
     case 'thisWeek':
       return [
         getMonday(),
-        getMonday().add(1, 'weeks'),
+        getMonday().add(1, 'weeks').add(-1, 'day'),
       ];
     case 'nextWeek':
       return [
         getMonday().add(1, 'weeks'),
-        getMonday().add(2, 'weeks'),
+        getMonday().add(2, 'weeks').add(-1, 'day'),
       ];
     case 'yesterday':
-      return [moment().add(-1, 'days'), moment()];
+      return [moment().add(-1, 'day'), moment().add(-1, 'day')];
     case 'tomorrow':
       return [
-        moment().add(1, 'days'),
-        moment().add(2, 'days'),
+        moment().add(1, 'day'),
+        moment().add(1, 'day'),
       ];
     case 'theDayAfterTomorrow':
       return [
-        moment().add(2, 'days'),
-        moment().add(3, 'days'),
+        moment().add(2, 'day'),
+        moment().add(2, 'day'),
       ];
     case 'nextSevenDay':
-      return [moment(), moment().add(7, 'days')];
+      return [moment(), moment().add(6, 'day')];
     case 'Monday':
       return [
         getMonday(),
-        getMonday().add(1, 'days'),
+        getMonday(),
       ];
     case 'Tuesday':
       return [
-        getMonday().add(1, 'days'),
-        getMonday().add(2, 'days'),
+        getMonday().add(1, 'day'),
+        getMonday().add(1, 'day'),
       ];
     case 'Wednesday':
       return [
-        getMonday().add(2, 'days'),
-        getMonday().add(3, 'days'),
+        getMonday().add(2, 'day'),
+        getMonday().add(2, 'day'),
       ];
     case 'Thursday':
       return [
-        getMonday().add(3, 'days'),
-        getMonday().add(4, 'days'),
+        getMonday().add(3, 'day'),
+        getMonday().add(3, 'day'),
       ];
     case 'Friday':
       return [
-        getMonday().add(4, 'days'),
-        getMonday().add(5, 'days'),
+        getMonday().add(4, 'day'),
+        getMonday().add(4, 'day'),
       ];
     case 'Saturday':
       return [
-        getMonday().add(5, 'days'),
-        getMonday().add(6, 'days'),
+        getMonday().add(5, 'day'),
+        getMonday().add(5, 'day'),
       ];
     case 'Sunday':
       return [
-        getMonday().add(6, 'days'),
-        getMonday().add(7, 'days'),
+        getMonday().add(6, 'day'),
+        getMonday().add(6, 'day'),
       ];
     case 'today':
     default:
-      return [moment().startOf('day'), moment().startOf('day').add(1, 'days')];
+      return [moment().startOf('day'), moment().startOf('day')];
   }
 }

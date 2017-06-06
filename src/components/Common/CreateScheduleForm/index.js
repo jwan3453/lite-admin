@@ -11,6 +11,8 @@ import {
   Button,
 } from 'antd';
 
+import _ from 'lodash';
+
 import CourseCascader from '../CourseCascader';
 import ScheduleTimes from '../../../common/scheduleTimes';
 
@@ -22,20 +24,57 @@ class CreateScheduleForm extends React.Component {
     courses: React.PropTypes.array,
     roomTypes: React.PropTypes.array,
     onSubmit: React.PropTypes.func.isRequired,
+    copiedSchedule: React.PropTypes.object.isRequired,
   };
   static defaultProps = {
+    form: {},
     courses: [],
     roomTypes: [],
+    copiedSchedule: {},
   };
   state = {
     confirmDirty: false,
     startTimeUsePreset: true,
     autoCompleteResult: [],
   };
+  componentWillMount() {
+    const { copiedSchedule } = this.props;
+    if (copiedSchedule.beginAt) {
+      const scheduleTime = moment.unix(copiedSchedule.beginAt).format('HH:mm');
+      this.setState({
+        startTimeUsePreset: (ScheduleTimes.indexOf(scheduleTime) >= 0),
+      });
+    }
+  }
+  getCourseCascaderInitailValue = () => {
+    const { copiedSchedule, courses } = this.props;
+    if (copiedSchedule.courseId && copiedSchedule.lessonId) {
+      const course = _.find(courses, { id: copiedSchedule.courseId });
+      if (!_.isEmpty(course) && !_.isEmpty(course.chapters)) {
+        let chapterId = null;
+        let lessonId = null;
+        course.chapters.map((chapter) => {
+          if (!_.isEmpty(chapter.lessons)) {
+            chapter.lessons.map((lesson) => {
+              if (lesson.id === copiedSchedule.lessonId) {
+                chapterId = chapter.id;
+                lessonId = lesson.id;
+              }
+              return null;
+            });
+          }
+          return null;
+        });
+        if (chapterId && lessonId) {
+          return [copiedSchedule.courseId, chapterId, lessonId];
+        }
+      }
+    }
+    return null;
+  };
   handleSubmit = (e) => {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
-      console.log(values);
       if (!err) {
         const dateString = values.date.format('YYYY-MM-DD');
         const timeString = values.startTimeUsePreset
@@ -58,40 +97,10 @@ class CreateScheduleForm extends React.Component {
       }
     });
   };
-  handleConfirmBlur = (e) => {
-    const value = e.target.value;
-    this.setState({ confirmDirty: this.state.confirmDirty || !!value });
-  };
-  checkPassword = (rule, value, callback) => {
-    const form = this.props.form;
-    if (value && value !== form.getFieldValue('password')) {
-      callback('Two passwords that you enter is inconsistent!');
-    } else {
-      callback();
-    }
-  };
-  checkConfirm = (rule, value, callback) => {
-    const form = this.props.form;
-    if (value && this.state.confirmDirty) {
-      form.validateFields(['confirm'], { force: true });
-    }
-    callback();
-  };
-
-  handleWebsiteChange = (value) => {
-    let autoCompleteResult;
-    if (!value) {
-      autoCompleteResult = [];
-    } else {
-      autoCompleteResult = ['.com', '.org', '.net'].map(
-        domain => `${value}${domain}`,
-      );
-    }
-    this.setState({ autoCompleteResult });
-  };
 
   render() {
-    const { getFieldDecorator } = this.props.form;
+    const { copiedSchedule, form, courses } = this.props;
+    const { getFieldDecorator } = form;
 
     const formItemLayout = {
       labelCol: {
@@ -120,6 +129,7 @@ class CreateScheduleForm extends React.Component {
       <Form onSubmit={this.handleSubmit}>
         <FormItem {...formItemLayout} label="选择课时">
           {getFieldDecorator('courseCascader', {
+            initialValue: this.getCourseCascaderInitailValue(),
             rules: [
               {
                 type: 'array',
@@ -129,14 +139,14 @@ class CreateScheduleForm extends React.Component {
             ],
           })(
             <CourseCascader
-              courses={this.props.courses}
+              courses={courses}
               changeOnSelect={false}
             />,
           )}
         </FormItem>
         <FormItem {...formItemLayout} label="是否内部">
           {getFieldDecorator('isInternal', {
-            initialValue: false,
+            initialValue: copiedSchedule.isInternal || false,
             rules: [
               { required: true, message: 'Please input your phone number!' },
             ],
@@ -149,6 +159,7 @@ class CreateScheduleForm extends React.Component {
         </FormItem>
         <FormItem {...formItemLayout} label="日期">
           {getFieldDecorator('date', {
+            initialValue: copiedSchedule.beginAt ? moment.unix(copiedSchedule.beginAt) : null,
             rules: [{ required: true, message: 'Please input date!' }],
           })(<DatePicker />)}
         </FormItem>
@@ -172,6 +183,7 @@ class CreateScheduleForm extends React.Component {
           style={{ display: this.state.startTimeUsePreset ? 'block' : 'none' }}
         >
           {getFieldDecorator('startTimePreset', {
+            initialValue: copiedSchedule.beginAt ? moment.unix(copiedSchedule.beginAt).format('HH:mm') : null,
             rules: [
               { required: false, message: 'Please input the captcha you got!' },
             ],
@@ -189,6 +201,7 @@ class CreateScheduleForm extends React.Component {
           style={{ display: this.state.startTimeUsePreset ? 'none' : 'block' }}
         >
           {getFieldDecorator('startTime', {
+            initialValue: copiedSchedule.beginAt ? moment.unix(copiedSchedule.beginAt) : null,
             rules: [
               { required: false, message: 'Please input the captcha you got!' },
             ],
@@ -204,13 +217,14 @@ class CreateScheduleForm extends React.Component {
         </FormItem>
         <FormItem {...formItemLayout} label="班型">
           {getFieldDecorator('roomTypeId', {
+            initialValue: copiedSchedule.roomTypeId || null,
             rules: [
               { required: true, message: 'Please input your phone number!' },
             ],
           })(
             <Select size="large">
               {this.props.roomTypes.map(type => (
-                <Select.Option value={type.id.toString()} key={type.id}>
+                <Select.Option value={type.id} key={type.id}>
                   {type.name}
                 </Select.Option>
               ))}
@@ -219,7 +233,7 @@ class CreateScheduleForm extends React.Component {
         </FormItem>
         <FormItem {...formItemLayout} label="房间数">
           {getFieldDecorator('roomCount', {
-            initialValue: 1,
+            initialValue: copiedSchedule.roomCount || 1,
             rules: [
               { required: true, message: 'Please input your phone number!' },
             ],

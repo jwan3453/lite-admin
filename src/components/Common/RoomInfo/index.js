@@ -13,10 +13,6 @@ export default class RoomInfo extends Component {
     onCopySchedule: React.PropTypes.func.isRequired,
   };
   static defaultProps = {
-    roomInfo: {},
-    lessonName: '',
-    onHide: () => {},
-    onCopySchedule: () => {},
   };
   render() {
     const { roomInfo, lessonName, onHide, onCopySchedule } = this.props;
@@ -38,7 +34,11 @@ export default class RoomInfo extends Component {
           />
         </Tabs.TabPane>
         <Tabs.TabPane tab="学生预约" key="studentAppointments">
-          <StudentAppointments roomId={roomInfo.id} studentAppointments={studentAppointments} />
+          <StudentAppointments
+            scheduleId={roomInfo.scheduleId}
+            roomId={roomInfo.id}
+            studentAppointments={studentAppointments}
+          />
         </Tabs.TabPane>
         <Tabs.TabPane tab="操作记录" key="operationLogs">
           <OperationLogs operationLogs={operationLogs} />
