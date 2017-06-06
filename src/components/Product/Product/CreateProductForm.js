@@ -158,7 +158,7 @@ class CreateProductForm extends React.Component {
 
         <FormItem {...formItemLayout} label="扣课优先级">
           {getFieldDecorator('lessonConsumePriority', {
-            initialValue: 0,
+            initialValue: 100,
             rules: [{ required: true }],
           })(<InputNumber min={0} size="large" />)}
         </FormItem>

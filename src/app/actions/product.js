@@ -12,12 +12,12 @@ export function createProduct(data) {
   };
 }
 
-export function fetchProducts(filters) {
+export function manageProducts(filters) {
   return {
     filters,
     [CALL_JQ_API]: {
-      types: [Products.FETCH, Products.FETCH_SUCCESS, Products.FETCH_FAIL],
-      uri: '/admin/billing/products',
+      types: [Products.MANAGE, Products.MANAGE_SUCCESS, Products.MANAGE_FAIL],
+      uri: '/admin/billing/products/manage',
       body: filters,
       method: 'GET',
     },

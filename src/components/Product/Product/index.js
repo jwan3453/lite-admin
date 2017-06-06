@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Table, Button, Icon, Modal, Message } from 'antd';
 import { connect } from 'react-redux';
 
-import { createProduct, fetchProducts } from '../../../app/actions/product';
+import { createProduct, manageProducts } from '../../../app/actions/product';
 import CreateProductForm from './CreateProductForm';
 
 class ProductList extends Component {
@@ -23,7 +23,7 @@ class ProductList extends Component {
 
   componentDidMount() {
     const { dispatch } = this.props;
-    dispatch(fetchProducts());
+    dispatch(manageProducts());
   }
 
   handleEdit(product) {
@@ -37,6 +37,7 @@ class ProductList extends Component {
         Message.error(result.message);
       } else {
         Message.success('创建成功');
+        dispatch(manageProducts());
       }
     });
   };
@@ -44,7 +45,7 @@ class ProductList extends Component {
   handleChange = (pagination) => {
     const { dispatch, filters } = this.props;
     dispatch(
-      fetchProducts(
+      manageProducts(
         Object.assign(filters, {
           page: pagination.current,
           pageSize: pagination.pageSize,

@@ -16,14 +16,14 @@ export function product(
       return assign({}, state, {
         loading: true,
       });
-    case Products.FETCH:
+    case Products.MANAGE:
       return assign({}, state, {
         loading: true,
         manage: {
           filters: action.filters,
         },
       });
-    case Products.FETCH_SUCCESS:
+    case Products.MANAGE_SUCCESS:
       return assign({}, state, {
         loading: false,
         manage: {
@@ -31,7 +31,7 @@ export function product(
           result: action.response,
         },
       });
-    case Products.FETCH_FAIL:
+    case Products.MANAGE_FAIL:
     case Product.CREATE_SUCCESS:
     case Product.CREATE_FAIL:
       return assign({}, state, {

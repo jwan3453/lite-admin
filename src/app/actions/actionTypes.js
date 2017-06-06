@@ -153,7 +153,7 @@ export const Product = {
 };
 
 export const Products = {
-  FETCH: 'products_fetch',
-  FETCH_SUCCESS: 'products_fetch_success',
-  FETCH_FAIL: 'products_fetch_fail',
+  MANAGE: 'products_manage',
+  MANAGE_SUCCESS: 'products_manage_success',
+  MANAGE_FAIL: 'products_manage_fail',
 };
