@@ -6,6 +6,26 @@ export const Admin = {
   FETCH: 'admin_fetch',
   FETCH_SUCCESS: 'admin_fetch_success',
   FETCH_FAIL: 'admin_fetch_fail',
+
+  MANAGE: 'admin_manage',
+  MANAGE_SUCCESS: 'admin_manage_success',
+  MANAGE_FAIL: 'admin_manage_fail',
+
+  CREATE: 'admin_create',
+  CREATE_SUCCESS: 'admin_create_success',
+  CREATE_FAIL: 'admin_create_fail',
+
+  UPDATE_PASSWORD: 'admin_update_password',
+  UPDATE_PASSWORD_SUCCESS: 'admin_update_password_success',
+  UPDATE_PASSWORD_FAIL: 'admin_update_password_fail',
+
+  UPDATE_NONCE: 'admin_update_nonce',
+  UPDATE_NONCE_SUCCESS: 'admin_update_nonce_success',
+  UPDATE_NONCE_FAIL: 'admin_update_nonce_fail',
+
+  ENABLE: 'admin_enable',
+  ENABLE_SUCCESS: 'admin_enable_success',
+  ENABLE_FAIL: 'admin_enable_fail',
 };
 
 export const Student = {

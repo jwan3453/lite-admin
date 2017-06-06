@@ -10,9 +10,11 @@ class ProductList extends Component {
     dispatch: React.PropTypes.func.isRequired,
     loading: React.PropTypes.bool.isRequired,
     products: React.PropTypes.array,
+    filters: React.PropTypes.object,
   };
   static defaultProps = {
     products: [],
+    filters: {},
   };
 
   state = {
@@ -37,6 +39,18 @@ class ProductList extends Component {
         Message.success('创建成功');
       }
     });
+  };
+
+  handleChange = (pagination) => {
+    const { dispatch, filters } = this.props;
+    dispatch(
+      fetchProducts(
+        Object.assign(filters, {
+          page: pagination.current,
+          pageSize: pagination.pageSize,
+        }),
+      ),
+    );
   };
 
   render() {
@@ -115,6 +129,7 @@ class ProductList extends Component {
           dataSource={dataSource}
           rowKey="id"
           pagination={pagination}
+          onChange={this.handleChange}
         />
         <Modal
           maskClosable={false}
@@ -137,6 +152,7 @@ function mapStateToProps(state) {
   const { product } = state;
   return {
     products: product.manage.result,
+    filters: product.manage.filters,
   };
 }
 
