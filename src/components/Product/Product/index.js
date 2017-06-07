@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 
 import { createProduct, manageProducts } from '../../../app/actions/product';
 import CreateProductForm from './CreateProductForm';
+import UpdateProductForm from './UpdateProductForm';
 
 class ProductList extends Component {
   static propTypes = {
@@ -19,6 +20,8 @@ class ProductList extends Component {
 
   state = {
     visible: false,
+    updateFormVisible: false,
+    currentProduct: {},
   };
 
   componentDidMount() {
@@ -27,7 +30,7 @@ class ProductList extends Component {
   }
 
   handleEdit(product) {
-    console.log(product);
+    this.setState({ currentProduct: product, updateFormVisible: true });
   }
 
   handleCreateProduct = (data) => {
@@ -41,6 +44,10 @@ class ProductList extends Component {
       }
     });
   };
+
+  handleUpdateProduct = (data) => {
+    console.log(data);
+  }
 
   handleChange = (pagination) => {
     const { dispatch, filters } = this.props;
@@ -85,8 +92,8 @@ class ProductList extends Component {
       },
       {
         title: '限购数量',
-        dataIndex: 'quota',
-        key: 'quota',
+        dataIndex: 'maxBuyLimit',
+        key: 'maxBuyLimit',
       },
       {
         title: '获得课时',
@@ -142,6 +149,19 @@ class ProductList extends Component {
           <CreateProductForm
             products={this.props.products.result}
             onSubmit={this.handleCreateProduct}
+          />
+        </Modal>
+        <Modal
+          maskClosable={false}
+          visible={this.state.updateFormVisible}
+          title="修改产品"
+          footer={null}
+          onCancel={() => this.setState({ updateFormVisible: false })}
+        >
+          <UpdateProductForm
+            products={this.props.products.result}
+            product={this.state.currentProduct}
+            onSubmit={this.handleUpdateProduct}
           />
         </Modal>
       </div>

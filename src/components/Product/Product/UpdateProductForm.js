@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import moment from 'moment';
 import React from 'react';
 import {
   Form,
@@ -16,10 +17,11 @@ const dateFormat = 'YYYY-MM-DD';
 const LESSON_VALIDITY_LIFE_TIME = '0';
 const LESSON_VALIDITY_START_END = '1';
 
-class CreateProductForm extends React.Component {
+class UpdateProductForm extends React.Component {
   static propTypes = {
     form: React.PropTypes.object.isRequired,
     products: React.PropTypes.array,
+    product: React.PropTypes.object.isRequired,
     onSubmit: React.PropTypes.func.isRequired,
   };
   static defaultProps = {
@@ -27,8 +29,14 @@ class CreateProductForm extends React.Component {
   };
   state = {
     confirmDirty: false,
+    lessonValidityType: '0',
     autoCompleteResult: [],
   };
+
+  componentWillMount() {
+    const { product } = this.props;
+    this.setState({ lessonValidityType: product.lessonValidityType });
+  }
 
   handleSubmit = (e) => {
     e.preventDefault();
@@ -87,43 +95,47 @@ class CreateProductForm extends React.Component {
       },
     };
 
-    const products = this.props.products || [];
-    const children = products.map(product => (
-      <Select.Option key={product.id} value={`${product.id}`}>
-        {product.name}
+    const { product, products } = this.props;
+    const children = products.map(p => (
+      <Select.Option key={p.id} value={`${p.id}`}>
+        {p.name}
       </Select.Option>
     ));
+
+    const lessonTimeRange = [];
+    if (product.lessonStartDate) { lessonTimeRange.push(moment(product.lessonStartDate, 'YYYY-MM-DD')); }
+    if (product.lessonEndDate) { lessonTimeRange.push(moment(product.lessonEndDate, 'YYYY-MM-DD')); }
 
     return (
       <Form onSubmit={this.handleSubmit}>
         <FormItem {...formItemLayout} label="产品名称">
           {getFieldDecorator('name', {
-            initialValue: '',
+            initialValue: product.name,
             rules: [{ required: true }],
           })(<Input size="large" />)}
         </FormItem>
         <FormItem {...formItemLayout} label="产品价格">
           {getFieldDecorator('price', {
-            initialValue: 0,
+            initialValue: product.price,
             rules: [{ required: true }],
           })(<InputNumber min={0} size="large" />)}
         </FormItem>
         <FormItem {...formItemLayout} label="课时数">
           {getFieldDecorator('lessonCount', {
-            initialValue: 1,
+            initialValue: product.lessonCount,
             rules: [{ required: true }],
           })(<InputNumber min={1} size="large" />)}
         </FormItem>
         <FormItem {...formItemLayout} label="限购数量">
           {getFieldDecorator('maxBuyLimit', {
-            initialValue: 1,
+            initialValue: product.maxBuyLimit,
             rules: [{ required: false }],
           })(<InputNumber min={0} size="large" />)}
         </FormItem>
 
         <FormItem {...formItemLayout} label="归属产品">
           {getFieldDecorator('parent', {
-            initialValue: '0',
+            initialValue: `${product.parent}`,
             rules: [{ required: false }],
           })(
             <Select size="large">
@@ -134,7 +146,7 @@ class CreateProductForm extends React.Component {
         </FormItem>
         <FormItem {...formItemLayout} label="互斥产品">
           {getFieldDecorator('rejectIds', {
-            initialValue: [],
+            initialValue: product.rejectIds,
             rules: [{ required: false }],
           })(
             <Select size="large" mode="multiple">
@@ -145,7 +157,7 @@ class CreateProductForm extends React.Component {
 
         <FormItem {...formItemLayout} label="活动类型">
           {getFieldDecorator('buyingType', {
-            initialValue: 0,
+            initialValue: product.buyingType,
             rules: [{ required: false }],
           })(<InputNumber min={0} size="large" />)}
         </FormItem>
@@ -157,13 +169,13 @@ class CreateProductForm extends React.Component {
 
         <FormItem {...formItemLayout} label="扣课优先级">
           {getFieldDecorator('lessonConsumePriority', {
-            initialValue: 100,
+            initialValue: product.lessonConsumePriority,
             rules: [{ required: true }],
           })(<InputNumber min={0} size="large" />)}
         </FormItem>
         <FormItem {...formItemLayout} label="有效期类型">
           {getFieldDecorator('lessonValidityType', {
-            initialValue: '0',
+            initialValue: `${product.lessonValidityType}`,
             rules: [{ required: true }],
           })(
             <Radio.Group onChange={this.handleLessonValidityTypeChange}>
@@ -180,7 +192,7 @@ class CreateProductForm extends React.Component {
           }}
         >
           {getFieldDecorator('lessonLifeTime', {
-            initialValue: 30,
+            initialValue: product.lessonLifeTime,
             rules: [{ required: false }],
           })(<InputNumber min={1} max={1460} size="large" />)}
         </FormItem>
@@ -192,6 +204,7 @@ class CreateProductForm extends React.Component {
           }}
         >
           {getFieldDecorator('lessonTimeRange', {
+            initialValue: lessonTimeRange,
             rules: [{ required: false }],
           })(<RangePicker format="YYYY-MM-DD" />)}
         </FormItem>
@@ -204,4 +217,4 @@ class CreateProductForm extends React.Component {
   }
 }
 
-export default Form.create()(CreateProductForm);
+export default Form.create()(UpdateProductForm);
