@@ -1,15 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import {
-  Spin,
-  Tag,
-  Radio,
-  Icon,
-  Table,
-  Modal,
-} from 'antd';
+import { Spin, Tag, Select, Icon, Table, Modal } from 'antd';
 
 import status from '../../../common/lessonStatus';
+import { fetchCourses } from '../../../app/actions/course';
 
 const mapStatusToColor = (value) => {
   let color = '';
@@ -24,7 +18,7 @@ const mapStatusToColor = (value) => {
       color = 'gray';
       break;
     case 10:
-      color = 'lighter-gray';
+      color = 'orange';
       break;
     default:
       color = '';
@@ -50,16 +44,21 @@ status.forEach((item) => {
 
 class LessonStatus extends React.Component {
   static propTypes = {
+    dispatch: React.PropTypes.func.isRequired,
     loading: React.PropTypes.bool,
-    course: React.PropTypes.object,
+    courseLoaded: React.PropTypes.bool.isRequired,
     courses: React.PropTypes.array,
   };
 
   static defaultProps = {
     loading: false,
-    course: {},
     courses: [],
   };
+
+  componentWillMount() {
+    const { dispatch, courseLoaded } = this.props;
+    if (!courseLoaded) dispatch(fetchCourses());
+  }
 
   handleCourseChange = () => {
     //  todo handle course change
@@ -77,18 +76,18 @@ class LessonStatus extends React.Component {
     });
   };
 
-  render() {
-    const {
-      loading,
-      course,
-      courses,
-    } = this.props;
+  handleToggleLessonStatus = (lesson) => {
+    console.log(lesson);
+  };
 
-    const dataSource = courses[0].chapters;
+  render() {
+    const { loading, courses } = this.props;
+
+    const dataSource = courses[1] === undefined ? [] : courses[1].chapters;
 
     const columns = [
       {
-        title: 'chapter',
+        title: '课程单元',
         key: 'name',
         dataIndex: 'name',
         render: (name, record) => (
@@ -96,50 +95,46 @@ class LessonStatus extends React.Component {
             tabIndex="0"
             role="button"
             onClick={() => this.handleSkipChapter(record)}
-          >{name}</a>
+          >
+            {name}
+          </a>
         ),
       },
       {
-        title: 'lesson status',
+        title: '学习进度',
         key: 'lessons',
         dataIndex: 'lessons',
         render: lessons => (
           <div>
-            {
-              lessons.map(lesson => (
-                <Tag color={statusColors[lesson.status]}>{lesson.name}</Tag>
-              ))
-            }
+            {lessons.map(lesson => (
+              <Tag
+                color={statusColors[lesson.status]}
+                style={{ minWidth: 40, textAlign: 'center' }}
+                onClick={() => this.handleToggleLessonStatus(lesson)}
+              >
+                {lesson.name}
+              </Tag>
+            ))}
           </div>
         ),
       },
     ];
 
     return (
-      <Spin
-        spinning={loading}
-      >
+      <Spin spinning={loading}>
         <div>
-          <Radio.Group
+          <Select
+            size="small"
             onChange={this.handleCourseChange}
-            value={course.id}
-            style={{ marginRight: 10 }}
+            style={{ marginRight: 10, width: 200 }}
           >
-            {
-              courses.map(item => (
-                <Radio.Button
-                  key={item.id}
-                  value={item.id}
-                >{item.name}
-                </Radio.Button>
-              ))
-            }
-          </Radio.Group>
-          {
-            statusTags.map(item => (
-              <Tag color={item.color}>{item.name}</Tag>
-            ))
-          }
+            {courses.map(item => (
+              <Select.Option key={item.id} value={item.id}>
+                {item.name}
+              </Select.Option>
+            ))}
+          </Select>
+          {statusTags.map(item => <Tag color={item.color}>{item.name}</Tag>)}
         </div>
         <div>
           <Table
@@ -153,216 +148,32 @@ class LessonStatus extends React.Component {
         </div>
         <div>
           <p style={{ paddingLeft: 8 }}>
-            <Icon type="info-circle" style={{ color: '#108ee9', marginRight: '8px' }} />{ '点击课时：未完成->跳过，预约->暂无处理，已完成->重学，跳过->未完成，重学->已完成' }</p>
+            <Icon
+              type="info-circle"
+              style={{ color: '#108ee9', marginRight: '8px' }}
+            />
+            {'点击课时：未完成<->跳过，已完成<->重学'}
+          </p>
           <p style={{ paddingLeft: 8 }}>
-            <Icon type="info-circle" style={{ color: '#108ee9', marginRight: '8px' }} />{ '点击章节跳过整个章节，此操作不可逆' }</p>
+            <Icon
+              type="info-circle"
+              style={{ color: '#108ee9', marginRight: '8px' }}
+            />
+            {'点击章节：跳过整个章节(不可逆)'}
+          </p>
         </div>
       </Spin>
     );
   }
 }
 
-
-function mapStateToProps() {
+function mapStateToProps(state) {
+  const { course } = state;
+  const { loaded, courses } = course;
   return {
-    loading: false,
-    course: {
-      id: 0,
-    },
-    courses: [
-      {
-        id: 0,
-        name: 'G1',
-        chapters: [
-          {
-            id: 0,
-            name: 'My School',
-            lessons: [
-              {
-                id: 0,
-                name: '1-1',
-                status: 10,
-              },
-              {
-                id: 1,
-                name: '1-2',
-                status: 6,
-              },
-              {
-                id: 2,
-                name: '1-3',
-                status: 4,
-              },
-              {
-                id: 3,
-                name: '1-4',
-                status: 1,
-              },
-              {
-                id: 4,
-                name: '1-5',
-                status: 0,
-              },
-              {
-                id: 5,
-                name: '1-6',
-                status: 0,
-              },
-              {
-                id: 6,
-                name: '1-7',
-                status: 0,
-              },
-              {
-                id: 7,
-                name: '1-8',
-                status: 0,
-              },
-              {
-                id: 8,
-                name: '1-9',
-                status: 0,
-              },
-            ],
-          },
-          {
-            id: 1,
-            name: 'My Home',
-            lessons: [
-              {
-                id: 0,
-                name: '2-1',
-                status: 0,
-              },
-              {
-                id: 1,
-                name: '2-2',
-                status: 0,
-              },
-              {
-                id: 2,
-                name: '2-3',
-                status: 0,
-              },
-              {
-                id: 3,
-                name: '2-4',
-                status: 0,
-              },
-              {
-                id: 4,
-                name: '2-5',
-                status: 0,
-              },
-              {
-                id: 5,
-                name: '2-6',
-                status: 0,
-              },
-              {
-                id: 6,
-                name: '2-7',
-                status: 0,
-              },
-              {
-                id: 7,
-                name: '2-8',
-                status: 0,
-              },
-              {
-                id: 8,
-                name: '2-9',
-                status: 0,
-              },
-            ],
-          },
-          {
-            id: 3,
-            name: 'Toy Factory',
-            lessons: [
-              {
-                id: 0,
-                name: '3-1',
-                status: 0,
-              },
-              {
-                id: 1,
-                name: '3-2',
-                status: 0,
-              },
-              {
-                id: 2,
-                name: '3-3',
-                status: 0,
-              },
-              {
-                id: 3,
-                name: '3-4',
-                status: 0,
-              },
-              {
-                id: 4,
-                name: '3-5',
-                status: 0,
-              },
-              {
-                id: 5,
-                name: '3-6',
-                status: 0,
-              },
-              {
-                id: 6,
-                name: '3-7',
-                status: 0,
-              },
-              {
-                id: 7,
-                name: '3-8',
-                status: 0,
-              },
-            ],
-          },
-          {
-            id: 4,
-            name: 'Closthing Shop',
-            lessons: [
-              {
-                id: 0,
-                name: '4-1',
-                status: 0,
-              },
-            ],
-          },
-          {
-            id: 5,
-            name: 'My House',
-            lessons: [
-              {
-                id: 0,
-                name: '5-1',
-                status: 0,
-              },
-            ],
-          },
-        ],
-      },
-      {
-        id: 1,
-        name: 'G2',
-        chapters: [
-          {},
-        ],
-      },
-      {
-        id: 2,
-        name: 'G3',
-        chapters: [
-          {},
-        ],
-      },
-    ],
+    courseLoaded: loaded,
+    courses,
   };
 }
 
 export default connect(mapStateToProps)(LessonStatus);
-

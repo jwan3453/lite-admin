@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Table, Button, Icon, Modal, Message } from 'antd';
 import { connect } from 'react-redux';
 
-import { createProduct, manageProducts } from '../../../app/actions/product';
+import { createProduct, updateProduct, manageProducts } from '../../../app/actions/product';
 import CreateProductForm from './CreateProductForm';
 import UpdateProductForm from './UpdateProductForm';
 
@@ -46,7 +46,16 @@ class ProductList extends Component {
   };
 
   handleUpdateProduct = (data) => {
-    console.log(data);
+    const { dispatch } = this.props;
+    const product = this.state.currentProduct;
+    dispatch(updateProduct(product.id, data)).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+      } else {
+        Message.success('修改成功');
+        dispatch(manageProducts());
+      }
+    });
   }
 
   handleChange = (pagination) => {

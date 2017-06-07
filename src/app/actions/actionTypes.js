@@ -160,6 +160,10 @@ export const Product = {
   CREATE: 'product_create',
   CREATE_SUCCESS: 'product_create_success',
   CREATE_FAIL: 'product_create_fail',
+
+  UPDATE: 'product_update',
+  UPDATE_SUCCESS: 'product_update_success',
+  UPDATE_FAIL: 'product_update_fail',
 };
 
 export const Products = {

@@ -14,6 +14,7 @@ export function product(
 ) {
   switch (action.type) {
     case Product.CREATE:
+    case Product.UPDATE:
     case Product.FETCH_SIMPLE_LIST:
       return assign({}, state, {
         loading: true,
@@ -37,6 +38,9 @@ export function product(
       return assign({}, state, {
         simpleList: action.response,
       });
+
+    case Product.UPDATE_FAIL:
+    case Product.UPDATE_SUCCESS:
     case Products.MANAGE_FAIL:
     case Product.CREATE_SUCCESS:
     case Product.CREATE_FAIL:

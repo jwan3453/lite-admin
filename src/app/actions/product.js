@@ -12,6 +12,17 @@ export function createProduct(data) {
   };
 }
 
+export function updateProduct(id, data) {
+  return {
+    [CALL_JQ_API]: {
+      types: [Product.UPDATE, Product.UPDATE_SUCCESS, Product.UPDATE_FAIL],
+      uri: `/admin/billing/products/${id}`,
+      body: data,
+      method: 'POST',
+    },
+  };
+}
+
 export function manageProducts(filters) {
   return {
     filters,
