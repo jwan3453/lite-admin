@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Tabs } from 'antd';
 
-import BasicInfo from './basicinfo';
+import BasicInfo from './BasicInfo/index';
 
 class TeacherInfo extends Component {
   render() {
@@ -35,3 +35,4 @@ class TeacherInfo extends Component {
 }
 
 export default connect()(TeacherInfo);
+

@@ -11,7 +11,7 @@ import {
 
 import status from '../../../common/teacherStatus';
 import levels from '../../../common/levels';
-import billingTypes from '../../../common/teacherBillingTypes';
+import billingTypes from '../../../common/teacherBillingCycle';
 
 const FormItem = Form.Item;
 
