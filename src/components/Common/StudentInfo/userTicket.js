@@ -179,6 +179,7 @@ class UserTicket extends React.Component {
         >新建工单</Button>
         <Table
           rowKey="id"
+          size="small"
           loading={loading}
           columns={columns}
           dataSource={tickets}
