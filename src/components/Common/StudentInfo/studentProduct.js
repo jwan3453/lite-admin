@@ -4,44 +4,70 @@ import {
   Table,
   Button,
   Popconfirm,
+  // Modal,
+  Message,
 } from 'antd';
 import moment from 'moment';
 
-class UserProduct extends React.Component {
+import { fetchProductSimpleList } from '../../../app/actions/product';
+import { fetchStudentProducts, gift } from '../../../app/actions/studentProduct';
+
+class StudentProduct extends React.Component {
   static propTypes = {
-    loading: React.PropTypes.bool,
-    products: React.PropTypes.array,
-    page: React.PropTypes.number,
-    pageSize: React.PropTypes.number,
-    total: React.PropTypes.number,
+    dispatch: React.PropTypes.func.isRequired,
+    studentId: React.PropTypes.number.isRequired,
+    loading: React.PropTypes.bool.isRequired,
+    // products: React.PropTypes.array.isRequired,
+    // filters: React.prototype.object,
+    studentProducts: React.PropTypes.object.isRequired,
   };
 
-  static defaultProps = {
-    loading: false,
-    products: {},
-    page: 1,
-    pageSize: 10,
-    total: 0,
+  state = {
+    productVisible: false,
   };
+
+  componentWillMount() {
+    const { dispatch } = this.props;
+    dispatch(fetchProductSimpleList());
+    dispatch(fetchStudentProducts({}));
+  }
+  componentWillReceiveProps(nextProps) {
+    const { dispatch, studentId } = this.props;
+    if (nextProps.studentId > 0 && nextProps.studentId !== studentId) {
+      dispatch(fetchStudentProducts({}));
+    }
+  }
 
   handleRefund = (product) => {
     //  todo handle refund
     console.log(product);
   };
+  handleApplyGift = () => {
+    this.setState({
+      productVisible: true,
+    });
+  };
+  handleGift = (productId, parentId) => {
+    const { dispatch, studentId } = this.props;
+    dispatch(gift(studentId, productId, parentId)).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+      } else {
+        dispatch();
+      }
+    });
+  };
 
   render() {
     const {
       loading,
-      products,
-      page,
-      pageSize,
-      total,
+      studentProducts,
     } = this.props;
 
     const pagination = {
-      current: page,
-      pageSize,
-      total,
+      current: studentProducts.page || 1,
+      pageSize: studentProducts.pageSize || 10,
+      total: studentProducts.total || 0,
     };
 
     const columns = [
@@ -105,42 +131,30 @@ class UserProduct extends React.Component {
           rowKey="id"
           loading={loading}
           columns={columns}
-          dataSource={products}
+          dataSource={studentProducts.result || []}
           pagination={pagination}
+          title={() => (<Button
+            size="small"
+            icon="gift"
+            onClick={this.handleApplyGift}
+          >赠送课时</Button>)}
         />
       </div>
     );
   }
 }
 
-function mapStateToProps() {
-  return {
-    loading: false,
-    page: 1,
-    pageSize: 10,
-    total: 100,
-    products: [
-      {
-        id: 0,
-        name: '1元/1课时',
-        totalHours: 1,
-        availableHours: 1,
-        start: 1493424000000,
-        expiration: 1494806400000,
-        refund: 0,
-      },
-      {
-        id: 1,
-        name: '2元/2课时',
-        totalHours: 1,
-        availableHours: 1,
-        start: 1493424000000,
-        expiration: 1494806400000,
-        refund: 0,
-      },
-    ],
-  };
-}
 
-export default connect(mapStateToProps)(UserProduct);
+export default connect((state) => {
+  const { product, studentProduct } = state;
+  const { simpleList } = product;
+  const { loading, manage } = studentProduct;
+  const { filters, result } = manage;
+  return {
+    loading,
+    filters,
+    studentProducts: result,
+    products: simpleList,
+  };
+})(StudentProduct);
 

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, Modal, Spin } from 'antd';
+import { Table, Modal, Spin, Button, Message } from 'antd';
 import { connect } from 'react-redux';
 import moment from 'moment';
 import _ from 'lodash';
@@ -8,8 +8,7 @@ import SearchForm from './SearchForm';
 import StudentInfo from '../../Common/StudentInfo';
 
 import crmStatus from '../../../common/crmStatus';
-import { fetchAdmins } from '../../../app/actions/admin';
-import { manageStudent } from '../../../app/actions/student';
+import { manageStudent, fetchMobile } from '../../../app/actions/student';
 
 class StudentList extends Component {
   static propTypes = {
@@ -18,6 +17,7 @@ class StudentList extends Component {
     adminUsers: React.PropTypes.array.isRequired,
     filters: React.PropTypes.object.isRequired,
     students: React.PropTypes.object.isRequired,
+    mobile: React.PropTypes.object.isRequired,
   };
   static defaultProps = {
     adminUsers: [],
@@ -25,12 +25,11 @@ class StudentList extends Component {
     students: {},
   };
   state = {
-    currentStudent: null,
+    studentId: 0,
     studentInfoModalVisible: false,
   };
   componentWillMount() {
     const { dispatch, filters } = this.props;
-    dispatch(fetchAdmins());
     dispatch(manageStudent(filters));
   }
   handleSearch = (filters) => {
@@ -48,10 +47,24 @@ class StudentList extends Component {
       ),
     );
   };
-  handleShowStudentInfo = (studentInfo) => {
+  handleShowStudentInfo = (studentId) => {
     this.setState({
-      currentStudent: studentInfo,
+      studentId,
       studentInfoModalVisible: true,
+    });
+  };
+
+  handleFetchMobile = (studentId) => {
+    const { dispatch } = this.props;
+    dispatch(fetchMobile(studentId)).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+      } else {
+        const { mobile } = this.props;
+        Modal.info({
+          content: `用户${mobile.studentId}手机号为: ${mobile.result}`,
+        });
+      }
     });
   };
 
@@ -63,21 +76,27 @@ class StudentList extends Component {
         dataIndex: 'id',
         key: 'id',
         width: 80,
-        render: (text, record, index) => (
+        render: studentId => (
           <a
             role="button"
-            tabIndex={index}
-            onClick={() => this.handleShowStudentInfo(record)}
+            tabIndex={studentId}
+            onClick={() => this.handleShowStudentInfo(studentId)}
           >
-            [ {text} ]
+            {studentId}
           </a>
         ),
       },
       {
         title: '手机尾号',
-        dataIndex: 'mobileSuffix',
         key: 'mobileSuffix',
         width: 80,
+        render: student => (student.mobileSuffix ? <Button
+          size="small"
+          icon="mobile"
+          onClick={() => this.handleFetchMobile(student.id)}
+        >
+          {student.mobileSuffix}
+        </Button> : <span />),
       },
       {
         title: '昵称',
@@ -155,7 +174,6 @@ class StudentList extends Component {
     };
 
     const dataSource = students.result || [];
-    const student = this.state.currentStudent || {};
     return (
       <div>
         <SearchForm
@@ -174,13 +192,13 @@ class StudentList extends Component {
         />
         <Modal
           visible={this.state.studentInfoModalVisible}
-          title={`学生信息 ${student.nickname}`}
+          title="学生信息"
           footer={null}
           onCancel={() => this.setState({ studentInfoModalVisible: false })}
           width={700}
         >
           <Spin spinning={this.props.loading}>
-            <StudentInfo student={student} />
+            <StudentInfo studentId={this.state.studentId} />
           </Spin>
         </Modal>
       </div>
@@ -190,7 +208,7 @@ class StudentList extends Component {
 
 function mapStateToProps(state) {
   const { student, admin } = state;
-  const { loading, manage } = student;
+  const { loading, manage, mobile } = student;
   const { filters, result } = manage;
 
   return {
@@ -198,6 +216,7 @@ function mapStateToProps(state) {
     filters,
     students: result,
     adminUsers: admin.users,
+    mobile,
   };
 }
 

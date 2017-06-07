@@ -18,6 +18,7 @@ export function teacher(
         loading: true,
         search: {
           text: action.searchText,
+          result: [],
         },
       });
     }

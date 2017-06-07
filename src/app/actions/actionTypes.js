@@ -46,6 +46,16 @@ export const Student = {
   FETCH_MOBILE_FAIL: 'fetch_mobile_fail',
 };
 
+export const StudentProduct = {
+  FETCH: 'fetch',
+  FETCH_SUCCESS: 'fetch_success',
+  FETCH_FAIL: 'fetch_fail',
+
+  GIFT: 'gift',
+  GIFT_SUCCESS: 'gift_success',
+  GIFT_FAIL: 'gift_fail',
+};
+
 export const Teacher = {
   SEARCH: 'teacher_search',
   SEARCH_SUCCESS: 'teacher_search_success',
@@ -156,4 +166,8 @@ export const Products = {
   MANAGE: 'products_manage',
   MANAGE_SUCCESS: 'products_manage_success',
   MANAGE_FAIL: 'products_manage_fail',
+
+  FETCH_SIMPLE_LIST: 'fetch_simple_list',
+  FETCH_SIMPLE_LIST_SUCCESS: 'fetch_simple_list_success',
+  FETCH_SIMPLE_LIST_FAIL: 'fetch_simple_list_fail',
 };

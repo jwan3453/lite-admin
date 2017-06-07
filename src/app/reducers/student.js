@@ -29,6 +29,7 @@ export function student(
         loading: true,
         search: {
           filters: action.filters,
+          result: {},
         },
       });
     }
@@ -37,6 +38,7 @@ export function student(
         loading: true,
         manage: {
           filters: action.filters,
+          result: {},
         },
       });
     case Student.FETCH:
@@ -44,6 +46,7 @@ export function student(
         loading: true,
         studentInfo: {
           studentId: action.studentId,
+          result: {},
         },
       });
     case Student.FETCH_MOBILE:

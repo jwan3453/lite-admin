@@ -1,31 +1,29 @@
+/**
+ * Created by chenlingguang on 2017/5/31.
+ */
 import { assign } from 'lodash';
-import { Product, Products } from '../actions/actionTypes';
+import { StudentProduct } from '../actions/actionTypes';
 
-export function product(
+export function studentProduct(
   state = {
     loading: false,
     manage: {
       filters: {},
       result: {},
     },
-    simpleList: [],
   },
   action = {},
 ) {
   switch (action.type) {
-    case Product.CREATE:
-    case Product.FETCH_SIMPLE_LIST:
-      return assign({}, state, {
-        loading: true,
-      });
-    case Products.MANAGE:
+    case StudentProduct.FETCH:
       return assign({}, state, {
         loading: true,
         manage: {
           filters: action.filters,
+          result: {},
         },
       });
-    case Products.MANAGE_SUCCESS:
+    case StudentProduct.FETCH_SUCCESS:
       return assign({}, state, {
         loading: false,
         manage: {
@@ -33,14 +31,13 @@ export function product(
           result: action.response,
         },
       });
-    case Product.FETCH_SIMPLE_LIST_SUCCESS:
+    case StudentProduct.GIFT:
       return assign({}, state, {
-        simpleList: action.response,
+        loading: false,
       });
-    case Products.MANAGE_FAIL:
-    case Product.CREATE_SUCCESS:
-    case Product.CREATE_FAIL:
-    case Product.FETCH_SIMPLE_LIST_FAIL:
+    case StudentProduct.GIFT_SUCCESS:
+    case StudentProduct.GIFT_FAIL:
+    case StudentProduct.FETCH_FAIL:
       return assign({}, state, {
         loading: false,
       });

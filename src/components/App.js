@@ -9,6 +9,7 @@ import appRoutes from '../app/routes';
 import './App.less';
 
 import { receiveDimensions } from '../app/actions/system';
+import { fetchAdmins } from '../app/actions/admin';
 
 class App extends React.PureComponent {
   static propTypes = {
@@ -52,6 +53,7 @@ class App extends React.PureComponent {
       App.menuItems = App.buildMenuTree(appRoutes[0].childRoutes);
     }
     this.updateDimensions();
+    this.props.dispatch(fetchAdmins());
   }
   componentDidMount() {
     global.window.addEventListener('resize', this.updateDimensions);

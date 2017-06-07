@@ -9,6 +9,7 @@ import * as teacherReducers from './teacher';
 import * as teacherAppointmentReducers from './teacherAppointment';
 import * as studentReducers from './student';
 import * as studentAppointmentReducers from './studentAppointment';
+import * as studentProductReducers from './studentProduct';
 import * as adminReducers from './admin';
 import * as productReducers from './product';
 
@@ -22,6 +23,7 @@ const rootReducer = combineReducers({
   ...teacherAppointmentReducers,
   ...studentReducers,
   ...studentAppointmentReducers,
+  ...studentProductReducers,
   ...adminReducers,
   ...productReducers,
 });

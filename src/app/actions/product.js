@@ -23,3 +23,17 @@ export function manageProducts(filters) {
     },
   };
 }
+
+export function fetchProductSimpleList() {
+  return {
+    [CALL_JQ_API]: {
+      types: [
+        Products.FETCH_SIMPLE_LIST,
+        Products.FETCH_SIMPLE_LIST_SUCCESS,
+        Products.FETCH_SIMPLE_LIST_FAIL,
+      ],
+      uri: '/admin/billing/products',
+      method: 'GET',
+    },
+  };
+}

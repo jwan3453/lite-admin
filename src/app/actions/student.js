@@ -43,6 +43,7 @@ export function fetchMobile(studentId) {
       types: [Student.FETCH_MOBILE, Student.FETCH_MOBILE_SUCCESS, Student.FETCH_MOBILE_FAIL],
       uri: `/admin/students/${studentId}/mobile`,
       method: 'GET',
+      nonce: true,
     },
   };
 }
