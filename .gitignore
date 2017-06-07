@@ -18,3 +18,4 @@ yarn-error.log*
 
 /src/configs/config.dev.js
 .idea
+*.swp
