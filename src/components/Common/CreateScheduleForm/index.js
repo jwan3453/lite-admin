@@ -224,7 +224,7 @@ class CreateScheduleForm extends React.Component {
           })(
             <Select size="large">
               {this.props.roomTypes.map(type => (
-                <Select.Option value={type.id} key={type.id}>
+                <Select.Option value={String(type.id)} key={type.id}>
                   {type.name}
                 </Select.Option>
               ))}

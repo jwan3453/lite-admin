@@ -78,7 +78,7 @@ class StandardRefundForm extends React.Component {
             <Select size="large" disabled>
               {
                 refundFunnels.map(item => (
-                  <Option key={item.value} value={item.value}>{item.name}</Option>
+                  <Option key={item.value} value={String(item.value)}>{item.name}</Option>
                 ))
               }
             </Select>,

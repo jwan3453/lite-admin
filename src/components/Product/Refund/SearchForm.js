@@ -108,7 +108,7 @@ class RefundSearchForm extends Component {
                   <Select size="default">
                     <Select.Option value="-1">全部</Select.Option>
                     {status.map(item => (
-                      <Select.Option key={item.value} value={item.value}>
+                      <Select.Option key={item.value} value={String(item.value)}>
                         {item.name}
                       </Select.Option>
                     ))}
@@ -133,7 +133,7 @@ class RefundSearchForm extends Component {
                   <Select size="default">
                     <Select.Option value="-1">全部</Select.Option>
                     {funnels.map(funnel => (
-                      <Select.Option key={funnel.value} value={funnel.value}>
+                      <Select.Option key={funnel.value} value={String(funnel.value)}>
                         {funnel.name}
                       </Select.Option>
                     ))}

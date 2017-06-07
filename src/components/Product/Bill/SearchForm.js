@@ -139,7 +139,7 @@ class BillSearchForm extends Component {
                   <Select size="default">
                     <Select.Option value="-1">全部</Select.Option>
                     {billingStatus.map(status => (
-                      <Select.Option key={status.value} value={status.value}>
+                      <Select.Option key={status.value} value={String(status.value)}>
                         {status.name}
                       </Select.Option>
                     ))}

@@ -9,7 +9,7 @@ import {
 const FormItem = Form.Item;
 const SelectOption = Select.Option;
 
-class Question extends React.Component {
+class EntrySurvey extends React.Component {
   static propTypes = {
     loading: React.PropTypes.bool,
     form: React.PropTypes.object.isRequired,
@@ -81,7 +81,7 @@ class Question extends React.Component {
             {
               questions.length > 0
               ? questions.map(item => (
-                <div>
+                <div key={Math.random()}>
                   <div>Q：{item[0]}</div>
                   <div>A：{item[1]}</div>
                 </div>
@@ -109,5 +109,5 @@ export default Form.create({
       });
     }
   },
-})(Question);
+})(EntrySurvey);
 

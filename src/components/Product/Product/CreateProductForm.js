@@ -89,7 +89,7 @@ class CreateProductForm extends React.Component {
 
     const products = this.props.products || [];
     const children = products.map(product => (
-      <Select.Option key={product.id} value={`${product.id}`}>
+      <Select.Option key={product.id} value={String(product.id)}>
         {product.name}
       </Select.Option>
     ));

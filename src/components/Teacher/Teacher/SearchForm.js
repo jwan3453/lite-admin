@@ -96,7 +96,7 @@ class TeacherSearchForm extends Component {
                   <Select size="default">
                     <Select.Option value="-1">全部</Select.Option>
                     {status.map(item => (
-                      <Select.Option key={item.value} value={item.value}>
+                      <Select.Option key={item.value} value={String(item.value)}>
                         {item.name}
                       </Select.Option>
                     ))}
@@ -120,7 +120,7 @@ class TeacherSearchForm extends Component {
                     <Select.Option value="-1">全部</Select.Option>
                     <Select.Option value="0">未分级</Select.Option>
                     {levels.map(level => (
-                      <Select.Option key={level.value} value={level.value}>
+                      <Select.Option key={level.value} value={String(level.value)}>
                         {level.name}
                       </Select.Option>
                     ))}

@@ -96,7 +96,9 @@ class BasicProfileForm extends Component {
               <Select>
                 {
                   levels.map(item => (
-                    <Select.Option key={item.value} value={item.value}>{item.name}</Select.Option>
+                    <Select.Option key={item.value} value={String(item.value)}>
+                      {item.name}
+                    </Select.Option>
                   ))
                 }
               </Select>,
@@ -128,7 +130,7 @@ class BasicProfileForm extends Component {
         >
           {
             getFieldDecorator('group', {
-              initialValue: -1,
+              initialValue: '-1',
               rules: [
                 {
                   required: false,

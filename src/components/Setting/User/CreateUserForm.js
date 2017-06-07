@@ -79,7 +79,7 @@ class CreateUserForm extends React.Component {
 
     const roles = this.props.roles || [];
     const children = roles.map(role => (
-      <Select.Option key={role.id} value={`${role.id}`}>
+      <Select.Option key={role.id} value={String(role.id)}>
         {role.name}
       </Select.Option>
     ));

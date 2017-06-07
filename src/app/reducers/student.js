@@ -10,7 +10,7 @@ export function student(
     },
     manage: {
       filters: {},
-      result: [],
+      result: {},
     },
     studentInfo: {
       studentId: 0,

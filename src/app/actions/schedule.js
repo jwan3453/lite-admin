@@ -20,7 +20,7 @@ export function updateSchedule(scheduleId, isInternal) {
     scheduleId,
     isInternal,
     [CALL_JQ_API]: {
-      types: [Schedule.SET_INTERNAL, Schedule.SET_INTERNAL_SUCCESS, Schedule.SET_INTERNAL_FAIL],
+      types: [Schedule.UPDATE, Schedule.UPDATE_SUCCESS, Schedule.UPDATE_FAIL],
       uri: `/admin/schedules/${scheduleId}`,
       method: 'POST',
       body: {

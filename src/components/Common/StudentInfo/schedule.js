@@ -152,7 +152,12 @@ class Schedule extends Component {
             >隐藏</Button>,
           ]}
         >
-          <RoomInfo />
+          <RoomInfo
+            onCopySchedule={() => {}}
+            roomInfo={{}}
+            lessonName=""
+            onHide={() => {}}
+          />
         </Modal>
       </div>
     );

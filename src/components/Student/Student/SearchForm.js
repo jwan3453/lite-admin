@@ -155,12 +155,10 @@ class StudentSearchForm extends Component {
                   <Select.Option value="-1">全部</Select.Option>
                   <Select.Option value="0">未分级</Select.Option>
                   {levels.map(level => (
-                    <Select.Option key={level.value} value={level.value}>
+                    <Select.Option key={level.value} value={String(level.value)}>
                       {level.name}
                     </Select.Option>
                   ))}
-
-                  <Select.Option value="2">L2</Select.Option>
                 </Select>,
               )}
             </FormItem>
@@ -252,7 +250,7 @@ class StudentSearchForm extends Component {
                 <Select size="default">
                   <Select.Option value="-1">全部</Select.Option>
                   {crmStatus.map(status => (
-                    <Select.Option key={status.value} value={status.value}>
+                    <Select.Option key={status.value} value={String(status.value)}>
                       {status.name}
                     </Select.Option>
                   ))}

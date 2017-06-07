@@ -37,23 +37,23 @@ export const Student = {
   MANAGE_SUCCESS: 'student_manage_success',
   MANAGE_FAIL: 'student_manage_fail',
 
-  FETCH: 'fetch',
-  FETCH_SUCCESS: 'fetch_success',
-  FETCH_FAIL: 'fetch_fail',
+  FETCH: 'student_fetch',
+  FETCH_SUCCESS: 'student_fetch_success',
+  FETCH_FAIL: 'student_fetch_fail',
 
-  FETCH_MOBILE: 'fetch_mobile',
-  FETCH_MOBILE_SUCCESS: 'fetch_mobile_success',
-  FETCH_MOBILE_FAIL: 'fetch_mobile_fail',
+  FETCH_MOBILE: 'student_fetch_mobile',
+  FETCH_MOBILE_SUCCESS: 'student_fetch_mobile_success',
+  FETCH_MOBILE_FAIL: 'student_fetch_mobile_fail',
 };
 
 export const StudentProduct = {
-  FETCH: 'fetch',
-  FETCH_SUCCESS: 'fetch_success',
-  FETCH_FAIL: 'fetch_fail',
+  FETCH: 'student_product_fetch',
+  FETCH_SUCCESS: 'student_product_fetch_success',
+  FETCH_FAIL: 'student_product_fetch_fail',
 
-  GIFT: 'gift',
-  GIFT_SUCCESS: 'gift_success',
-  GIFT_FAIL: 'gift_fail',
+  GIFT: 'student_product_gift',
+  GIFT_SUCCESS: 'student_product_gift_success',
+  GIFT_FAIL: 'student_product_gift_fail',
 };
 
 export const Teacher = {
@@ -85,13 +85,13 @@ export const Room = {
   DELETE_SUCCESS: 'room_delete_success',
   DELETE_FAIL: 'room_delete_fail',
 
-  ADD_STUDENT: 'add_student',
-  ADD_STUDENT_SUCCESS: 'add_student_success',
-  ADD_STUDENT_FAIL: 'add_student_fail',
+  ADD_STUDENT: 'room_add_student',
+  ADD_STUDENT_SUCCESS: 'room_add_student_success',
+  ADD_STUDENT_FAIL: 'room_add_student_fail',
 
-  UPDATE_TEACHER: 'update_teacher',
-  UPDATE_TEACHER_SUCCESS: 'update_teacher_success',
-  UPDATE_TEACHER_FAIL: 'update_teacher_fail',
+  UPDATE_TEACHER: 'room_update_teacher',
+  UPDATE_TEACHER_SUCCESS: 'room_update_teacher_success',
+  UPDATE_TEACHER_FAIL: 'room_update_teacher_fail',
 };
 
 export const RoomTypes = {
@@ -107,41 +107,41 @@ export const Schedule = {
 
   COPY: 'schedule_copy',
 
-  ADD_ROOM: 'add_room',
-  ADD_ROOM_SUCCESS: 'add_room_success',
-  ADD_ROOM_FAIL: 'add_room_fail',
+  ADD_ROOM: 'schedule_add_room',
+  ADD_ROOM_SUCCESS: 'schedule_add_room_success',
+  ADD_ROOM_FAIL: 'schedule_add_room_fail',
 
-  SET_INTERNAL: 'set_internal',
-  SET_INTERNAL_SUCCESS: 'set_internal_SUCCESS',
-  SET_INTERNAL_FAIL: 'set_internal_FAIL',
+  UPDATE: 'schedule_update',
+  UPDATE_SUCCESS: 'schedule_update_success',
+  UPDATE_FAIL: 'schedule_update_fail',
 
-  FETCH_ROOMS: 'fetch_rooms',
-  FETCH_ROOMS_SUCCESS: 'fetch_rooms_success',
-  FETCH_ROOMS_FAIL: 'fetch_rooms_fail',
+  FETCH_ROOMS: 'schedule_fetch_rooms',
+  FETCH_ROOMS_SUCCESS: 'schedule_fetch_rooms_success',
+  FETCH_ROOMS_FAIL: 'schedule_fetch_rooms_fail',
 };
 
 export const TeacherAppointment = {
-  FETCH: 'fetch',
-  FETCH_SUCCESS: 'fetch_success',
-  FETCH_FAIL: 'fetch_fail',
+  FETCH: 'teacher_appointment_fetch',
+  FETCH_SUCCESS: 'teacher_appointment_fetch_success',
+  FETCH_FAIL: 'teacher_appointment_fetch_fail',
 
-  UPDATE: 'update',
-  UPDATE_SUCCESS: 'update_success',
-  UPDATE_FAIL: 'update_fail',
+  UPDATE: 'teacher_appointment_update',
+  UPDATE_SUCCESS: 'teacher_appointment_update_success',
+  UPDATE_FAIL: 'teacher_appointment_update_fail',
 };
 
 export const StudentAppointment = {
-  FETCH: 'fetch',
-  FETCH_SUCCESS: 'fetch_success',
-  FETCH_FAIL: 'fetch_fail',
+  FETCH: 'student_appointment_fetch',
+  FETCH_SUCCESS: 'student_appointment_fetch_success',
+  FETCH_FAIL: 'student_appointment_fetch_fail',
 
-  UPDATE: 'update',
-  UPDATE_SUCCESS: 'update_success',
-  UPDATE_FAIL: 'update_fail',
+  UPDATE: 'student_appointment_update',
+  UPDATE_SUCCESS: 'student_appointment_update_success',
+  UPDATE_FAIL: 'student_appointment_update_fail',
 
-  CHANGE_ROOM: 'change_room',
-  CHANGE_ROOM_SUCCESS: 'change_room_success',
-  CHANGE_ROOM_FAIL: 'change_room_fail',
+  CHANGE_ROOM: 'student_appointment_change_room',
+  CHANGE_ROOM_SUCCESS: 'student_appointment_change_room_success',
+  CHANGE_ROOM_FAIL: 'student_appointment_change_room_fail',
 };
 
 export const Courses = {
@@ -171,7 +171,7 @@ export const Products = {
   MANAGE_SUCCESS: 'products_manage_success',
   MANAGE_FAIL: 'products_manage_fail',
 
-  FETCH_SIMPLE_LIST: 'fetch_simple_list',
-  FETCH_SIMPLE_LIST_SUCCESS: 'fetch_simple_list_success',
-  FETCH_SIMPLE_LIST_FAIL: 'fetch_simple_list_fail',
+  FETCH_SIMPLE_LIST: 'products_fetch_simple_list',
+  FETCH_SIMPLE_LIST_SUCCESS: 'products_fetch_simple_list_success',
+  FETCH_SIMPLE_LIST_FAIL: 'products_fetch_simple_list_fail',
 };

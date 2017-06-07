@@ -86,7 +86,7 @@ class StudentBasicInfo extends Component {
     const currentCrmStatus = _.find(crmStatus, item =>
         item.value === studentInfo.crmStatus) || {};
     const assistant = _.find(adminUsers,
-      admin => _.toInteger(admin.id) === studentInfo.crmAssistantId) || {};
+      admin => Number(admin.id) === Number(studentInfo.crmAssistantId)) || {};
 
     return (
       <div>

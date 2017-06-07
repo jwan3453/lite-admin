@@ -3,7 +3,7 @@ import { Tabs } from 'antd';
 
 import StudentBasicInfo from './basicInfo';
 import Schedule from './schedule';
-import Question from './question';
+import EntrySurvey from './entrySurvey';
 import LessonStatus from './lessonStatus';
 import StudentProduct from './studentProduct';
 import Scholarship from './scholarship';
@@ -25,7 +25,7 @@ export default class StudentInfo extends Component {
           <Schedule studentId={studentId} />
         </Tabs.TabPane>
         <Tabs.TabPane tab="入学问卷" key="entry-questionair">
-          <Question studentId={studentId} />
+          <EntrySurvey studentId={studentId} />
         </Tabs.TabPane>
         <Tabs.TabPane tab="学习进度" key="user-progress">
           <LessonStatus studentId={studentId} />

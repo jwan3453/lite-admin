@@ -4,56 +4,76 @@ import {
   Table,
   Button,
   Popconfirm,
-  // Modal,
+  Tooltip,
+  Modal,
   Message,
 } from 'antd';
+import _ from 'lodash';
 import moment from 'moment';
 
+import {
+  STUDENT_PRODUCT_STATUS,
+  STUDENT_PRODUCT_STATUS_NORMAL,
+} from '../../../common/studentProduct';
+
 import { fetchProductSimpleList } from '../../../app/actions/product';
-import { fetchStudentProducts, gift } from '../../../app/actions/studentProduct';
+import { fetchStudentProducts, giftStudentProduct } from '../../../app/actions/studentProduct';
+
+import GiftProductForm from '../GiftProductForm';
 
 class StudentProduct extends React.Component {
   static propTypes = {
     dispatch: React.PropTypes.func.isRequired,
     studentId: React.PropTypes.number.isRequired,
     loading: React.PropTypes.bool.isRequired,
-    // products: React.PropTypes.array.isRequired,
-    // filters: React.prototype.object,
+    products: React.PropTypes.array.isRequired,
+    filters: React.PropTypes.object.isRequired,
     studentProducts: React.PropTypes.object.isRequired,
   };
 
   state = {
-    productVisible: false,
+    studentProductId: 0,
+    giftVisible: false,
   };
 
   componentWillMount() {
-    const { dispatch } = this.props;
+    const { dispatch, studentId } = this.props;
     dispatch(fetchProductSimpleList());
-    dispatch(fetchStudentProducts({}));
+    dispatch(fetchStudentProducts(studentId, {}));
   }
   componentWillReceiveProps(nextProps) {
     const { dispatch, studentId } = this.props;
     if (nextProps.studentId > 0 && nextProps.studentId !== studentId) {
-      dispatch(fetchStudentProducts({}));
+      dispatch(fetchStudentProducts(nextProps.studentId, {}));
     }
   }
+
+  expandRowRender = record =>
+    (<p>
+      共{record.lessonCount}课时，
+      包含赠送{record.givenLessonCount}课时，
+      赔偿{record.compensationLessonCount}课时，<br />
+      共消耗{record.consumedCount}课时，
+      剩余{record.lessonCountLeft}课时
+    </p>);
 
   handleRefund = (product) => {
     //  todo handle refund
     console.log(product);
   };
-  handleApplyGift = () => {
+  handleApplyGift = (studentProductId) => {
     this.setState({
-      productVisible: true,
+      studentProductId,
+      giftVisible: true,
     });
   };
-  handleGift = (productId, parentId) => {
-    const { dispatch, studentId } = this.props;
-    dispatch(gift(studentId, productId, parentId)).then((result) => {
+  handleGiftSubmit = (giftProduct) => {
+    const { dispatch, studentId, filters } = this.props;
+    dispatch(giftStudentProduct(studentId, giftProduct)).then((result) => {
       if (result.code) {
         Message.error(result.message);
       } else {
-        dispatch();
+        dispatch(fetchStudentProducts(studentId, filters));
       }
     });
   };
@@ -62,6 +82,7 @@ class StudentProduct extends React.Component {
     const {
       loading,
       studentProducts,
+      products,
     } = this.props;
 
     const pagination = {
@@ -78,48 +99,70 @@ class StudentProduct extends React.Component {
       },
       {
         title: '总课时',
-        key: 'totalHours',
-        dataIndex: 'totalHours',
-        render: hours => (hours.toFixed(1)),
+        key: 'lessonCount',
+        dataIndex: 'lessonCount',
       },
       {
         title: '可用课时',
-        key: 'availableHours',
-        dataIndex: 'availableHours',
-        render: hours => (hours.toFixed(1)),
+        key: 'lessonCountLeft',
+        dataIndex: 'lessonCountLeft',
       },
       {
         title: '状态',
         key: 'status',
-        render: (text, record) => {
-          const { start, expiration } = record;
-          const now = (new Date()).getTime();
-          return !(now < start || now > expiration) ? '有效' : '已过期';
+        render: (record) => {
+          const status = _.find(STUDENT_PRODUCT_STATUS, { value: Number(record.status) });
+          if (status) {
+            if (record.status === STUDENT_PRODUCT_STATUS_NORMAL) {
+              if (moment().isBefore(moment.unix(record.validStartAt))) {
+                return '未开始';
+              }
+              if (moment().isAfter(moment.unix(record.validFinishedAt))) {
+                return '已过期';
+              }
+            }
+            return status.text;
+          }
+          return record.status;
         },
       },
       {
         title: '有效期',
         key: 'availableTime',
-        render: (text, record) => {
+        render: (record) => {
           const dateFormat = 'YYYY.MM.DD';
-          return `${moment(new Date(record.start)).format(dateFormat)} - ${moment(new Date(record.expiration)).format(dateFormat)}`;
+          return `${moment.unix(record.validStartAt).format(dateFormat)} - ${moment.unix(record.validFinishAt).format(dateFormat)}`;
         },
-      },
-      {
-        title: '退款金额',
-        key: 'refund',
-        dataIndex: 'refund',
       },
       {
         title: '操作',
         key: 'actions',
-        render: (text, record) => (
-          <Popconfirm
-            title="操作不可逆，确认继续？"
-            onConfirm={() => this.handleRefund(record)}
-          >
-            <Button size="default" type="primary">申请退款</Button>
-          </Popconfirm>
+        render: record => (
+          <div>
+            <Popconfirm
+              title="操作不可逆，确认继续？"
+              onConfirm={() => this.handleRefund(record)}
+            >
+              <Tooltip title="申请退款">
+                <Button
+                  size="small"
+                  type="primary"
+                  ghost
+                  icon="wallet"
+                  style={{ marginRight: 5 }}
+                />
+              </Tooltip>
+            </Popconfirm>
+            <Tooltip title="赠送关联产品">
+              <Button
+                size="small"
+                type="primary"
+                ghost
+                icon="gift"
+                onClick={() => this.handleApplyGift(record.id)}
+              />
+            </Tooltip>
+          </div>
         ),
       },
     ];
@@ -131,14 +174,27 @@ class StudentProduct extends React.Component {
           rowKey="id"
           loading={loading}
           columns={columns}
+          expandedRowRender={this.expandRowRender}
           dataSource={studentProducts.result || []}
           pagination={pagination}
           title={() => (<Button
             size="small"
             icon="gift"
-            onClick={this.handleApplyGift}
+            onClick={() => this.handleApplyGift(0)}
           >赠送课时</Button>)}
         />
+        <Modal
+          title="赠送课时"
+          visible={this.state.giftVisible}
+          footer={null}
+          onCancel={() => this.setState({ giftVisible: false })}
+        >
+          <GiftProductForm
+            products={products}
+            onSubmit={this.handleGiftSubmit}
+            parent={this.state.studentProductId}
+          />
+        </Modal>
       </div>
     );
   }
