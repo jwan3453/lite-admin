@@ -8,9 +8,9 @@ import {
   Button,
   Modal,
 } from 'antd';
-
 import _ from 'lodash';
 
+import ProfileForm from './profileForm';
 import STATUS from '../../../../common/teacherStatus';
 import level from '../../../../common/levels';
 import billingCycle from '../../../../common/teacherBillingCycle';
@@ -161,7 +161,9 @@ class BasicInfo extends React.Component {
           visible={this.state.profileDialogVisible}
           onOk={this.handleUpdateProfile}
           onCancel={() => this.setState({ profileDialogVisible: false })}
-        >this is profile dialog</Modal>
+        >
+          <ProfileForm />
+        </Modal>
       </div>
     );
   }
