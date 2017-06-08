@@ -14,6 +14,7 @@ import _ from 'lodash';
 import * as CERTIFICATION_STATUS from './status';
 import * as CERTIFICATION_STEP_TYPES from './stepTypes';
 import AssignCertificationForm from './assignCertificationForm';
+import VideoConferenceForm from './videoConferenceForm';
 
 const TIME_FORMAT = 'YYYY-MM-DD hh:mm:ss';
 
@@ -54,6 +55,10 @@ class Certification extends React.Component {
     this.setState({
       conferenceDialogVisible: false,
     });
+  };
+
+  updateStepStatus = () => {
+    //  todo update status of step of session type
   };
 
   render() {
@@ -195,10 +200,10 @@ class Certification extends React.Component {
         <Modal
           title="待处理session"
           visible={this.state.conferenceDialogVisible}
-          onOk={() => console.log('todo')}
+          onOk={() => this.updateStepStatus()}
           onCancel={this.hideConferenceDialog}
         >
-          this is videoConferenceStep dialog
+          <VideoConferenceForm />
         </Modal>
       </div>
     );
