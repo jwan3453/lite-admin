@@ -59,6 +59,18 @@ class Certification extends React.Component {
 
   updateStepStatus = () => {
     //  todo update status of step of session type
+    const form = this.videoConferenceForm;
+    console.log(
+      'updateStepStatus'
+      , form.getFieldsValue());
+  };
+
+  assignCertification = () => {
+    const form = this.assignCertificationForm;
+    //  todo
+    console.log(
+      'assignCertification'
+      , form.getFieldsValue());
   };
 
   render() {
@@ -190,12 +202,14 @@ class Certification extends React.Component {
           style={{ marginTop: 16 }}
         />
         <Modal
-          title="分配资质"
+          title="选择资质"
           visible={this.state.assignCertDialogVisible}
           onOk={() => { this.assignCertification(); }}
           onCancel={this.hideAssignCertDialog}
         >
-          <AssignCertificationForm />
+          <AssignCertificationForm
+            ref={(node) => { this.assignCertificationForm = node; }}
+          />
         </Modal>
         <Modal
           title="待处理session"
@@ -203,7 +217,9 @@ class Certification extends React.Component {
           onOk={() => this.updateStepStatus()}
           onCancel={this.hideConferenceDialog}
         >
-          <VideoConferenceForm />
+          <VideoConferenceForm
+            ref={(node) => { this.videoConferenceForm = node; }}
+          />
         </Modal>
       </div>
     );
