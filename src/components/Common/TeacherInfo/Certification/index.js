@@ -7,11 +7,12 @@ import {
   Modal,
   Popover,
   Steps,
-  Timeline,
+  Tooltip,
 } from 'antd';
 import moment from 'moment';
 import _ from 'lodash';
 import * as CERTIFICATION_STATUS from './status';
+import * as CERTIFICATION_STEP_TYPES from './stepTypes';
 import AssignCertificationForm from './assignCertificationForm';
 
 const TIME_FORMAT = 'YYYY-MM-DD hh:mm:ss';
@@ -29,6 +30,30 @@ class Certification extends React.Component {
 
   state = {
     dialogVisible: false,
+  };
+
+  showAssignCertDialog = () => {
+    this.setState({
+      assignCertDialogVisible: true,
+    });
+  };
+
+  hideAssignCertDialog = () => {
+    this.setState({
+      assignCertDialogVisible: false,
+    });
+  };
+
+  showConferenceDialog = () => {
+    this.setState({
+      conferenceDialogVisible: true,
+    });
+  };
+
+  hideConferenceDialog = () => {
+    this.setState({
+      conferenceDialogVisible: false,
+    });
   };
 
   render() {
@@ -66,6 +91,11 @@ class Certification extends React.Component {
                       <Steps.Step
                         key={item.id}
                         title={item.title}
+                        description={
+                          item.score > 0
+                          ? <p>分数：{item.score}</p>
+                          : ''
+                        }
                       />
                     ))
                   }
@@ -76,61 +106,35 @@ class Certification extends React.Component {
         },
       },
       {
-        title: '认证记录',
-        key: 'steps',
-        dataIndex: 'steps',
-        render: (steps) => {
-          const statistics = _.countBy(steps, 'status');
-          const list = (
-            <ul>
-              {
-                _.map(
-                  _.filter(
-                    CERTIFICATION_STATUS.STATUS
-                    , item => item.value > 0)
-                  , item => (
-                    <li
-                      style={{ color: item.color }}
-                    >{`${statistics[item.value] || 0} ${item.text}`}</li>
-                  ))
-              }
-            </ul>
-          );
-          const showPopover = _.some(steps, item => item.status > 0);
-
-          return (
-            !showPopover ?
-              list
-              : <Popover
-                content={
-                  <Timeline size="small">
-                    {
-                      steps.map((step) => {
-                        const S = _.filter(
-                          CERTIFICATION_STATUS.STATUS
-                          , item => item.value === step.status);
-
-                        return (
-                          <Timeline.Item
-                            key={step.id}
-                            color={S.color}
-                          >
-                            <h3>{step.title}</h3>
-                            {step.score > 0 && <p>分数：{step.score}</p>}
-                          </Timeline.Item>
-                        );
-                      })
-                    }
-                  </Timeline>
-                }
-              >{list}</Popover>
-          );
-        },
-      },
-      {
         title: '待处理培训',
         key: 'session',
-        render: () => '--',
+        dataIndex: 'steps',
+        render: (steps) => {
+          const activatedSteps = _.filter(
+            steps
+            , item => CERTIFICATION_STATUS.isAssigned(item.status)
+                      || CERTIFICATION_STATUS.isInProgress(item.status));
+
+          const videoConferenceStep = _.head(
+            _.filter(
+              activatedSteps
+              , item => CERTIFICATION_STEP_TYPES.isSessionStep(item.type)
+              ,
+            ),
+          );
+
+          const linkButton = (
+            <Tooltip title="处理session">
+              <a
+                role="button"
+                tabIndex="0"
+                onClick={this.showConferenceDialog}
+              >{videoConferenceStep.title}</a>
+            </Tooltip>
+          );
+
+          return !videoConferenceStep ? '' : linkButton;
+        },
       },
       {
         title: '状态',
@@ -169,7 +173,7 @@ class Certification extends React.Component {
       <div>
         <Button
           type="primary"
-          onClick={() => { this.setState({ dialogVisible: true }); }}
+          onClick={this.showAssignCertDialog}
         >分配资质</Button>
         <Table
           rowKey="id"
@@ -182,11 +186,19 @@ class Certification extends React.Component {
         />
         <Modal
           title="分配资质"
-          visible={this.state.dialogVisible}
+          visible={this.state.assignCertDialogVisible}
           onOk={() => { this.assignCertification(); }}
-          onCancel={() => { this.setState({ dialogVisible: false }); }}
+          onCancel={this.hideAssignCertDialog}
         >
           <AssignCertificationForm />
+        </Modal>
+        <Modal
+          title="待处理session"
+          visible={this.state.conferenceDialogVisible}
+          onOk={() => console.log('todo')}
+          onCancel={this.hideConferenceDialog}
+        >
+          this is videoConferenceStep dialog
         </Modal>
       </div>
     );
@@ -205,20 +217,20 @@ function mapStateToProps() {
             title: 'step 1',
             type: 'ppt',
             status: 40,
-            score: 0,
+            score: 88,
           },
           {
             id: 1,
             title: 'step 2',
             type: 'video',
-            status: 20,
-            score: 0,
+            status: 40,
+            score: 100,
           },
           {
             id: 2,
             title: 'step 3',
             type: 'session',
-            status: 0,
+            status: 10,
             score: 0,
           },
           {
