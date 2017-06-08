@@ -89,6 +89,10 @@ export const Room = {
   ADD_STUDENT_SUCCESS: 'room_add_student_success',
   ADD_STUDENT_FAIL: 'room_add_student_fail',
 
+  REMOVE_STUDENT: 'room_remove_student',
+  REMOVE_STUDENT_SUCCESS: 'room_remove_student_success',
+  REMOVE_STUDENT_FAIL: 'room_remove_student_fail',
+
   UPDATE_TEACHER: 'room_update_teacher',
   UPDATE_TEACHER_SUCCESS: 'room_update_teacher_success',
   UPDATE_TEACHER_FAIL: 'room_update_teacher_fail',

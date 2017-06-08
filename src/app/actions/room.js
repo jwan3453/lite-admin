@@ -72,6 +72,16 @@ export function addStudent(roomId, studentId) {
   };
 }
 
+export function removeStudent(roomId, studentId) {
+  return {
+    [CALL_JQ_API]: {
+      types: [Room.REMOVE_STUDENT, Room.REMOVE_STUDENT_SUCCESS, Room.REMOVE_STUDENT_FAIL],
+      uri: `/admin/schedules/rooms/${roomId}/student/${studentId}`,
+      method: 'DELETE',
+    },
+  };
+}
+
 export function updateTeacher(roomId, teacherId, reason) {
   const body = { teacherId };
   if (reason) body.reason = reason;

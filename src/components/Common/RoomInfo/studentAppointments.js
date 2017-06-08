@@ -7,7 +7,6 @@ import _ from 'lodash';
 import {
   STUDENT_APPOINTMENT_CREATED,
   STUDENT_APPOINTMENT_CONFIRMED,
-  STUDENT_APPOINTMENT_CANCELED,
   STUDENT_APPOINTMENT_FINISHED,
   STUDENT_APPOINTMENT_ABSENT,
   STUDENT_APPOINTMENT_EXCEPTED,
@@ -18,7 +17,7 @@ import FindStudentModal from '../FindStudentModal';
 import ScheduleRooms from './scheduleRooms';
 
 import { fetchScheduleRooms } from '../../../app/actions/schedule';
-import { fetchRoom, addStudent } from '../../../app/actions/room';
+import { fetchRooms, fetchRoom, addStudent, removeStudent } from '../../../app/actions/room';
 import { updateStudentAppointment, changeRoom } from '../../../app/actions/studentAppointment';
 
 class StudentAppointments extends Component {
@@ -28,6 +27,7 @@ class StudentAppointments extends Component {
     roomId: React.PropTypes.number.isRequired,
     studentAppointments: React.PropTypes.array.isRequired,
     loading: React.PropTypes.bool.isRequired,
+    filters: React.PropTypes.object.isRequired,
   };
   state = {
     findStudentModalVisible: false,
@@ -48,17 +48,27 @@ class StudentAppointments extends Component {
   handleSelectedStudentsChange = (selectedStudents) => {
     this.setState({ selectedStudents });
   };
+  handleRefresh = () => {
+    const { dispatch, roomId, filters } = this.props;
+    dispatch(fetchRooms(filters));
+    dispatch(fetchRoom(roomId));
+  };
   handleAddStudent = () => {
     const { dispatch, roomId } = this.props;
     const { selectedStudents } = this.state;
     if (roomId && selectedStudents.length) {
-      selectedStudents.map(studentId =>
-        dispatch(addStudent(roomId, studentId)).then((result) => {
-          if (result.code) {
-            Message.error(result.message);
-          }
-        }),
-      );
+      const studentId = selectedStudents[0];
+      dispatch(addStudent(roomId, studentId)).then((result) => {
+        if (result.code) {
+          Message.error(result.message);
+        } else {
+          Message.success('添加成功');
+          this.setState({
+            findStudentModalVisible: false,
+          });
+          this.handleRefresh();
+        }
+      });
     }
   };
   handleUpdateStudentAppointment = (studentAppointmentId, statusId) => {
@@ -68,27 +78,39 @@ class StudentAppointments extends Component {
         Message.error(result.message);
       } else {
         Message.success('标记成功');
+        this.handleRefresh();
+      }
+    });
+  };
+  handleRemoveStudent = (studentId) => {
+    const { dispatch, roomId } = this.props;
+    dispatch(removeStudent(roomId, studentId)).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+      } else {
+        Message.success('取消预约成功');
+        this.handleRefresh();
       }
     });
   };
   handleUpdateAllStudentAppointments = (statusId) => {
-    const { dispatch, roomId, studentAppointments } = this.props;
+    const { dispatch, studentAppointments } = this.props;
     const promises = [];
     studentAppointments.map(studentAppointment =>
       promises.push(dispatch(updateStudentAppointment(studentAppointment.id, statusId))),
     );
     global.Promise.all(promises).then(() => {
       Message.success('成功发起标记');
-      dispatch(fetchRoom(roomId));
+      this.handleRefresh();
     });
   };
   handleChangeRoom = (toRoomId) => {
-    const { dispatch, roomId } = this.props;
+    const { dispatch } = this.props;
     dispatch(changeRoom(this.state.changeStudentAppointmentId, toRoomId)).then((result) => {
       if (result.code) {
         Message.error(result.message);
       } else {
-        dispatch(fetchRoom(roomId));
+        this.handleRefresh();
       }
     });
   };
@@ -190,9 +212,8 @@ class StudentAppointments extends Component {
             <Popconfirm
               title="确认删除预约？"
               onConfirm={() =>
-                this.handleUpdateStudentAppointment(
-                  studentAppointment.id,
-                  STUDENT_APPOINTMENT_CANCELED,
+                this.handleRemoveStudent(
+                  studentAppointment.studentId,
                 )}
             >
               <Tooltip title="取消预约">
@@ -290,8 +311,9 @@ class StudentAppointments extends Component {
 
 export default connect((state) => {
   const { room } = state;
-  const { loading } = room;
+  const { loading, filters } = room;
   return {
     loading,
+    filters,
   };
 })(StudentAppointments);
