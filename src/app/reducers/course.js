@@ -1,17 +1,19 @@
 import { assign } from 'lodash';
-import { Course, Courses } from '../actions/actionTypes';
+import { UserCourse, Courses } from '../actions/actionTypes';
 
 export function course(
   state = {
     loading: false,
     loaded: false,
     courses: [],
+    userCourse: {},
   },
   action = {},
 ) {
   switch (action.type) {
     case Courses.FETCH:
-    case Course.FETCH:
+    case UserCourse.FETCH:
+    case UserCourse.UPDATE_LESSON_STATUS:
       return assign({}, state, {
         loading: true,
       });
@@ -21,21 +23,16 @@ export function course(
         loaded: true,
         courses: action.response,
       });
-    case Course.FETCH_SUCCESS: {
-      const courses = state.courses;
-      const courseData = action.response;
-      for (let i = 0; i < courses.length; i += 1) {
-        if (courses[i].id === courseData.id) {
-          courses[i] = assign({}, courses[i], courseData);
-        }
-      }
+    case UserCourse.FETCH_SUCCESS: {
       return assign({}, state, {
         loading: false,
-        courses,
+        userCourse: action.response,
       });
     }
     case Courses.FETCH_FAIL:
-    case Course.FETCH_FAIL:
+    case UserCourse.FETCH_FAIL:
+    case UserCourse.UPDATE_LESSON_STATUS_FAIL:
+    case UserCourse.UPDATE_LESSON_STATUS_SUCCESS:
       return assign({}, state, {
         loading: false,
       });

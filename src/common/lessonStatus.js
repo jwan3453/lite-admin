@@ -1,22 +1,22 @@
 export default [
   {
-    value: 0,
+    value: 'none',
     name: '未开始',
   },
   {
-    value: 1,
+    value: 'booked',
     name: '已预约',
   },
   {
-    value: 4,
+    value: 'done',
     name: '已完成',
   },
   {
-    value: 6,
+    value: 'skipped',
     name: '已跳过',
   },
   {
-    value: 10,
+    value: 'reset',
     name: '可重学',
   },
 ];

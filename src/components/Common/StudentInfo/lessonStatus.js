@@ -1,23 +1,24 @@
+import _ from 'lodash';
 import React from 'react';
 import { connect } from 'react-redux';
-import { Spin, Tag, Select, Icon, Table, Modal } from 'antd';
+import { Spin, Tag, Select, Icon, Table, Modal, Message } from 'antd';
 
 import status from '../../../common/lessonStatus';
-import { fetchCourses } from '../../../app/actions/course';
+import { fetchCourses, fetchUserCourse, updateUserLessonStatus } from '../../../app/actions/course';
 
 const mapStatusToColor = (value) => {
   let color = '';
   switch (value) {
-    case 1:
+    case 'booked':
       color = 'yellow';
       break;
-    case 4:
+    case 'done':
       color = 'green';
       break;
-    case 6:
+    case 'skipped':
       color = 'gray';
       break;
-    case 10:
+    case 'reset':
       color = 'orange';
       break;
     default:
@@ -48,42 +49,122 @@ class LessonStatus extends React.Component {
     loading: React.PropTypes.bool,
     courseLoaded: React.PropTypes.bool.isRequired,
     courses: React.PropTypes.array,
+    userCourse: React.PropTypes.object,
+    studentId: React.PropTypes.number.isRequired,
   };
 
   static defaultProps = {
     loading: false,
     courses: [],
+    userCourse: {},
+  };
+
+  state = {
+    selectedCourseId: null,
   };
 
   componentWillMount() {
     const { dispatch, courseLoaded } = this.props;
     if (!courseLoaded) dispatch(fetchCourses());
+    this.setState({ selectedCourseId: null });
   }
 
-  handleCourseChange = () => {
-    //  todo handle course change
+  getLessonStatus = (lessonId) => {
+    const { userCourse } = this.props;
+    if (_.isEmpty(userCourse)) {
+      return 'none';
+    }
+
+    const lesson = _.assign({ status: 'none' }, _.find(userCourse, { lessonId }));
+    return lesson.status;
   };
 
-  handleSkipChapter = () => {
+  handleCourseChange = (value) => {
+    this.setState({ selectedCourseId: value });
+    const { dispatch, studentId } = this.props;
+
+    dispatch(fetchUserCourse(studentId, value)).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+      }
+    });
+  };
+
+  handleToggleLessonStatus = (lesson) => {
+    const { dispatch, studentId } = this.props;
+    const { selectedCourseId } = this.state;
+    const currentStatus = this.getLessonStatus(lesson.id);
+    const allowedOptions = [
+      { currentStatus: 'none', ToStatus: 'skipped' },
+      { currentStatus: 'skipped', ToStatus: 'none' },
+      { currentStatus: 'done', ToStatus: 'reset' },
+      { currentStatus: 'reset', ToStatus: 'done' },
+    ];
+    const operation = _.find(allowedOptions, { currentStatus });
+    if (operation === undefined) { return; }
+    dispatch(updateUserLessonStatus(studentId, this.state.selectedCourseId, lesson.id,
+      { status: operation.ToStatus })).then((result) => {
+        if (result.code) {
+          Message.error(result.message);
+        } else {
+          Message.success('更改状态成功');
+          dispatch(fetchUserCourse(studentId, selectedCourseId));
+        }
+      });
+  };
+
+  handleSkipChapter = (record) => {
+    const { dispatch, studentId } = this.props;
+    const { selectedCourseId } = this.state;
+    const getLessonStatus = lessonId => this.getLessonStatus(lessonId);
+    const allowedOptions = [
+      { currentStatus: 'none', ToStatus: 'skipped' },
+      { currentStatus: 'skipped', ToStatus: 'none' },
+      { currentStatus: 'done', ToStatus: 'reset' },
+      { currentStatus: 'reset', ToStatus: 'done' },
+    ];
+
     Modal.confirm({
       title: 'Confirm',
       content: '此操作不可逆，确定要跳过整个章节？',
       okText: '确认',
       cancelText: '取消',
       onOk() {
-        console.log('skip all lessons of this chapter');
+        let hasError = false;
+        const promises = [];
+
+        record.lessons.forEach((lesson) => {
+          const currentStatus = getLessonStatus(lesson.id);
+          if (currentStatus !== 'none') {
+            hasError = true;
+            return;
+          }
+
+          const operation = _.find(allowedOptions, { currentStatus });
+          if (operation === undefined) { return; }
+          promises.push(dispatch(updateUserLessonStatus(studentId, selectedCourseId, lesson.id,
+            { status: operation.ToStatus })));
+        });
+        global.Promise.all(promises).then((values) => {
+          values.forEach((result) => {
+            if (result.code) {
+              hasError = true;
+              Message.error(result.message);
+            }
+          });
+          if (!hasError) {
+            Message.success('更改状态成功');
+          }
+          dispatch(fetchUserCourse(studentId, selectedCourseId));
+        });
       },
     });
   };
 
-  handleToggleLessonStatus = (lesson) => {
-    console.log(lesson);
-  };
-
   render() {
     const { loading, courses } = this.props;
-
-    const dataSource = courses[1] === undefined ? [] : courses[1].chapters;
+    const { selectedCourseId } = this.state;
+    const course = _.find(courses, c => c.id === selectedCourseId) || {};
 
     const columns = [
       {
@@ -108,9 +189,10 @@ class LessonStatus extends React.Component {
           <div>
             {lessons.map(lesson => (
               <Tag
-                color={statusColors[lesson.status]}
+                color={statusColors[this.getLessonStatus(lesson.id)]}
                 style={{ minWidth: 40, textAlign: 'center' }}
                 onClick={() => this.handleToggleLessonStatus(lesson)}
+                key={lesson.id}
               >
                 {lesson.name}
               </Tag>
@@ -128,13 +210,13 @@ class LessonStatus extends React.Component {
             onChange={this.handleCourseChange}
             style={{ marginRight: 10, width: 200 }}
           >
-            {courses.map(item => (
+            {courses && courses.map(item => (
               <Select.Option key={item.id} value={item.id}>
                 {item.name}
               </Select.Option>
             ))}
           </Select>
-          {statusTags.map(item => <Tag color={item.color}>{item.name}</Tag>)}
+          {statusTags.map(item => <Tag color={item.color} key={item.name}>{item.name}</Tag>)}
         </div>
         <div>
           <Table
@@ -142,7 +224,7 @@ class LessonStatus extends React.Component {
             rowKey="id"
             pagination={false}
             columns={columns}
-            dataSource={dataSource}
+            dataSource={course.chapters}
             style={{ marginTop: 16, marginBottom: 16 }}
           />
         </div>
@@ -169,10 +251,11 @@ class LessonStatus extends React.Component {
 
 function mapStateToProps(state) {
   const { course } = state;
-  const { loaded, courses } = course;
+  const { loaded, courses, userCourse } = course;
   return {
     courseLoaded: loaded,
     courses,
+    userCourse,
   };
 }
 

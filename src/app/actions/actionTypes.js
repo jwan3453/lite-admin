@@ -154,10 +154,13 @@ export const Courses = {
   FETCH_FAIL: 'courses_fetch_fail',
 };
 
-export const Course = {
-  FETCH: 'course_fetch',
-  FETCH_SUCCESS: 'course_fetch_success',
-  FETCH_FAIL: 'course_fetch_fail',
+export const UserCourse = {
+  FETCH: 'user_course_fetch',
+  FETCH_SUCCESS: 'user_course_fetch_success',
+  FETCH_FAIL: 'user_course_fetch_fail',
+  UPDATE_LESSON_STATUS: 'update_lesson_status',
+  UPDATE_LESSON_STATUS_SUCCESS: 'update_lesson_status_success',
+  UPDATE_LESSON_STATUS_FAIL: 'update_lesson_status_fail',
 };
 
 export const Product = {
