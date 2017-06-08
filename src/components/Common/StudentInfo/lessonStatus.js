@@ -38,6 +38,13 @@ const statusTags = status.map((item) => {
   };
 });
 
+const allowedOptions = [
+  { currentStatus: 'none', ToStatus: 'skipped' },
+  { currentStatus: 'skipped', ToStatus: 'none' },
+  { currentStatus: 'done', ToStatus: 'reset' },
+  { currentStatus: 'reset', ToStatus: 'done' },
+];
+
 const statusColors = {};
 status.forEach((item) => {
   statusColors[item.value] = mapStatusToColor(item.value);
@@ -69,6 +76,14 @@ class LessonStatus extends React.Component {
     this.setState({ selectedCourseId: null });
   }
 
+  componentWillReceiveProps(nextProps) {
+    const { dispatch, studentId, courseLoaded } = this.props;
+    if (!courseLoaded) dispatch(fetchCourses());
+    if (nextProps.studentId > 0 && nextProps.studentId !== studentId) {
+      this.setState({ selectedCourseId: null });
+    }
+  }
+
   getLessonStatus = (lessonId) => {
     const { userCourse } = this.props;
     if (_.isEmpty(userCourse)) {
@@ -94,12 +109,6 @@ class LessonStatus extends React.Component {
     const { dispatch, studentId } = this.props;
     const { selectedCourseId } = this.state;
     const currentStatus = this.getLessonStatus(lesson.id);
-    const allowedOptions = [
-      { currentStatus: 'none', ToStatus: 'skipped' },
-      { currentStatus: 'skipped', ToStatus: 'none' },
-      { currentStatus: 'done', ToStatus: 'reset' },
-      { currentStatus: 'reset', ToStatus: 'done' },
-    ];
     const operation = _.find(allowedOptions, { currentStatus });
     if (operation === undefined) { return; }
     dispatch(updateUserLessonStatus(studentId, this.state.selectedCourseId, lesson.id,
@@ -117,12 +126,6 @@ class LessonStatus extends React.Component {
     const { dispatch, studentId } = this.props;
     const { selectedCourseId } = this.state;
     const getLessonStatus = lessonId => this.getLessonStatus(lessonId);
-    const allowedOptions = [
-      { currentStatus: 'none', ToStatus: 'skipped' },
-      { currentStatus: 'skipped', ToStatus: 'none' },
-      { currentStatus: 'done', ToStatus: 'reset' },
-      { currentStatus: 'reset', ToStatus: 'done' },
-    ];
 
     Modal.confirm({
       title: 'Confirm',
