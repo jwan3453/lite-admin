@@ -3,16 +3,20 @@ import { connect } from 'react-redux';
 import { Tabs } from 'antd';
 
 import BasicInfo from './BasicInfo/index';
+import Certification from './Certification/index';
 
 class TeacherInfo extends Component {
   render() {
     return (
-      <Tabs size="small">
+      <Tabs
+        size="small"
+        style={{ paddingBottom: '40px' }}
+      >
         <Tabs.TabPane tab="基础信息" key="basic">
           <BasicInfo />
         </Tabs.TabPane>
         <Tabs.TabPane tab="资质" key="qualification">
-          todo
+          <Certification />
         </Tabs.TabPane>
         <Tabs.TabPane tab="账单" key="bill">
           todo
