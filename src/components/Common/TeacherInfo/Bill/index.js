@@ -34,7 +34,7 @@ class Bill extends React.Component {
     bills: [],
   };
 
-  cancleBill = (bill) => {
+  cancelBill = (bill) => {
     //  todo dispatch action here
     console.log('canceling bill, ', bill);
   };
@@ -91,7 +91,7 @@ class Bill extends React.Component {
           const popConfirm = (
             <Popconfirm
               title="操作不可逆，确认继续？"
-              onConfirm={() => this.cancleBill(record)}
+              onConfirm={() => this.cancelBill(record)}
             >
               <Tooltip title="取消账单">{tag}</Tooltip>
             </Popconfirm>
@@ -139,7 +139,7 @@ class Bill extends React.Component {
           : (
             <Popconfirm
               title="操作不可逆，确认继续？"
-              onConfirm={() => this.cancleBill(record)}
+              onConfirm={() => this.cancelBill(record)}
             >
               <Tooltip title="取消账单">
                 <Button icon="close" />
