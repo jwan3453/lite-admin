@@ -5,6 +5,7 @@ import { Tabs } from 'antd';
 import BasicInfo from './BasicInfo/index';
 import Certification from './Certification/index';
 import Bill from './Bill/index';
+import Bonus from './Bonus/index';
 
 class TeacherInfo extends Component {
   render() {
@@ -23,7 +24,7 @@ class TeacherInfo extends Component {
           <Bill />
         </Tabs.TabPane>
         <Tabs.TabPane tab="奖金" key="bonus">
-          todo
+          <Bonus />
         </Tabs.TabPane>
         <Tabs.TabPane tab="提现" key="withdraw">
           todo
