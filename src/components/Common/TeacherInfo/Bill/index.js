@@ -58,6 +58,11 @@ class Bill extends React.Component {
 
     const columns = [
       {
+        title: 'ID',
+        key: 'id',
+        dataIndex: 'id',
+      },
+      {
         title: '金额',
         key: 'amount',
         dataIndex: 'amount',
