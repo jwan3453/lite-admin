@@ -29,9 +29,6 @@ class TeacherInfo extends Component {
         <Tabs.TabPane tab="提现" key="withdraw">
           todo
         </Tabs.TabPane>
-        <Tabs.TabPane tab="资质培训" key="training">
-          todo
-        </Tabs.TabPane>
         <Tabs.TabPane tab="银行账号" key="bankAccount">
           todo
         </Tabs.TabPane>
