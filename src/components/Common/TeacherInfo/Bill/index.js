@@ -154,6 +154,7 @@ class Bill extends React.Component {
       <div>
         <SearchForm />
         <Table
+          rowKey="id"
           size="small"
           loading={loading}
           columns={columns}
