@@ -161,6 +161,12 @@ export const UserCourse = {
   UPDATE_LESSON_STATUS: 'update_lesson_status',
   UPDATE_LESSON_STATUS_SUCCESS: 'update_lesson_status_success',
   UPDATE_LESSON_STATUS_FAIL: 'update_lesson_status_fail',
+  UPDATE_COURSE_ACTIVE: 'update_course_active',
+  UPDATE_COURSE_ACTIVE_SUCCESS: 'update_course_active_success',
+  UPDATE_COURSE_ACTIVE_FAIL: 'update_course_active_fail',
+  FETCH_COURSE_ACTIVE: 'fetch_course_active',
+  FETCH_COURSE_ACTIVE_SUCCESS: 'fetch_course_active_success',
+  FETCH_COURSE_ACTIVE_FAIL: 'fetch_course_active_fail',
 };
 
 export const Product = {

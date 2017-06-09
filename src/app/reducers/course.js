@@ -7,6 +7,7 @@ export function course(
     loaded: false,
     courses: [],
     userCourse: {},
+    userActiveCourseIds: [],
   },
   action = {},
 ) {
@@ -29,6 +30,10 @@ export function course(
         userCourse: action.response,
       });
     }
+    case UserCourse.FETCH_COURSE_ACTIVE_SUCCESS:
+      return assign({}, state, {
+        userActiveCourseIds: action.response,
+      });
     case Courses.FETCH_FAIL:
     case UserCourse.FETCH_FAIL:
     case UserCourse.UPDATE_LESSON_STATUS_FAIL:

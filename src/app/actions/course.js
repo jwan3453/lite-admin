@@ -35,3 +35,31 @@ export function updateUserLessonStatus(userId, courseId, lessonId, data) {
     },
   };
 }
+
+export function updateUserCourseActive(userId, courseId, data) {
+  return {
+    [CALL_JQ_API]: {
+      types: [
+        UserCourse.UPDATE_COURSE_ACTIVE,
+        UserCourse.UPDATE_COURSE_ACTIVE_SUCCESS,
+        UserCourse.UPDATE_COURSE_ACTIVE_FAIL,
+      ],
+      uri: `/admin/progress/users/${userId}/courses/${courseId}/active`,
+      method: 'POST',
+      body: data,
+    },
+  };
+}
+export function fetchUserCourseActive(userId) {
+  return {
+    [CALL_JQ_API]: {
+      types: [
+        UserCourse.FETCH_COURSE_ACTIVE,
+        UserCourse.FETCH_COURSE_ACTIVE_SUCCESS,
+        UserCourse.FETCH_COURSE_ACTIVE_FAIL,
+      ],
+      uri: `/admin/progress/users/${userId}/courses/active`,
+      method: 'GET',
+    },
+  };
+}

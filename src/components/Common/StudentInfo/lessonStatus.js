@@ -1,10 +1,10 @@
 import _ from 'lodash';
 import React from 'react';
 import { connect } from 'react-redux';
-import { Spin, Tag, Select, Icon, Table, Modal, Message } from 'antd';
+import { Spin, Tag, Select, Icon, Table, Modal, Message, Checkbox } from 'antd';
 
 import status from '../../../common/lessonStatus';
-import { fetchCourses, fetchUserCourse, updateUserLessonStatus } from '../../../app/actions/course';
+import { fetchCourses, fetchUserCourse, updateUserLessonStatus, fetchUserCourseActive, updateUserCourseActive } from '../../../app/actions/course';
 
 const mapStatusToColor = (value) => {
   let color = '';
@@ -58,12 +58,14 @@ class LessonStatus extends React.Component {
     courses: React.PropTypes.array,
     userCourse: React.PropTypes.object,
     studentId: React.PropTypes.number.isRequired,
+    userActiveCourseIds: React.PropTypes.array,
   };
 
   static defaultProps = {
     loading: false,
     courses: [],
     userCourse: {},
+    userActiveCourseIds: [],
   };
 
   state = {
@@ -71,9 +73,10 @@ class LessonStatus extends React.Component {
   };
 
   componentWillMount() {
-    const { dispatch, courseLoaded } = this.props;
+    const { dispatch, courseLoaded, studentId } = this.props;
     if (!courseLoaded) dispatch(fetchCourses());
     this.setState({ selectedCourseId: null });
+    dispatch(fetchUserCourseActive(studentId));
   }
 
   componentWillReceiveProps(nextProps) {
@@ -81,6 +84,7 @@ class LessonStatus extends React.Component {
     if (!courseLoaded) dispatch(fetchCourses());
     if (nextProps.studentId > 0 && nextProps.studentId !== studentId) {
       this.setState({ selectedCourseId: null });
+      dispatch(fetchUserCourseActive(nextProps.studentId));
     }
   }
 
@@ -164,6 +168,27 @@ class LessonStatus extends React.Component {
     });
   };
 
+  handleActiveChange = (e) => {
+    const { dispatch, studentId } = this.props;
+    const { selectedCourseId } = this.state;
+    dispatch(updateUserCourseActive(studentId, selectedCourseId,
+      { active: e.target.checked })).then((result) => {
+        if (result.code) {
+          Message.error(result.message);
+        } else {
+          Message.success('更改状态成功');
+          dispatch(fetchUserCourseActive(studentId));
+        }
+      });
+  }
+
+  isCourseActive = () => {
+    const { userActiveCourseIds } = this.props;
+    const { selectedCourseId } = this.state;
+    return _.isEmpty(userActiveCourseIds) ?
+      false : userActiveCourseIds.includes(selectedCourseId);
+  }
+
   render() {
     const { loading, courses } = this.props;
     const { selectedCourseId } = this.state;
@@ -220,6 +245,11 @@ class LessonStatus extends React.Component {
             ))}
           </Select>
           {statusTags.map(item => <Tag color={item.color} key={item.name}>{item.name}</Tag>)}
+          <Checkbox
+            size="small"
+            onChange={this.handleActiveChange}
+            checked={this.isCourseActive()}
+          >在用户主界面显示</Checkbox>
         </div>
         <div>
           <Table
@@ -254,11 +284,12 @@ class LessonStatus extends React.Component {
 
 function mapStateToProps(state) {
   const { course } = state;
-  const { loaded, courses, userCourse } = course;
+  const { loaded, courses, userCourse, userActiveCourseIds } = course;
   return {
     courseLoaded: loaded,
     courses,
     userCourse,
+    userActiveCourseIds,
   };
 }
 
