@@ -35,7 +35,7 @@ class Bill extends React.Component {
   };
 
   cancleBill = (bill) => {
-    //  todo
+    //  todo dispatch action here
     console.log('canceling bill, ', bill);
   };
 
@@ -185,6 +185,48 @@ function mapStateToProps() {
           },
         },
       },
+      {
+        id: 1,
+        amount: 8,
+        status: 0,
+        ctime: 1479657540000,
+        category: {
+          type: 'App\\Models\\TeacherSchedule',
+          course: {
+            name: 'G1',
+            lesson: {
+              name: '1-9',
+              begin_at: 1496980612150,
+            },
+          },
+        },
+      },
+      {
+        id: 2,
+        amount: 8,
+        status: 0,
+        ctime: 1479657540000,
+        category: {
+          type: 'App\\Models\\TeacherBonus',
+          bonus: {
+            type: 0,
+            comment: '',
+          },
+        },
+      },
+      {
+        id: 3,
+        amount: 8,
+        status: 0,
+        ctime: 1479657540000,
+        category: {
+          type: 'App\\Models\\Standby',
+          from: 1496880000000,
+          to: 1496980612150,
+          remark: '',
+        },
+      },
+
     ],
   };
 }
