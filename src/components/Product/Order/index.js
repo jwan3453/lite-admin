@@ -1,10 +1,18 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Table, Button, Modal } from 'antd';
+import {
+  Table,
+  Button,
+  Tag,
+  Modal,
+} from 'antd';
+import _ from 'lodash';
 import SearchForm from './SearchForm';
 import RefundForm from './RefundForm/';
 
-class Bills extends Component {
+import ORDER_STATUS from '../../../common/orderStatus';
+
+class Orders extends Component {
   static propTypes = {
     bills: React.PropTypes.object.isRequired,
     loading: React.PropTypes.bool.isRequired,
@@ -97,6 +105,14 @@ class Bills extends Component {
         title: '订单状态',
         dataIndex: 'status',
         key: 'status',
+        render: (status) => {
+          const currentStatus = _.filter(
+            ORDER_STATUS
+            , item => item.value === status)[0];
+          return (
+            <Tag color={currentStatus.color}>{currentStatus.name}</Tag>
+          );
+        },
       },
       {
         title: '支付时间',
@@ -176,7 +192,7 @@ function mapStateToProps() {
             nickname: '',
             phone: '18965176267',
           },
-          status: 1,
+          status: 2,
           transactionTime: '--',
           transactionFunnel: '--',
         },
@@ -185,4 +201,4 @@ function mapStateToProps() {
   };
 }
 
-export default connect(mapStateToProps)(Bills);
+export default connect(mapStateToProps)(Orders);

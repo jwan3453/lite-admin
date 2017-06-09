@@ -1,5 +1,5 @@
 import Product from '../../components/Product/Product';
-import Bill from '../../components/Product/Bill';
+import Order from '../../components/Product/Order';
 import Refund from '../../components/Product/Refund';
 
 export default [
@@ -20,8 +20,8 @@ export default [
         breadcrumbName: '订单',
         navigatorName: '订单',
         navigatorIcon: 'pay-circle-o',
-        path: 'bill',
-        component: Bill,
+        path: 'order',
+        component: Order,
       },
       {
         breadcrumbName: '退款',

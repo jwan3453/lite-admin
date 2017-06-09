@@ -8,7 +8,7 @@ import {
   Select,
   DatePicker,
 } from 'antd';
-import billingStatus from '../../../common/billingStatus';
+import billingStatus from '../../../common/orderStatus';
 
 const FormItem = Form.Item;
 
