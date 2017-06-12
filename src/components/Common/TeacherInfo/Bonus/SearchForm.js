@@ -44,6 +44,27 @@ class SearchForm extends React.Component {
         <Row type="flex" style={{ marginBottom: 0 }}>
           <Col span={8}>
             <FormItem
+              label="时间"
+              {...formItemLayout}
+            >
+              {
+                getFieldDecorator('ctime', {
+                  rules: [
+                    {
+                      required: false,
+                    },
+                  ],
+                })(
+                  <DatePicker.RangePicker
+                    size="default"
+                    style={{ width: '100%' }}
+                  />,
+                )
+              }
+            </FormItem>
+          </Col>
+          <Col span={8}>
+            <FormItem
               label="状态"
               {...formItemLayout}
             >
@@ -102,27 +123,6 @@ class SearchForm extends React.Component {
                       ))
                     }
                   </Select>,
-                )
-              }
-            </FormItem>
-          </Col>
-          <Col span={8}>
-            <FormItem
-              label="时间"
-              {...formItemLayout}
-            >
-              {
-                getFieldDecorator('ctime', {
-                  rules: [
-                    {
-                      required: false,
-                    },
-                  ],
-                })(
-                  <DatePicker.RangePicker
-                    size="default"
-                    style={{ width: '100%' }}
-                  />,
                 )
               }
             </FormItem>
