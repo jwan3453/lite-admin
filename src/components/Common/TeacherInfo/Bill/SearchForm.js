@@ -4,7 +4,6 @@ import {
   Row,
   Col,
   Button,
-  Input,
   Select,
   DatePicker,
 } from 'antd';
@@ -40,20 +39,25 @@ class SearchForm extends React.Component {
 
     return (
       <Form>
-        <Row type="flex" style={{ marginBottom: 0 }}>
+        <Row type="flex">
           <Col span={8}>
             <FormItem
-              label="提现ID"
+              label="账单时间"
               {...formItemLayout}
             >
               {
-                getFieldDecorator('id', {
+                getFieldDecorator('ctime', {
                   rules: [
                     {
                       required: false,
                     },
                   ],
-                })(<Input placeholder="ID" />)
+                })(
+                  <DatePicker.RangePicker
+                    style={{ width: '100%' }}
+                    size="default"
+                  />,
+                )
               }
             </FormItem>
           </Col>
@@ -121,28 +125,9 @@ class SearchForm extends React.Component {
               }
             </FormItem>
           </Col>
-          <Col span={8}>
-            <FormItem
-              label="账单时间"
-              {...formItemLayout}
-            >
-              {
-                getFieldDecorator('ctime', {
-                  rules: [
-                    {
-                      required: false,
-                    },
-                  ],
-                })(
-                  <DatePicker.RangePicker
-                    style={{ width: '100%' }}
-                    size="default"
-                  />,
-                )
-              }
-            </FormItem>
-          </Col>
-          <Col span={16} style={{ textAlign: 'right' }}>
+        </Row>
+        <Row type="flex">
+          <Col span={24} style={{ textAlign: 'right' }}>
             <Button
               type="primary"
               onClick={() => { this.search(); }}

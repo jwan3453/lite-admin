@@ -160,6 +160,7 @@ class Bill extends React.Component {
           columns={columns}
           pagination={pagination}
           dataSource={bills}
+          style={{ marginTop: 16 }}
         />
       </div>
     );
