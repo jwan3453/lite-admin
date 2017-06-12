@@ -25,6 +25,7 @@ class Bill extends React.Component {
     page: React.PropTypes.number,
     pageSize: React.PropTypes.number,
     total: React.PropTypes.number,
+    readonly: React.PropTypes.bool,
   };
 
   static defaultProps = {
@@ -32,6 +33,7 @@ class Bill extends React.Component {
     pageSize: 10,
     total: 0,
     bills: [],
+    readonly: false,
   };
 
   cancelBill = (bill) => {
@@ -46,6 +48,7 @@ class Bill extends React.Component {
       pageSize,
       total,
       bills,
+      readonly,
     } = this.props;
 
     const pagination = {
@@ -132,6 +135,10 @@ class Bill extends React.Component {
         title: '操作',
         key: 'actions',
         render: (text, record) => {
+          if (readonly) {
+            return null;
+          }
+
           const showActionButtons = record.status === BILL_STATUS.CREATED;
 
           return !showActionButtons

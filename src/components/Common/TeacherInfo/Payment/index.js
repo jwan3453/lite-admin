@@ -13,6 +13,7 @@ import _ from 'lodash';
 import SearchForm from './SearchForm';
 
 import { Paypal, BankUsa, WireTransfer } from './BankInfo/index';
+import Bill from '../Bill/index';
 
 import * as BANK_TYPE from './bankType';
 import * as BILLING_CYCLE from '../../../../common/teacherBillingCycle';
@@ -193,16 +194,6 @@ class Payment extends React.Component {
                 />
               </Tooltip>
             </Popconfirm>
-            <Modal
-              visible={this.state.dialogVisible}
-              title="提现明细"
-              okText="确定"
-              cancelText="取消"
-              onOk={this.closePaymentDetails}
-              onCancel={this.closePaymentDetails}
-            >
-              this is payment details
-            </Modal>
           </div>
         ),
       },
@@ -220,6 +211,17 @@ class Payment extends React.Component {
           dataSource={payments}
           onChange={this.handleTableChange}
         />
+        <Modal
+          visible={this.state.dialogVisible}
+          title="提现明细"
+          okText="确定"
+          cancelText="取消"
+          onOk={this.closePaymentDetails}
+          onCancel={this.closePaymentDetails}
+          width={700}
+        >
+          <Bill readonly />
+        </Modal>
       </div>
     );
   }
