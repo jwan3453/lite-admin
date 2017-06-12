@@ -13,7 +13,7 @@ import { Created, Confirmed, Withdrawed } from './ActionBar/index';
 import { Paypal, BankUsa, WireTransfer } from './BankInfo/index';
 import Bill from '../Bill/index';
 
-import * as BANK_TYPE from './bankType';
+import * as BANK_TYPE from '../../../../common/teacherBankTypes';
 import * as BILLING_CYCLE from '../../../../common/teacherBillingCycle';
 import * as PAYMENT_STATUS from '../../../../common/teacherPaymentStatus';
 

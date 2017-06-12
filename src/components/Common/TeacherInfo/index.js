@@ -7,6 +7,7 @@ import Certification from './Certification/index';
 import Bill from './Bill/index';
 import Bonus from './Bonus/index';
 import Payment from './Payment/index';
+import BankAccounts from './BankAccounts/index';
 
 class TeacherInfo extends Component {
   render() {
@@ -31,7 +32,7 @@ class TeacherInfo extends Component {
           <Payment />
         </Tabs.TabPane>
         <Tabs.TabPane tab="银行账号" key="bankAccount">
-          todo
+          <BankAccounts />
         </Tabs.TabPane>
       </Tabs>
     );
