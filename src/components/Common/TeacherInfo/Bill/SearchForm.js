@@ -55,7 +55,6 @@ class SearchForm extends React.Component {
                 })(
                   <DatePicker.RangePicker
                     style={{ width: '100%' }}
-                    size="default"
                   />,
                 )
               }
