@@ -2,16 +2,14 @@ import React from 'react';
 import { connect } from 'react-redux';
 import {
   Table,
-  Button,
-  Tooltip,
   Tag,
-  Popconfirm,
   Modal,
 } from 'antd';
 import moment from 'moment';
 import _ from 'lodash';
 import SearchForm from './SearchForm';
 
+import { Created, Confirmed, Withdrawed } from './ActionBar/index';
 import { Paypal, BankUsa, WireTransfer } from './BankInfo/index';
 import Bill from '../Bill/index';
 
@@ -50,7 +48,7 @@ class Payment extends React.Component {
     this.setState({ dialogVisible: false });
   };
 
-  confirmPayment = () => {
+  confirmBill = () => {
     //  TODO
   };
 
@@ -58,7 +56,11 @@ class Payment extends React.Component {
     //  TODO
   };
 
-  cancelPayment = () => {
+  cancelConfirmation = () => {
+    //  TODO
+  };
+
+  completePayment = () => {
     //  TODO
   };
 
@@ -148,54 +150,40 @@ class Payment extends React.Component {
       {
         title: '操作',
         key: 'actions',
-        render: (text, record) => (
-          <div>
-            <Tooltip placement="top" title="查看明细">
-              <Button
-                icon="book"
-                style={{ marginRight: 8 }}
-                onClick={() => this.showPaymentDetails(record)}
+        render: (text, record) => {
+          const { status } = record;
+          if (status === PAYMENT_STATUS.CREATED) {
+            return (
+              <Created
+                onShowDetails={() => this.showPaymentDetails(record)}
+                onConfirmPayment={() => this.confirmBill(record)}
+                onRecalculate={() => this.recalculate(record)}
+                onCancelPayment={() => this.cancelConfirmation(record)}
               />
-            </Tooltip>
-            <Popconfirm
-              placement="top"
-              title="此操作不可逆，确定继续？"
-              onConfirm={() => this.confirmPayment(record)}
-            >
-              <Tooltip placement="top" title="确认正确">
-                <Button
-                  icon="check"
-                  style={{ marginRight: 8 }}
-                />
-              </Tooltip>
-            </Popconfirm>
-            <Popconfirm
-              placement="top"
-              title="此操作不可逆，确定继续？"
-              onConfirm={() => this.confirmPayment(record)}
-            >
-              <Tooltip placement="top" title="重新计算">
-                <Button
-                  icon="calculator"
-                  style={{ marginRight: 8 }}
-                  onClick={() => this.recalculate(record)}
-                />
-              </Tooltip>
-            </Popconfirm>
-            <Popconfirm
-              placement="top"
-              title="此操作不可逆，确定继续？"
-              onConfirm={() => this.confirmPayment(record)}
-            >
-              <Tooltip placement="top" title="取消提现">
-                <Button
-                  icon="close"
-                  onClick={() => this.cancelPayment(record)}
-                />
-              </Tooltip>
-            </Popconfirm>
-          </div>
-        ),
+            );
+          }
+
+          if (status === PAYMENT_STATUS.CONFIRMED) {
+            return (
+              <Confirmed
+                onShowDetails={() => this.showPaymentDetails(record)}
+                onConfirmPayment={() => this.completePayment(record)}
+                onRecalculate={() => this.recalculate(record)}
+                onCancelPayment={() => this.cancelConfirmation(record)}
+              />
+            );
+          }
+
+          if (status === PAYMENT_STATUS.WITHDRAWED) {
+            return (
+              <Withdrawed
+                onShowDetails={() => this.showPaymentDetails(record)}
+              />
+            );
+          }
+
+          return null;
+        },
       },
     ];
 
