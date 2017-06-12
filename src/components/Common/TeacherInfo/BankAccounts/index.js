@@ -56,6 +56,8 @@ class BankAccounts extends React.Component {
             return (
               <div>
                 <div>账户类型：{account.type}</div>
+                <div>银行：{account.bank.name}</div>
+                <div>国家：{account.country}</div>
                 <div>汇款路线号码：{account.routing}</div>
                 <div>持有人：{account.holder.name}</div>
               </div>
@@ -67,6 +69,7 @@ class BankAccounts extends React.Component {
               <div>
                 <div>SWIFT: {account.swiftCode}</div>
                 <div>持有人: {account.holder.name}</div>
+                <div>银行：{account.bank.name}</div>
                 <div>分行: {account.bank.branch}</div>
                 <div>分行SWIFT: {account.intermediarySwiftCode}</div>
               </div>
