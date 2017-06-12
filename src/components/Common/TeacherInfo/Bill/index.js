@@ -14,7 +14,7 @@ import SearchForm from './SearchForm';
 import { Bonus, Certificate, Schedule, StandBy } from './Showcase/index';
 
 import * as INCOME_CATEGORY from './categories';
-import * as BILL_STATUS from './status';
+import * as BILL_STATUS from '../../../../common/teacherBillStatus';
 
 const TIME_FORMAT = 'YYYY-MM-DD hh:mm';
 

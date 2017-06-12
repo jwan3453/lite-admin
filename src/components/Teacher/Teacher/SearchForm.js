@@ -11,7 +11,7 @@ import {
 
 import status from '../../../common/teacherStatus';
 import levels from '../../../common/levels';
-import billingTypes from '../../../common/teacherBillingCycle';
+import * as BILLING_CYCLE from '../../../common/teacherBillingCycle';
 
 const FormItem = Form.Item;
 
@@ -160,7 +160,7 @@ class TeacherSearchForm extends Component {
                 })(
                   <Select size="default">
                     <Select.Option value="-1">全部</Select.Option>
-                    {billingTypes.map(billingType => (
+                    {BILLING_CYCLE.CYCLES.map(billingType => (
                       <Select.Option key={billingType.value} value={billingType.value}>
                         {billingType.name}
                       </Select.Option>

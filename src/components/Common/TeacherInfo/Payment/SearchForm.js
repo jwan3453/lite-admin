@@ -8,8 +8,10 @@ import {
   DatePicker,
 } from 'antd';
 
-import * as INCOME_CATEGORY from './categories';
-import * as BILL_STATUS from '../../../../common/teacherBillStatus';
+import _ from 'lodash';
+
+import * as BILLING_CYCLE from '../../../../common/teacherBillingCycle';
+import * as PAYMENT_STATUS from '../../../../common/bonusStatus';
 
 const FormItem = Form.Item;
 
@@ -39,10 +41,10 @@ class SearchForm extends React.Component {
 
     return (
       <Form>
-        <Row type="flex">
+        <Row type="flex" style={{ marginBottom: 0 }}>
           <Col span={8}>
             <FormItem
-              label="账单时间"
+              label="时间"
               {...formItemLayout}
             >
               {
@@ -54,8 +56,8 @@ class SearchForm extends React.Component {
                   ],
                 })(
                   <DatePicker.RangePicker
-                    style={{ width: '100%' }}
                     size="default"
+                    style={{ width: '100%' }}
                   />,
                 )
               }
@@ -81,7 +83,7 @@ class SearchForm extends React.Component {
                       value="-1"
                     >全部</Select.Option>
                     {
-                      BILL_STATUS.STATUS.map(item => (
+                      _.map(PAYMENT_STATUS.STATUS, item => (
                         <Select.Option
                           key={item.value}
                           value={item.value}
@@ -95,12 +97,12 @@ class SearchForm extends React.Component {
           </Col>
           <Col span={8}>
             <FormItem
-              label="收入分类"
+              label="结算周期"
               {...formItemLayout}
             >
               {
-                getFieldDecorator('category', {
-                  initialValue: 'all',
+                getFieldDecorator('billingCycle', {
+                  initialValue: '-1',
                   rules: [
                     {
                       required: false,
@@ -109,15 +111,15 @@ class SearchForm extends React.Component {
                 })(
                   <Select>
                     <Select.Option
-                      key="all"
-                      value="all"
+                      key="-1"
+                      value="-1"
                     >全部</Select.Option>
                     {
-                      INCOME_CATEGORY.CATEGORIES.map(item => (
+                      _.map(BILLING_CYCLE.CYCLES, item => (
                         <Select.Option
                           key={item.value}
                           value={item.value}
-                        >{item.text}</Select.Option>
+                        >{item.name}</Select.Option>
                       ))
                     }
                   </Select>,
@@ -126,16 +128,16 @@ class SearchForm extends React.Component {
             </FormItem>
           </Col>
         </Row>
-        <Row type="flex">
+        <Row type="flex" style={{ marginBottom: 0 }}>
           <Col span={24} style={{ textAlign: 'right' }}>
             <Button
               type="primary"
-              onClick={() => { this.search(); }}
+              onClick={() => this.search()}
               style={{ marginRight: 8 }}
             >搜索</Button>
             <Button
-              onClick={() => { this.reset(); }}
-            >清空条件</Button>
+              onClick={() => this.reset()}
+            >清除条件</Button>
           </Col>
         </Row>
       </Form>

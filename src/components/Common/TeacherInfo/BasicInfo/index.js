@@ -13,7 +13,7 @@ import _ from 'lodash';
 import ProfileForm from './profileForm';
 import STATUS from '../../../../common/teacherStatus';
 import level from '../../../../common/levels';
-import billingCycle from '../../../../common/teacherBillingCycle';
+import * as BILLING_CYCLE from '../../../../common/teacherBillingCycle';
 
 const CURRENCIES = [
   {
@@ -82,7 +82,7 @@ class BasicInfo extends React.Component {
       , item => item.value === teacherInfo.level);
 
     const currentBillingCycle = _.find(
-      billingCycle
+      BILLING_CYCLE.CYCLES
       , item => item.value === teacherInfo.salary.billingCycle);
 
     const currentNationality = _.find(

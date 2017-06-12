@@ -1,10 +1,14 @@
-export default [
+export const WEEKLY = 1;
+export const MONTHLY = 2;
+
+export const CYCLES = [
   {
-    value: 1,
+    value: WEEKLY,
     name: '周结',
   },
   {
-    value: 2,
+    value: MONTHLY,
     name: '月结',
   },
 ];
+
