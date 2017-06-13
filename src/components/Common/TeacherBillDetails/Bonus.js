@@ -4,7 +4,7 @@ import {
   Col,
 } from 'antd';
 import _ from 'lodash';
-import * as BONUS_TYPE from '../../../../../common/bonusTypes';
+import * as BONUS_TYPE from '../../../common/bonusTypes';
 
 export default class Bonus extends React.Component {
   static propTypes = {

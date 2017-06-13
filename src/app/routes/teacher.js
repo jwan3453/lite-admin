@@ -2,7 +2,7 @@ import Teacher from '../../components/Teacher/Teacher';
 import TeacherResume from '../../components/Teacher/Resume';
 import TeacherBill from '../../components/Teacher/Bill';
 import TeacherBonus from '../../components/Teacher/Bonus';
-import TeacherWithdraw from '../../components/Teacher/Withdraw';
+import TeacherPayment from '../../components/Teacher/Payment';
 
 export default [
   {
@@ -44,7 +44,7 @@ export default [
         navigatorName: '老师提现',
         navigatorIcon: 'bank',
         path: 'withdraw',
-        component: TeacherWithdraw,
+        component: TeacherPayment,
       },
     ],
   },

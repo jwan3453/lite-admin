@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
-export default class Room extends Component {
+export default class TeacherBonus extends Component {
   render() {
-    return <div>Room</div>;
+    return <div>this is teacher bonus</div>;
   }
 }

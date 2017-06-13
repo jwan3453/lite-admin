@@ -11,9 +11,9 @@ import _ from 'lodash';
 import moment from 'moment';
 
 import SearchForm from './SearchForm';
-import { Bonus, Certificate, Schedule, StandBy } from './Showcase/index';
+import { Bonus, Certificate, Schedule, StandBy } from '../../TeacherBillDetails';
 
-import * as INCOME_CATEGORY from './categories';
+import * as INCOME_CATEGORY from '../../../../common/teacherIncomeCategories';
 import * as BILL_STATUS from '../../../../common/teacherBillStatus';
 
 const TIME_FORMAT = 'YYYY-MM-DD hh:mm';

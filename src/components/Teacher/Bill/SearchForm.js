@@ -6,10 +6,13 @@ import {
   Button,
   Select,
   DatePicker,
+  Input,
 } from 'antd';
+import _ from 'lodash';
 
-import * as INCOME_CATEGORY from '../../../../common/teacherIncomeCategories';
-import * as BILL_STATUS from '../../../../common/teacherBillStatus';
+import TEACHER_STATUS from '../../../common/teacherStatus';
+import * as INCOME_CATEGORY from '../../../common/teacherIncomeCategories';
+import * as BILL_STATUS from '../../../common/teacherBillStatus';
 
 const FormItem = Form.Item;
 
@@ -38,8 +41,57 @@ class SearchForm extends React.Component {
     };
 
     return (
-      <Form>
+      <Form className="jiuqu-search-form">
         <Row type="flex">
+          <Col span={8}>
+            <FormItem
+              label="老师账号"
+              {...formItemLayout}
+            >
+              {
+                getFieldDecorator('name', {
+                  rules: [
+                    {
+                      required: false,
+                    },
+                  ],
+                })(<Input size="default" placeholder="老师账号" />)
+              }
+            </FormItem>
+          </Col>
+          <Col span={8}>
+            <FormItem
+              label="老师状态"
+              {...formItemLayout}
+            >
+              {
+                getFieldDecorator('teacherStatus', {
+                  initialValue: '-1',
+                  rules: [
+                    {
+                      required: false,
+                    },
+                  ],
+                })(
+                  <Select>
+                    <Select.Option
+                      key="-1"
+                      value="-1"
+                    >全部</Select.Option>
+                    {
+                      _.map(TEACHER_STATUS, item => (
+                        <Select.Option
+                          key={item.value}
+                          value={item.value}
+                        >{item.text}</Select.Option>
+                      ))
+                    }
+                  </Select>,
+                )
+              }
+            </FormItem>
+          </Col>
+
           <Col span={8}>
             <FormItem
               label="账单时间"
@@ -62,11 +114,11 @@ class SearchForm extends React.Component {
           </Col>
           <Col span={8}>
             <FormItem
-              label="状态"
+              label="账单状态"
               {...formItemLayout}
             >
               {
-                getFieldDecorator('status', {
+                getFieldDecorator('billStatus', {
                   initialValue: '-1',
                   rules: [
                     {
@@ -124,9 +176,7 @@ class SearchForm extends React.Component {
               }
             </FormItem>
           </Col>
-        </Row>
-        <Row type="flex">
-          <Col span={24} style={{ textAlign: 'right' }}>
+          <Col span={8} style={{ textAlign: 'right' }}>
             <Button
               type="primary"
               onClick={() => { this.search(); }}
