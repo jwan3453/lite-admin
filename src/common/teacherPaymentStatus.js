@@ -3,7 +3,7 @@ export const WITHDRAWED = 1;
 export const CANCELED = 2;
 export const CONFIRMED = 3;
 
-export const STATUS = [
+const STATUS = [
   {
     value: CREATED,
     text: '未确认',
@@ -25,4 +25,12 @@ export const STATUS = [
     color: 'yellow',
   },
 ];
+
+const STATUS_MAP = {};
+
+STATUS.forEach((item) => { STATUS_MAP[item.value] = item; });
+
+export default STATUS;
+
+export { STATUS_MAP };
 

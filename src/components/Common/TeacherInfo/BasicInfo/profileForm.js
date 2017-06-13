@@ -6,8 +6,8 @@ import {
   Radio,
 } from 'antd';
 
-import levels from '../../../../common/levels';
-import status from '../../../../common/teacherStatus';
+import LEVELS from '../../../../common/levels';
+import TEACHER_STATUS from '../../../../common/teacherStatus';
 
 const FormItem = Form.Item;
 const RadioGroup = Radio.Group;
@@ -97,11 +97,13 @@ class BasicInfo extends Component {
             })(
               <Select size="default">
                 <Select.Option value="-1">全部</Select.Option>
-                {status.map(item => (
-                  <Select.Option key={item.value} value={item.value}>
-                    {item.name}
-                  </Select.Option>
-                ))}
+                {
+                  TEACHER_STATUS.map(item => (
+                    <Select.Option key={item.value} value={item.value}>
+                      {item.text}
+                    </Select.Option>
+                  ))
+                }
               </Select>,
             )
           }
@@ -119,11 +121,13 @@ class BasicInfo extends Component {
               <Select size="default">
                 <Select.Option value="-1">全部</Select.Option>
                 <Select.Option value="0">未分级</Select.Option>
-                {levels.map(level => (
-                  <Select.Option key={level.value} value={level.value}>
-                    {level.name}
-                  </Select.Option>
-                ))}
+                {
+                  LEVELS.map(level => (
+                    <Select.Option key={level.value} value={level.value}>
+                      {level.name}
+                    </Select.Option>
+                  ))
+                }
               </Select>,
             )
           }

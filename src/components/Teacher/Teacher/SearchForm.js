@@ -9,9 +9,9 @@ import {
   DatePicker,
 } from 'antd';
 
-import status from '../../../common/teacherStatus';
+import TEACHER_STATUS from '../../../common/teacherStatus';
 import levels from '../../../common/levels';
-import * as BILLING_CYCLE from '../../../common/teacherBillingCycle';
+import BILLING_CYCLES from '../../../common/teacherBillingCycle';
 
 const FormItem = Form.Item;
 
@@ -95,11 +95,13 @@ class TeacherSearchForm extends Component {
                 })(
                   <Select size="default">
                     <Select.Option value="-1">全部</Select.Option>
-                    {status.map(item => (
-                      <Select.Option key={item.value} value={String(item.value)}>
-                        {item.name}
-                      </Select.Option>
-                    ))}
+                    {
+                      TEACHER_STATUS.map(item => (
+                        <Select.Option key={item.value} value={String(item.value)}>
+                          {item.text}
+                        </Select.Option>
+                      ))
+                    }
                   </Select>,
                 )
               }
@@ -160,11 +162,13 @@ class TeacherSearchForm extends Component {
                 })(
                   <Select size="default">
                     <Select.Option value="-1">全部</Select.Option>
-                    {BILLING_CYCLE.CYCLES.map(billingType => (
-                      <Select.Option key={billingType.value} value={billingType.value}>
-                        {billingType.name}
-                      </Select.Option>
-                    ))}
+                    {
+                      BILLING_CYCLES.map(billingType => (
+                        <Select.Option key={billingType.value} value={billingType.value}>
+                          {billingType.name}
+                        </Select.Option>
+                      ))
+                    }
                   </Select>,
                 )
               }

@@ -3,7 +3,9 @@ import _ from 'lodash';
 import React, { Component } from 'react';
 import { AutoComplete } from 'antd';
 
-import TeacherStatus from '../../../common/teacherStatus';
+import {
+  STATUS_MAP as TEACHER_STATUS_MAP,
+} from '../../../common/teacherStatus';
 
 export default class TeacherAutoComplete extends Component {
   static propTypes = {
@@ -30,7 +32,7 @@ export default class TeacherAutoComplete extends Component {
 
   render() {
     const children = this.state.teachers.map((teacher) => {
-      const status = _.find(TeacherStatus, { value: teacher.statusId }) || {};
+      const status = TEACHER_STATUS_MAP[teacher.statusId] || {};
       return (
         <AutoComplete.Option
           key={`${teacher.id}`}

@@ -8,9 +8,10 @@ import {
   Popconfirm,
 } from 'antd';
 import moment from 'moment';
-import _ from 'lodash';
 import SearchForm from './SearchForm';
-import * as BONUS_STATUS from '../../../../common/bonusStatus';
+import {
+  STATUS_MAP as BONUS_STATUS_MAP,
+} from '../../../../common/bonusStatus';
 
 class Bonus extends React.Component {
   static propTypes = {
@@ -67,9 +68,7 @@ class Bonus extends React.Component {
         key: 'status',
         dataIndex: 'status',
         render: (status) => {
-          const currentStatus = _.filter(
-            BONUS_STATUS.STATUS
-            , item => item.value === status)[0];
+          const currentStatus = BONUS_STATUS_MAP[status];
 
           return (
             <Tag

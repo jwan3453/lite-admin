@@ -7,13 +7,14 @@ import {
   Button,
   Popconfirm,
 } from 'antd';
-import _ from 'lodash';
 import moment from 'moment';
 
 import SearchForm from './SearchForm';
 import { Bonus, Certificate, Schedule, StandBy } from '../../Common/TeacherBillDetails';
 
-import TEACHER_STATUS from '../../../common/teacherStatus';
+import {
+  STATUS_MAP as TEACHER_STATUS_MAP,
+} from '../../../common/teacherStatus';
 import * as INCOME_CATEGORY from '../../../common/teacherIncomeCategories';
 import * as BILL_STATUS from '../../../common/teacherBillStatus';
 
@@ -72,10 +73,7 @@ class TeacherBill extends React.Component {
         key: 'teacherStatus',
         dataIndex: 'teacher',
         render: (teacher) => {
-          const currentStatus = _.filter(
-            TEACHER_STATUS
-            , item => item.value === teacher.status)[0];
-
+          const currentStatus = TEACHER_STATUS_MAP[teacher.status];
           return currentStatus.text;
         },
       },
@@ -96,9 +94,7 @@ class TeacherBill extends React.Component {
         key: 'status',
         dataIndex: 'bill',
         render: (bill) => {
-          const currentStatus = _.filter(
-            BILL_STATUS.STATUS
-            , item => item.value === bill.status)[0];
+          const currentStatus = BILL_STATUS.STATUS_MAP[bill.status];
 
           const tag = (
             <Tag
@@ -228,7 +224,7 @@ function mapStateToProps() {
         bill: {
           id: 1,
           amount: 8,
-          status: 0,
+          status: 1,
           ctime: 1479657540000,
           category: {
             type: 'App\\Models\\TeacherSchedule',
@@ -251,7 +247,7 @@ function mapStateToProps() {
         bill: {
           id: 2,
           amount: 8,
-          status: 0,
+          status: 2,
           ctime: 1479657540000,
           category: {
             type: 'App\\Models\\TeacherBonus',
@@ -271,7 +267,7 @@ function mapStateToProps() {
         bill: {
           id: 3,
           amount: 8,
-          status: 0,
+          status: 3,
           ctime: 1479657540000,
           category: {
             type: 'App\\Models\\Standby',

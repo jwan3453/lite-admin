@@ -10,8 +10,8 @@ import {
 
 import _ from 'lodash';
 
-import * as BILLING_CYCLE from '../../../../common/teacherBillingCycle';
-import * as PAYMENT_STATUS from '../../../../common/bonusStatus';
+import BILLING_CYCLES from '../../../../common/teacherBillingCycle';
+import PAYMENT_STATUS from '../../../../common/teacherPaymentStatus';
 
 const FormItem = Form.Item;
 
@@ -82,7 +82,7 @@ class SearchForm extends React.Component {
                       value="-1"
                     >全部</Select.Option>
                     {
-                      _.map(PAYMENT_STATUS.STATUS, item => (
+                      _.map(PAYMENT_STATUS, item => (
                         <Select.Option
                           key={item.value}
                           value={item.value}
@@ -114,7 +114,7 @@ class SearchForm extends React.Component {
                       value="-1"
                     >全部</Select.Option>
                     {
-                      _.map(BILLING_CYCLE.CYCLES, item => (
+                      _.map(BILLING_CYCLES, item => (
                         <Select.Option
                           key={item.value}
                           value={item.value}

@@ -5,8 +5,9 @@ import moment from 'moment';
 import _ from 'lodash';
 
 import './index.less';
-
-import TeacherStatus from '../../../common/teacherStatus';
+import {
+  STATUS_MAP as TEACHER_STATUS_MAP,
+} from '../../../common/teacherStatus';
 
 import { fetchRooms, fetchRoom, fetchRoomTypes } from '../../../app/actions/room';
 import { fetchCourses } from '../../../app/actions/course';
@@ -222,7 +223,7 @@ class ScheduleCalendar extends Component {
           }
           let teacherBackgroundColor;
           if (!_.isEmpty(teacher)) {
-            const teacherStatus = _.find(TeacherStatus, { value: teacher.statusId });
+            const teacherStatus = TEACHER_STATUS_MAP[teacher.statusId];
             if (teacherStatus) {
               teacherBackgroundColor = teacherStatus.color;
             }

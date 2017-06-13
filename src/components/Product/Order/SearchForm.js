@@ -8,7 +8,8 @@ import {
   Select,
   DatePicker,
 } from 'antd';
-import billingStatus from '../../../common/orderStatus';
+
+import ORDER_STATUS from '../../../common/orderStatus';
 
 const FormItem = Form.Item;
 
@@ -138,7 +139,7 @@ class BillSearchForm extends Component {
                 })(
                   <Select size="default">
                     <Select.Option value="-1">全部</Select.Option>
-                    {billingStatus.map(status => (
+                    {ORDER_STATUS.map(status => (
                       <Select.Option key={status.value} value={String(status.value)}>
                         {status.name}
                       </Select.Option>

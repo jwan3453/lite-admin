@@ -3,8 +3,9 @@ import {
   Row,
   Col,
 } from 'antd';
-import _ from 'lodash';
-import * as BONUS_TYPE from '../../../common/bonusTypes';
+import {
+  TYPE_MAP as BONUS_TYPE_MAP,
+} from '../../../common/bonusTypes';
 
 export default class Bonus extends React.Component {
   static propTypes = {
@@ -28,9 +29,7 @@ export default class Bonus extends React.Component {
 
     const { data } = this.props;
     const { bonus } = data;
-    const currentType = _.filter(
-      BONUS_TYPE.TYPES
-      , item => item.value === bonus.type)[0];
+    const currentType = BONUS_TYPE_MAP[bonus.type];
 
     return (
       <div>

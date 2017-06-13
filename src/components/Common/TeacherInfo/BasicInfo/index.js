@@ -11,9 +11,13 @@ import {
 import _ from 'lodash';
 
 import ProfileForm from './profileForm';
-import STATUS from '../../../../common/teacherStatus';
+import {
+  STATUS_MAP as TEACHER_STATUS_MAP,
+} from '../../../../common/teacherStatus';
 import level from '../../../../common/levels';
-import * as BILLING_CYCLE from '../../../../common/teacherBillingCycle';
+import {
+  CYCLE_MAP as BILLING_CYCLE_MAP,
+} from '../../../../common/teacherBillingCycle';
 
 const CURRENCIES = [
   {
@@ -69,9 +73,7 @@ class BasicInfo extends React.Component {
       span: 5,
     };
 
-    const currentStatus = _.find(
-      STATUS
-      , item => item.value === teacherInfo.status);
+    const currentStatus = TEACHER_STATUS_MAP[teacherInfo.status];
 
     const currentCurrency = _.find(
       CURRENCIES
@@ -81,9 +83,7 @@ class BasicInfo extends React.Component {
       level
       , item => item.value === teacherInfo.level);
 
-    const currentBillingCycle = _.find(
-      BILLING_CYCLE.CYCLES
-      , item => item.value === teacherInfo.salary.billingCycle);
+    const currentBillingCycle = BILLING_CYCLE_MAP[teacherInfo.salary.billingCycle];
 
     const currentNationality = _.find(
       COUNTRIES

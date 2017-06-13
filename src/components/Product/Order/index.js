@@ -6,11 +6,12 @@ import {
   Tag,
   Modal,
 } from 'antd';
-import _ from 'lodash';
 import SearchForm from './SearchForm';
 import RefundForm from './RefundForm/';
 
-import ORDER_STATUS from '../../../common/orderStatus';
+import {
+  STATUS_MAP as ORDER_STATUS_MAP,
+} from '../../../common/orderStatus';
 
 class Orders extends Component {
   static propTypes = {
@@ -106,9 +107,8 @@ class Orders extends Component {
         dataIndex: 'status',
         key: 'status',
         render: (status) => {
-          const currentStatus = _.filter(
-            ORDER_STATUS
-            , item => item.value === status)[0];
+          const currentStatus = ORDER_STATUS_MAP[status];
+
           return (
             <Tag color={currentStatus.color}>{currentStatus.name}</Tag>
           );

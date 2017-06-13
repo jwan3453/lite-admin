@@ -2,7 +2,8 @@ export const CERTIFICATE = 'App\\Models\\TeacherCertificate';
 export const SCHEDULE = 'App\\Models\\TeacherSchedule';
 export const BONUS = 'App\\Models\\TeacherBonus';
 export const STANDBY = 'App\\Models\\Standby';
-export const CATEGORIES = [
+
+const CATEGORIES = [
   {
     value: CERTIFICATE,
     text: '资质认证收入',
@@ -20,4 +21,6 @@ export const CATEGORIES = [
     text: '待命收入',
   },
 ];
+
+export default CATEGORIES;
 

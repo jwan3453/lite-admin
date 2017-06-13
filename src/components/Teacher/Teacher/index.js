@@ -4,6 +4,9 @@ import { connect } from 'react-redux';
 
 import SearchForm from './SearchForm';
 import TeacherInfo from '../../Common/TeacherInfo';
+import {
+  STATUS_MAP as TEACHER_STATUS_MAP,
+} from '../../../common/teacherStatus';
 
 export class TeacherList extends Component {
   static propTypes = {
@@ -92,6 +95,10 @@ export class TeacherList extends Component {
         title: '状态',
         dataIndex: 'status',
         key: 'status',
+        render: (status) => {
+          const currentStatus = TEACHER_STATUS_MAP[status];
+          return currentStatus.text;
+        },
       },
       {
         title: '备注',
@@ -173,7 +180,7 @@ function mapStateToProps() {
       nickname: 'hhh',
       firstname: 'milo',
       lastname: 'hou',
-      gener: 'male',
+      gender: 1,
       level: 'G1',
       status: 'status',
       comment: 'no comments yet',
@@ -189,9 +196,9 @@ function mapStateToProps() {
           nickname: 'hhh',
           firstname: 'milo',
           lastname: 'hou',
-          gener: 'male',
+          gender: 1,
           level: 'G1',
-          status: 'status',
+          status: 1,
           comment: 'no comments yet',
           statusChangeTime: '2016/05/31',
           salary: '100',
@@ -203,9 +210,9 @@ function mapStateToProps() {
           nickname: 'hhh',
           firstname: 'milo',
           lastname: 'hou',
-          gener: 'male',
+          gender: 2,
           level: 'G1',
-          status: 'status',
+          status: 2,
           comment: 'no comments yet',
           statusChangeTime: '2016/05/31',
           salary: '100',

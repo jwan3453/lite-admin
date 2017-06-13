@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
-import { Table, Button } from 'antd';
+import { Table, Button, Tooltip } from 'antd';
 import { connect } from 'react-redux';
 import moment from 'moment';
 import SearchForm from './SearchForm';
 import funnels from '../../../common/refundFunnels';
+import {
+  STATUS_MAP as REFUND_STATUS_MAP,
+} from '../../../common/refundStatus';
 
 const funnelNames = {};
 
@@ -107,21 +110,34 @@ class RefundList extends Component {
         render: text => (moment(new Date(text)).format('YYYY-MM-DD hh:mm:ss')),
       },
       {
+        title: '状态',
+        dataIndex: 'status',
+        key: 'status',
+        render: (status) => {
+          const currentStatus = REFUND_STATUS_MAP[status];
+          return currentStatus.name;
+        },
+      },
+      {
         title: '操作',
         key: 'actions',
         render: () => (
           <div>
-            <Button
-              icon="check"
-              size="default"
-              style={{ marginRight: 8 }}
-              onClick={() => this.handleApprove()}
-            />
-            <Button
-              icon="close"
-              size="default"
-              onClick={() => this.handleReject()}
-            />
+            <Tooltip placement="top" title="确认退款">
+              <Button
+                icon="check"
+                size="default"
+                style={{ marginRight: 8 }}
+                onClick={() => this.handleApprove()}
+              />
+            </Tooltip>
+            <Tooltip placement="top" title="取消退款">
+              <Button
+                icon="close"
+                size="default"
+                onClick={() => this.handleReject()}
+              />
+            </Tooltip>
           </div>
         ),
       },
@@ -154,6 +170,7 @@ function mapStateToProps() {
       result: [
         {
           id: '2338',
+          status: 1,
           user: {
             id: 376776,
           },
@@ -174,6 +191,7 @@ function mapStateToProps() {
         },
         {
           id: '2339',
+          status: 1,
           user: {
             id: 376776,
           },
@@ -194,6 +212,7 @@ function mapStateToProps() {
         },
         {
           id: '2340',
+          status: 2,
           user: {
             id: 376776,
           },

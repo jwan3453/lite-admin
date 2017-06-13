@@ -6,7 +6,6 @@ import {
   Modal,
 } from 'antd';
 import moment from 'moment';
-import _ from 'lodash';
 import SearchForm from './SearchForm';
 
 import { Created, Confirmed, Withdrawed } from './ActionBar/index';
@@ -130,9 +129,7 @@ class Payment extends React.Component {
         key: 'status',
         dataIndex: 'status',
         render: (status) => {
-          const currentStatus = _.filter(
-            PAYMENT_STATUS.STATUS
-            , item => item.value === status)[0];
+          const currentStatus = PAYMENT_STATUS.STATUS_MAP[status];
 
           return (
             <Tag

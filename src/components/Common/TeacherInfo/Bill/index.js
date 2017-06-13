@@ -7,7 +7,6 @@ import {
   Button,
   Popconfirm,
 } from 'antd';
-import _ from 'lodash';
 import moment from 'moment';
 
 import SearchForm from './SearchForm';
@@ -81,9 +80,7 @@ class Bill extends React.Component {
         key: 'status',
         dataIndex: 'status',
         render: (status, record) => {
-          const currentStatus = _.filter(
-            BILL_STATUS.STATUS
-            , item => item.value === status)[0];
+          const currentStatus = BILL_STATUS.STATUS_MAP[status];
 
           const tag = (
             <Tag

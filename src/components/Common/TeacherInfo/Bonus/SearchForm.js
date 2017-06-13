@@ -10,8 +10,8 @@ import {
 
 import _ from 'lodash';
 
-import * as BONUS_TYPE from '../../../../common/bonusTypes';
-import * as BONUS_STATUS from '../../../../common/bonusStatus';
+import BONUS_TYPE from '../../../../common/bonusTypes';
+import BONUS_STATUS from '../../../../common/bonusStatus';
 
 const FormItem = Form.Item;
 
@@ -82,7 +82,7 @@ class SearchForm extends React.Component {
                       value="-1"
                     >全部</Select.Option>
                     {
-                      _.map(BONUS_STATUS.STATUS, item => (
+                      _.map(BONUS_STATUS, item => (
                         <Select.Option
                           key={item.value}
                           value={item.value}
@@ -114,7 +114,7 @@ class SearchForm extends React.Component {
                       value="-1"
                     >全部</Select.Option>
                     {
-                      _.map(BONUS_TYPE.TYPES, item => (
+                      _.map(BONUS_TYPE, item => (
                         <Select.Option
                           key={item.value}
                           value={item.value}

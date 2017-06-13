@@ -11,8 +11,8 @@ import {
 import _ from 'lodash';
 
 import TEACHER_STATUS from '../../../common/teacherStatus';
-import * as INCOME_CATEGORY from '../../../common/teacherIncomeCategories';
-import * as BILL_STATUS from '../../../common/teacherBillStatus';
+import INCOME_CATEGORIES from '../../../common/teacherIncomeCategories';
+import BILL_STATUS from '../../../common/teacherBillStatus';
 
 const FormItem = Form.Item;
 
@@ -132,7 +132,7 @@ class SearchForm extends React.Component {
                       value="-1"
                     >全部</Select.Option>
                     {
-                      BILL_STATUS.STATUS.map(item => (
+                      BILL_STATUS.map(item => (
                         <Select.Option
                           key={item.value}
                           value={item.value}
@@ -164,7 +164,7 @@ class SearchForm extends React.Component {
                       value="all"
                     >全部</Select.Option>
                     {
-                      INCOME_CATEGORY.CATEGORIES.map(item => (
+                      INCOME_CATEGORIES.map(item => (
                         <Select.Option
                           key={item.value}
                           value={item.value}
