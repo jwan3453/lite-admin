@@ -10,7 +10,7 @@ import SearchForm from './SearchForm';
 
 import { Created, Confirmed, Withdrawed } from './ActionBar/index';
 import { Paypal, BankUsa, WireTransfer } from './BankInfo/index';
-import Bill from '../Bill/index';
+import Bill from '../../TeacherBills';
 
 import * as BANK_TYPE from '../../../../common/teacherBankTypes';
 import * as BILLING_CYCLE from '../../../../common/teacherBillingCycle';

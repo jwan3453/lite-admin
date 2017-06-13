@@ -4,7 +4,7 @@ import { Tabs } from 'antd';
 
 import BasicInfo from './BasicInfo/index';
 import Certification from './Certification/index';
-import Bill from './Bill/index';
+import Bill from '../TeacherBills';
 import Bonus from './Bonus/index';
 import Payment from './Payment/index';
 import BankAccounts from './BankAccounts/index';

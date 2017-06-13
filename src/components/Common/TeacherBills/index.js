@@ -10,10 +10,10 @@ import {
 import moment from 'moment';
 
 import SearchForm from './SearchForm';
-import { Bonus, Certificate, Schedule, StandBy } from '../../TeacherBillDetails';
+import { Bonus, Certificate, Schedule, StandBy } from '../TeacherIncomeDetails';
 
-import * as INCOME_CATEGORY from '../../../../common/teacherIncomeCategories';
-import * as BILL_STATUS from '../../../../common/teacherBillStatus';
+import * as INCOME_CATEGORY from '../../../common/teacherIncomeCategories';
+import * as BILL_STATUS from '../../../common/teacherBillStatus';
 
 const TIME_FORMAT = 'YYYY-MM-DD hh:mm';
 

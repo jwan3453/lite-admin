@@ -8,8 +8,8 @@ import {
   DatePicker,
 } from 'antd';
 
-import INCOME_CATEGORIES from '../../../../common/teacherIncomeCategories';
-import BILL_STATUS from '../../../../common/teacherBillStatus';
+import INCOME_CATEGORIES from '../../../common/teacherIncomeCategories';
+import BILL_STATUS from '../../../common/teacherBillStatus';
 
 const FormItem = Form.Item;
 

@@ -10,7 +10,12 @@ import {
 import moment from 'moment';
 
 import SearchForm from './SearchForm';
-import { Bonus, Certificate, Schedule, StandBy } from '../../Common/TeacherBillDetails';
+import {
+  Bonus,
+  Certificate,
+  Schedule,
+  StandBy,
+} from '../../Common/TeacherIncomeDetails';
 
 import {
   STATUS_MAP as TEACHER_STATUS_MAP,
