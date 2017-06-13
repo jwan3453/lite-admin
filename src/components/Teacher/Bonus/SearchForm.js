@@ -8,11 +8,11 @@ import {
   DatePicker,
   Input,
 } from 'antd';
+
 import _ from 'lodash';
 
-import TEACHER_STATUS from '../../../common/teacherStatus';
-import * as INCOME_CATEGORY from '../../../common/teacherIncomeCategories';
-import * as BILL_STATUS from '../../../common/teacherBillStatus';
+import * as BONUS_TYPE from '../../../common/bonusTypes';
+import * as BONUS_STATUS from '../../../common/bonusStatus';
 
 const FormItem = Form.Item;
 
@@ -42,7 +42,7 @@ class SearchForm extends React.Component {
 
     return (
       <Form className="jiuqu-search-form">
-        <Row type="flex">
+        <Row type="flex" style={{ marginBottom: 0 }}>
           <Col span={8}>
             <FormItem
               label="老师账号"
@@ -61,40 +61,7 @@ class SearchForm extends React.Component {
           </Col>
           <Col span={8}>
             <FormItem
-              label="老师状态"
-              {...formItemLayout}
-            >
-              {
-                getFieldDecorator('teacherStatus', {
-                  initialValue: '-1',
-                  rules: [
-                    {
-                      required: false,
-                    },
-                  ],
-                })(
-                  <Select>
-                    <Select.Option
-                      key="-1"
-                      value="-1"
-                    >全部</Select.Option>
-                    {
-                      _.map(TEACHER_STATUS, item => (
-                        <Select.Option
-                          key={item.value}
-                          value={item.value}
-                        >{item.text}</Select.Option>
-                      ))
-                    }
-                  </Select>,
-                )
-              }
-            </FormItem>
-          </Col>
-
-          <Col span={8}>
-            <FormItem
-              label="账单时间"
+              label="时间"
               {...formItemLayout}
             >
               {
@@ -114,11 +81,11 @@ class SearchForm extends React.Component {
           </Col>
           <Col span={8}>
             <FormItem
-              label="账单状态"
+              label="状态"
               {...formItemLayout}
             >
               {
-                getFieldDecorator('billStatus', {
+                getFieldDecorator('status', {
                   initialValue: '-1',
                   rules: [
                     {
@@ -132,7 +99,7 @@ class SearchForm extends React.Component {
                       value="-1"
                     >全部</Select.Option>
                     {
-                      BILL_STATUS.STATUS.map(item => (
+                      _.map(BONUS_STATUS.STATUS, item => (
                         <Select.Option
                           key={item.value}
                           value={item.value}
@@ -146,12 +113,12 @@ class SearchForm extends React.Component {
           </Col>
           <Col span={8}>
             <FormItem
-              label="收入分类"
+              label="奖励类型"
               {...formItemLayout}
             >
               {
-                getFieldDecorator('category', {
-                  initialValue: 'all',
+                getFieldDecorator('type', {
+                  initialValue: '-1',
                   rules: [
                     {
                       required: false,
@@ -160,11 +127,11 @@ class SearchForm extends React.Component {
                 })(
                   <Select>
                     <Select.Option
-                      key="all"
-                      value="all"
+                      key="-1"
+                      value="-1"
                     >全部</Select.Option>
                     {
-                      INCOME_CATEGORY.CATEGORIES.map(item => (
+                      _.map(BONUS_TYPE.TYPES, item => (
                         <Select.Option
                           key={item.value}
                           value={item.value}
@@ -176,15 +143,15 @@ class SearchForm extends React.Component {
               }
             </FormItem>
           </Col>
-          <Col span={8} style={{ textAlign: 'right' }}>
+          <Col span={16} style={{ textAlign: 'right' }}>
             <Button
               type="primary"
-              onClick={() => { this.search(); }}
+              onClick={() => this.search()}
               style={{ marginRight: 8 }}
             >搜索</Button>
             <Button
-              onClick={() => { this.reset(); }}
-            >清空条件</Button>
+              onClick={() => this.reset()}
+            >清除条件</Button>
           </Col>
         </Row>
       </Form>
