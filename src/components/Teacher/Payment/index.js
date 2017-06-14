@@ -215,7 +215,6 @@ class Payment extends React.Component {
         <SearchForm />
         <Table
           rowKey="id"
-          size="small"
           style={{ marginTop: 16 }}
           loading={loading}
           columns={columns}

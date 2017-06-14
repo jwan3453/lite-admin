@@ -181,7 +181,6 @@ class TeacherBill extends React.Component {
         <SearchForm />
         <Table
           rowKey="id"
-          size="small"
           loading={loading}
           columns={columns}
           pagination={pagination}
