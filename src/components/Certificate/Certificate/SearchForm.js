@@ -19,9 +19,11 @@ const FormItem = Form.Item;
 class SearchForm extends React.Component {
   static propTypes = {
     form: React.PropTypes.object.isRequired,
+    showCertDialog: React.PropTypes.func,
   };
 
   static defaultProps = {
+    showCertDialog: () => {},
   };
 
   search = () => {
@@ -32,9 +34,9 @@ class SearchForm extends React.Component {
     this.props.form.resetFields();
   };
 
-
   render() {
-    const { getFieldDecorator } = this.props.form;
+    const { showCertDialog, form } = this.props;
+    const { getFieldDecorator } = form;
 
     const formItemLayout = {
       labelCol: { span: 8 },
@@ -165,15 +167,18 @@ class SearchForm extends React.Component {
           <Col span={8} style={{ textAlign: 'right' }}>
             <Button
               type="primary"
-              onClick={() => { this.search(); }}
+              onClick={this.search}
               style={{ marginRight: 8 }}
             >搜索</Button>
             <Button
-              onClick={() => { this.reset(); }}
+              onClick={this.reset}
+              style={{ marginRight: 8 }}
             >清空条件</Button>
+            <Button
+              onClick={showCertDialog}
+            >新建资质</Button>
           </Col>
         </Row>
-
       </Form>
     );
   }

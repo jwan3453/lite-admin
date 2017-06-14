@@ -2,10 +2,12 @@ import React from 'react';
 import { connect } from 'react-redux';
 import {
   Table,
+  Modal,
 } from 'antd';
 
 import SearchForm from './SearchForm';
 import ActionBar from './ActionBar';
+import Cert from './Cert';
 
 import {
   TYPE_MAP as CERT_TYPE_MAP,
@@ -69,6 +71,10 @@ class Certifications extends React.Component {
   deactivate = (cert) => {
     //  todo set certification status to 0
     console.log(cert);
+  };
+
+  createCert = () => {
+    //  todo create a new certification
   };
 
   invite = () => {
@@ -136,7 +142,7 @@ class Certifications extends React.Component {
             deactivateCert={() => { this.deactivateCert(cert); }}
             activateCert={() => { this.activateCert(cert); }}
             showTeachersDialog={this.showTeachersDialog}
-            showCertDialog={this.showCertDialog}
+            showCertDialog={() => { this.showCertDialog(cert); }}
             hideTeachersDialog={this.hideTeachersDialog}
             hideCertDialog={this.hideCertDialog}
           />
@@ -146,7 +152,9 @@ class Certifications extends React.Component {
 
     return (
       <div>
-        <SearchForm />
+        <SearchForm
+          showCertDialog={this.showCertDialog}
+        />
         <Table
           loading={loading}
           pagination={pagination}
@@ -154,6 +162,24 @@ class Certifications extends React.Component {
           dataSource={certifications}
           style={{ marginTop: 16 }}
         />
+        <Modal
+          title="创建资质"
+          width={700}
+          visible={this.state.certDialogVisible}
+          onOk={this.createCert}
+          onCancel={() => { this.setState({ certDialogVisible: false }); }}
+        >
+          <Cert />
+        </Modal>
+        <Modal
+          title="选择老师"
+          width={700}
+          visible={this.state.teachersDialogVisible}
+          onOk={this.invite}
+          onCancel={() => { this.setState({ teachersDialogVisible: false }); }}
+        >
+          this is new teachers dialog
+        </Modal>
       </div>
     );
   }

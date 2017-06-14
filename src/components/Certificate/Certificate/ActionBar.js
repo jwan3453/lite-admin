@@ -51,7 +51,7 @@ export default class ActionBar extends React.Component {
           />
         </Tooltip>
         <Popconfirm
-          placement="left"
+          placement="top"
           title="确定删除？"
           onConfirm={deleteCert}
           okText="确定"
@@ -68,7 +68,7 @@ export default class ActionBar extends React.Component {
           </Tooltip>
         </Popconfirm>
         <Popconfirm
-          placement="left"
+          placement="top"
           title={!isCertActivated ? '确定激活' : '确定冻结'}
           onConfirm={!isCertActivated ? activateCert : deactivateCert}
           okText="确定"

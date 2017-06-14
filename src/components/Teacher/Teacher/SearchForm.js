@@ -22,8 +22,6 @@ class TeacherSearchForm extends Component {
     pageSize: React.PropTypes.number.isRequired,
   };
 
-  static propTypes = {};
-
   static defaultProps = {};
 
   state = {
@@ -206,3 +204,4 @@ class TeacherSearchForm extends Component {
 }
 
 export default Form.create()(TeacherSearchForm);
+
