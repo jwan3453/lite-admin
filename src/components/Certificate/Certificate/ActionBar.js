@@ -76,9 +76,12 @@ export default class ActionBar extends React.Component {
         >
           <Tooltip
             placement="top"
-            title="冻结"
+            title={!isCertActivated ? '激活' : '冻结'}
           >
-            <Button icon="lock" style={butonStyle} />
+            <Button
+              icon={!isCertActivated ? 'unlock' : 'lock'}
+              style={butonStyle}
+            />
           </Tooltip>
         </Popconfirm>
         <Tooltip
