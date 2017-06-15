@@ -1,25 +1,39 @@
-export const TYPES = [
+export const PPT = 'ppt';
+export const VIDEO = 'video';
+export const TESTS = 'tests';
+export const SESSION = 'session';
+export const PRACTICE = 'practice';
+
+const TYPES = [
   {
-    value: 'ppt',
+    value: PPT,
     text: 'ppt(pdf)',
   },
   {
-    value: 'video',
+    value: VIDEO,
     text: 'video',
   },
   {
-    value: 'tests',
+    value: TESTS,
     text: 'tests',
   },
   {
-    value: 'session',
+    value: SESSION,
     text: 'session',
   },
   {
-    value: 'practice',
+    value: PRACTICE,
     text: 'practice',
   },
 ];
+
+const TYPE_MAP = {};
+
+TYPES.forEach((item) => { TYPE_MAP[item.value] = item; });
+
+export default TYPES;
+
+export { TYPE_MAP };
 
 export const isPPTStep = value => value.toLowerCase() === 'ppt';
 

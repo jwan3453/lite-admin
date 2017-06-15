@@ -12,7 +12,7 @@ import {
 import moment from 'moment';
 import _ from 'lodash';
 import * as CERTIFICATION_STATUS from './status';
-import * as CERTIFICATION_STEP_TYPES from './stepTypes';
+import * as CERTIFICATION_STEP_TYPES from '../../../../common/certificationStepTypes';
 import AssignCertificationForm from './assignCertificationForm';
 import VideoConferenceForm from './videoConferenceForm';
 
