@@ -66,11 +66,13 @@ class CertSteps extends React.Component {
 
   addStep = () => {
     const { steps } = this.state;
-    //  todo
+
     steps.push({
       id: Math.random(),
       title: `步骤 - ${steps.length + 1}`,
       type: '',
+      comment: '',
+      timeLimit: 0,
     });
 
     this.setState({
@@ -80,9 +82,9 @@ class CertSteps extends React.Component {
 
   updateStep = (currentStep, values) => {
     if (currentStep) {
-      _.assign(currentStep, values);
+      const step = _.assign(currentStep, values);
       this.setState({
-        currentStep,
+        currentStep: step,
       });
     }
   };
@@ -191,20 +193,20 @@ class CertSteps extends React.Component {
               }
             </Steps>
           </Col>
-          {
-            currentStep
-            ? (
-              <Col span={18}>
+          <Col span={18}>
+            {
+              currentStep
+              ? (
                 <StepForm
                   step={currentStep}
                   onChange={(values) => {
                     this.updateStep(currentStep, values);
                   }}
                 />
-              </Col>
-              )
-            : null
-          }
+                )
+              : null
+            }
+          </Col>
         </Row>
       </div>
     );

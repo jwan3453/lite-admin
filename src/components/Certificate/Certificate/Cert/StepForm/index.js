@@ -31,7 +31,7 @@ class StepForm extends React.Component {
     step: {
       title: '',
       timeLimit: 0,
-      type: 'tests',
+      type: '',
       comment: '',
     },
   };
@@ -41,7 +41,7 @@ class StepForm extends React.Component {
     examDialogVisible: false,
   };
 
-  upload = ({ fileList }) => this.setState({ fileList });
+  uploadFile = ({ fileList }) => this.setState({ fileList });
 
   render() {
     const {
@@ -179,7 +179,6 @@ class StepForm extends React.Component {
                   <Icon type="inbox" />
                 </p>
                 <p className="ant-upload-text">Click or drag file to this area to upload</p>
-                <p className="ant-upload-hint">Support for a single or bulk upload. Strictly prohibit from uploading company data or other band files</p>
               </Upload.Dragger>
             </FormItem>
             )
@@ -273,5 +272,6 @@ class StepForm extends React.Component {
 
 export default Form.create({
   onValuesChange: (props, values) => props.onChange(values),
+  mapPropsToFields: props => props,
 })(StepForm);
 
