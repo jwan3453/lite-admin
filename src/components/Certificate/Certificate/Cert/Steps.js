@@ -20,6 +20,7 @@ class CertSteps extends React.Component {
 
   state = {
     steps: [],
+    currentStep: null,
     currentStepIndex: 0,
   };
 
@@ -56,15 +57,18 @@ class CertSteps extends React.Component {
   };
 
   goTo = (index) => {
+    const { steps } = this.state;
     this.setState({
+      currentStep: steps[index],
       currentStepIndex: index,
     });
   };
 
   addStep = () => {
     const { steps } = this.state;
-
+    //  todo
     steps.push({
+      id: Math.random(),
       title: `步骤 - ${steps.length + 1}`,
       type: '',
     });
@@ -74,12 +78,23 @@ class CertSteps extends React.Component {
     });
   };
 
+  updateStep = (currentStep, values) => {
+    if (currentStep) {
+      _.assign(currentStep, values);
+      this.setState({
+        currentStep,
+      });
+    }
+  };
+
   removeStep = (index) => {
     const { steps } = this.state;
     steps.splice(index, 1);
     const currentStepIndex = Math.min(index, steps.length - 1);
+    const currentStep = steps[currentStepIndex];
     this.setState({
       steps,
+      currentStep,
       currentStepIndex,
     });
   };
@@ -87,15 +102,24 @@ class CertSteps extends React.Component {
   render() {
     const {
       steps,
+      currentStep,
       currentStepIndex,
     } = this.state;
+
+    const stepTitleStyle = {
+      display: 'inline-block',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      verticalAlign: 'middle',
+      maxWidth: 78,
+      cursor: 'pointer',
+    };
 
     const iconStyle = {
       marginLeft: '4px',
       cursor: 'pointer',
     };
-
-    const currentStep = steps[currentStepIndex];
 
     return (
       <div>
@@ -117,13 +141,14 @@ class CertSteps extends React.Component {
               {
                 _.map(steps, (item, index) => (
                   <Steps.Step
+                    key={item.title}
                     status={index !== currentStepIndex ? 'wait' : 'process'}
                     title={
                       <div>
                         <a
                           role="button"
                           tabIndex="0"
-                          style={{ cursor: 'pointer' }}
+                          style={stepTitleStyle}
                           onClick={() => { this.goTo(index); }}
                         >{item.title}</a>
                         {
@@ -170,7 +195,12 @@ class CertSteps extends React.Component {
             currentStep
             ? (
               <Col span={18}>
-                <StepForm step={currentStep} />
+                <StepForm
+                  step={currentStep}
+                  onChange={(values) => {
+                    this.updateStep(currentStep, values);
+                  }}
+                />
               </Col>
               )
             : null

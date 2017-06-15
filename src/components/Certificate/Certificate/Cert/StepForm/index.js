@@ -253,8 +253,12 @@ class StepForm extends React.Component {
               title="测试题目1"
               okText="保存"
               cancelText="取消"
-              onOk={() => { console.log('saving data...'); }}
-              onCancel={() => { this.setState({ examDialogVisible: false }); }}
+              onOk={() => {
+                console.log('saving data...');
+              }}
+              onCancel={() => {
+                this.setState({ examDialogVisible: false });
+              }}
               visible={this.state.examDialogVisible}
             >
               <ExamForm />
@@ -267,5 +271,7 @@ class StepForm extends React.Component {
   }
 }
 
-export default Form.create()(StepForm);
+export default Form.create({
+  onValuesChange: (props, values) => props.onChange(values),
+})(StepForm);
 
