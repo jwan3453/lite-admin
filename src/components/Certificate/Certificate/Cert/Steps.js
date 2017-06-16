@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Form,
   Steps,
   Row,
   Col,
@@ -13,16 +12,24 @@ import _ from 'lodash';
 
 import StepForm from './StepForm';
 
-class CertSteps extends React.Component {
+export default class CertSteps extends React.Component {
   static propTypes = {
-    form: React.PropTypes.object.isRequired,
+    steps: React.PropTypes.array.isRequired,
+  };
+
+  static defaultProps = {
+    steps: [],
   };
 
   state = {
-    steps: [],
+    steps: this.props.steps,
     currentStep: null,
     currentStepIndex: 0,
   };
+
+  getSteps() {
+    return this.state.steps;
+  }
 
   forward = (index) => {
     const next = index + 1;
@@ -58,6 +65,7 @@ class CertSteps extends React.Component {
 
   goTo = (index) => {
     const { steps } = this.state;
+    console.log('goto', index, steps[index]);
     this.setState({
       currentStep: steps[index],
       currentStepIndex: index,
@@ -212,6 +220,4 @@ class CertSteps extends React.Component {
     );
   }
 }
-
-export default Form.create()(CertSteps);
 

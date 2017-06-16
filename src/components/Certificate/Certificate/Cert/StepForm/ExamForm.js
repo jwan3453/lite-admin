@@ -27,7 +27,7 @@ class ExamForm extends React.Component {
   static defaultProps = {
     exam: {
       title: '',
-      desc: '',
+      description: '',
       picture: '',
       sound: '',
       answer_picture: 0,
@@ -80,8 +80,8 @@ class ExamForm extends React.Component {
           {...formItemLayout}
         >
           {
-            getFieldDecorator('desc', {
-              initialValue: exam.desc,
+            getFieldDecorator('description', {
+              initialValue: exam.description,
               rules: [
                 {
                   required: false,

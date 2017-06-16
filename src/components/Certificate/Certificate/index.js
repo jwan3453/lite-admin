@@ -9,11 +9,21 @@ import SearchForm from './SearchForm';
 import ActionBar from './ActionBar';
 import Cert from './Cert';
 
-import {
-  TYPE_MAP as CERT_TYPE_MAP,
-} from '../../../common/certificationTypes';
-
+import * as CERT_TYPE from '../../../common/certificationTypes';
 import * as CERT_STATUS from '../../../common/certificationStatus';
+
+const EMPTY_CERT = {
+  id: -1,
+  title: '',
+  required: false,
+  reward: '',
+  validDays: 90,
+  status: CERT_STATUS.UNACTIVATED,
+  type: CERT_TYPE.GENERAL,
+  currency: 'USD',
+  comment: '',
+  steps: [],
+};
 
 class Certifications extends React.Component {
   static propTypes = {
@@ -34,7 +44,7 @@ class Certifications extends React.Component {
   state = {
     certDialogVisible: false,
     teachersDialogVisible: false,
-    currentCert: null,
+    currentCert: EMPTY_CERT,
   };
 
   showCertDialog = (cert) => {
@@ -47,7 +57,7 @@ class Certifications extends React.Component {
   hideCertDialog = () => {
     this.setState({
       certDialogVisible: false,
-      currentCert: null,
+      currentCert: EMPTY_CERT,
     });
   }
 
@@ -75,6 +85,7 @@ class Certifications extends React.Component {
 
   createCert = () => {
     //  todo create a new certification
+    console.log('createCert', this.certForm.getCertification());
   };
 
   invite = () => {
@@ -124,7 +135,7 @@ class Certifications extends React.Component {
         title: '认证类型',
         key: 'type',
         dataIndex: 'type',
-        render: type => CERT_TYPE_MAP[type].text,
+        render: type => CERT_TYPE.TYPE_MAP[type].text,
       },
       {
         title: '状态',
@@ -150,6 +161,12 @@ class Certifications extends React.Component {
       },
     ];
 
+    const {
+      currentCert,
+      certDialogVisible,
+      teachersDialogVisible,
+    } = this.state;
+
     return (
       <div>
         <SearchForm
@@ -163,20 +180,28 @@ class Certifications extends React.Component {
           style={{ marginTop: 16 }}
         />
         <Modal
-          title="创建资质"
+          title={
+            currentCert.id !== -1
+            ? '编辑资质'
+            : '创建资质'
+          }
+          key={currentCert.id}
           width={700}
-          visible={this.state.certDialogVisible}
+          visible={certDialogVisible}
           onOk={this.createCert}
-          onCancel={() => { this.setState({ certDialogVisible: false }); }}
+          onCancel={this.hideCertDialog}
         >
-          <Cert />
+          <Cert
+            certification={currentCert}
+            ref={(node) => { this.certForm = node; }}
+          />
         </Modal>
         <Modal
           title="选择老师"
           width={700}
-          visible={this.state.teachersDialogVisible}
+          visible={teachersDialogVisible}
           onOk={this.invite}
-          onCancel={() => { this.setState({ teachersDialogVisible: false }); }}
+          onCancel={this.hideTeachersDialog}
         >
           this is new teachers dialog
         </Modal>
@@ -199,6 +224,33 @@ function mapStateToProps() {
         validDays: 90,
         status: 0,
         type: 0,
+        currency: 'USD',
+        description: '',
+        steps: [
+          {
+            id: 0,
+            title: 'step 1',
+            timeLimit: 0,
+            type: 'tests',
+            description: 'demo exams',
+            exams: [
+              {
+                title: 'exam 1',
+                description: 'exam 1',
+                picture: '',
+                sound: '',
+                answer_picture: 0,
+                answers: [
+                  {
+                    title: 'answer 1',
+                    picture: '',
+                    correct: 0,
+                  },
+                ],
+              },
+            ],
+          },
+        ],
       },
       {
         id: 1,
@@ -208,6 +260,7 @@ function mapStateToProps() {
         validDays: 90,
         status: 1,
         type: 'App\\Models\\ActivityTemplate',
+        description: '',
       },
       {
         id: 2,
@@ -217,6 +270,7 @@ function mapStateToProps() {
         validDays: 90,
         status: 1,
         type: 'App\\Models\\Lesson',
+        description: '',
       },
     ],
   };

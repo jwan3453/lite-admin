@@ -21,6 +21,8 @@ import * as CERT_STEP_TYPE from '../../../../../common/certificationStepTypes';
 
 const FormItem = Form.Item;
 
+const CERT_STEP_TYPES = CERT_STEP_TYPE.default;
+
 class StepForm extends React.Component {
   static propTypes = {
     form: React.PropTypes.object.isRequired,
@@ -32,7 +34,7 @@ class StepForm extends React.Component {
       title: '',
       timeLimit: 0,
       type: '',
-      comment: '',
+      description: '',
     },
   };
 
@@ -112,8 +114,8 @@ class StepForm extends React.Component {
           {...formItemLayout}
         >
           {
-            getFieldDecorator('comment', {
-              initialValue: step.comment,
+            getFieldDecorator('description', {
+              initialValue: step.description,
               rules: [
                 {
                   required: false,
@@ -137,7 +139,7 @@ class StepForm extends React.Component {
             })(
               <Select>
                 {
-                  _.map(CERT_STEP_TYPE.default, item => (
+                  _.map(CERT_STEP_TYPES, item => (
                     <Select.Option
                       key={item.value}
                       value={item.value}
@@ -185,9 +187,7 @@ class StepForm extends React.Component {
           : null
         }
         {
-          (
-            CERT_STEP_TYPE.isPracticeStep(stepType)
-          )
+          CERT_STEP_TYPE.isPracticeStep(stepType)
           ? (
             <FormItem
               label="房间ID"
@@ -207,42 +207,40 @@ class StepForm extends React.Component {
           : null
         }
         {
-          (
-            CERT_STEP_TYPE.isTestsStep(stepType)
-            ? (
-              <FormItem
-                label="测试题"
-                {...formItemLayout}
-              >
-                {
-                  _.each(exams, (item, index) => (
-                    <Tag
-                      key={item.id}
-                      onClick={() => { this.removeStepExam(index); }}
-                    >{item.title}
-                      <Tooltip title="删除">
-                        <Icon
-                          type="delete"
-                          style={examDelIconStyle}
-                        />
-                      </Tooltip>
-                    </Tag>
-                  ))
-                }
-                <Button
-                  size="small"
-                  type="dashed"
-                  icon="plus"
-                  onClick={() => {
-                    this.setState({
-                      examDialogVisible: true,
-                    });
-                  }}
-                >添加题目</Button>
-              </FormItem>
-              )
-            : null
-          )
+          CERT_STEP_TYPE.isTestsStep(stepType)
+          ? (
+            <FormItem
+              label="测试题"
+              {...formItemLayout}
+            >
+              {
+                _.map(exams, (item, index) => (
+                  <Tag
+                    key={item.id}
+                    onClick={() => { this.removeStepExam(index); }}
+                  >{item.title}
+                    <Tooltip title="删除">
+                      <Icon
+                        type="delete"
+                        style={examDelIconStyle}
+                      />
+                    </Tooltip>
+                  </Tag>
+                ))
+              }
+              <Button
+                size="small"
+                type="dashed"
+                icon="plus"
+                onClick={() => {
+                  this.setState({
+                    examDialogVisible: true,
+                  });
+                }}
+              >添加题目</Button>
+            </FormItem>
+            )
+          : null
         }
         {
           CERT_STEP_TYPE.isTestsStep(stepType)

@@ -14,9 +14,27 @@ import * as CERT_STATUS from '../../../../common/certificationStatus';
 
 const FormItem = Form.Item;
 
+const CERT_TYPES = CERT_TYPE.default;
+
+const REVERSED_CERT_STATUS = CERT_STATUS.default.reverse();
+
 class BasicInfo extends React.Component {
   static propTypes = {
     form: React.PropTypes.object.isRequired,
+    certification: React.PropTypes.object.isRequired,
+  };
+
+  static defaultProps = {
+    id: 0,
+    title: '',
+    required: false,
+    reward: '',
+    validDays: 90,
+    status: CERT_STATUS.UNACTIVATED,
+    type: CERT_TYPE.GENERAL,
+    currency: 'USD',
+    comment: '',
+    steps: [],
   };
 
   render() {
@@ -27,6 +45,8 @@ class BasicInfo extends React.Component {
       wrapperCol: { span: 12 },
     };
 
+    const { certification } = this.props;
+
     return (
       <Form>
         <FormItem
@@ -35,7 +55,7 @@ class BasicInfo extends React.Component {
         >
           {
             getFieldDecorator('type', {
-              initialValue: CERT_TYPE.GENERAL,
+              initialValue: certification.type,
               rules: [
                 {
                   required: false,
@@ -44,7 +64,7 @@ class BasicInfo extends React.Component {
             })(
               <Select>
                 {
-                  _.map(CERT_TYPE.default, item => (
+                  _.map(CERT_TYPES, item => (
                     <Select.Option
                       key={item.value}
                       value={item.value}
@@ -61,6 +81,7 @@ class BasicInfo extends React.Component {
         >
           {
             getFieldDecorator('title', {
+              initialValue: certification.title,
               rules: [
                 {
                   required: true,
@@ -75,7 +96,7 @@ class BasicInfo extends React.Component {
         >
           {
             getFieldDecorator('status', {
-              initialValue: CERT_STATUS.UNACTIVATED,
+              initialValue: certification.status,
               rules: [
                 {
                   required: false,
@@ -84,7 +105,7 @@ class BasicInfo extends React.Component {
             })(
               <Radio.Group>
                 {
-                  _.map(CERT_STATUS.default.reverse(), item => (
+                  _.map(REVERSED_CERT_STATUS, item => (
                     <Radio
                       key={item.value}
                       value={item.value}
@@ -100,7 +121,8 @@ class BasicInfo extends React.Component {
           {...formItemLayout}
         >
           {
-            getFieldDecorator('comment', {
+            getFieldDecorator('description', {
+              initialValue: certification.description,
               rules: [
                 {
                   required: false,
@@ -115,7 +137,7 @@ class BasicInfo extends React.Component {
         >
           {
             getFieldDecorator('required', {
-              initialValue: 'true',
+              initialValue: certification.required,
               rules: [
                 {
                   required: false,
@@ -141,7 +163,7 @@ class BasicInfo extends React.Component {
         >
           {
             getFieldDecorator('reward', {
-              initialValue: 0,
+              initialValue: certification.reward,
               rules: [
                 {
                   required: false,
@@ -156,7 +178,7 @@ class BasicInfo extends React.Component {
         >
           {
             getFieldDecorator('rewardUnit', {
-              initialValue: 'USD',
+              initialValue: certification.currency,
               rules: [
                 {
                   required: false,
@@ -175,7 +197,7 @@ class BasicInfo extends React.Component {
         >
           {
             getFieldDecorator('validDays', {
-              initialValue: 90,
+              initialValue: certification.validDays,
               rules: [
                 {
                   required: false,
@@ -184,11 +206,18 @@ class BasicInfo extends React.Component {
             })(<InputNumber min={1} style={{ width: '100%' }} />)
           }
         </FormItem>
-
       </Form>
     );
   }
 }
 
-export default Form.create()(BasicInfo);
+const BasicInfoForm = Form.create({
+  mapPropsToFields: props => props,
+})(BasicInfo);
+
+BasicInfoForm.prototype.getBasicInfo = function getBasicInfo() {
+  return this.getFieldsValue();
+};
+
+export default BasicInfoForm;
 
