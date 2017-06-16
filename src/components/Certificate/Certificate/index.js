@@ -235,6 +235,7 @@ function mapStateToProps() {
             description: 'demo exams',
             exams: [
               {
+                id: 0,
                 title: 'exam 1',
                 description: 'exam 1',
                 picture: '',

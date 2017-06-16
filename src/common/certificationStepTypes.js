@@ -35,13 +35,13 @@ export default TYPES;
 
 export { TYPE_MAP };
 
-export const isPPTStep = value => value.toLowerCase() === 'ppt';
+export const isPPTStep = (value = '') => value.toLowerCase() === 'ppt';
 
-export const isVideoStep = value => value.toLowerCase() === 'video';
+export const isVideoStep = (value = '') => value.toLowerCase() === 'video';
 
-export const isTestsStep = value => value.toLowerCase() === 'tests';
+export const isTestsStep = (value = '') => value.toLowerCase() === 'tests';
 
-export const isSessionStep = value => value.toLowerCase() === 'session';
+export const isSessionStep = (value = '') => value.toLowerCase() === 'session';
 
-export const isPracticeStep = value => value.toLowerCase() === 'practice';
+export const isPracticeStep = (value = '') => value.toLowerCase() === 'practice';
 

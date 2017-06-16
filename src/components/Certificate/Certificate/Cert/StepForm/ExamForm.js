@@ -18,7 +18,8 @@ import AnswerForm from './AnswerForm';
 
 const FormItem = Form.Item;
 
-class ExamForm extends React.Component {
+
+class Exam extends React.Component {
   static propTypes = {
     form: React.PropTypes.object.isRequired,
     exam: React.PropTypes.object,
@@ -161,21 +162,26 @@ class ExamForm extends React.Component {
           {...formItemLayout}
         >
           {
-            _.each(exam.answers, (item, index) => (
+            _.map(exam.answers, (item, index) => (
               <Tag
                 key={item.id}
-                onClick={() => { this.removeStepExam(index); }}
               >{item.title}
+                <Tooltip title="编辑">
+                  <Icon
+                    type="edit"
+                    style={examDelIconStyle}
+                  />
+                </Tooltip>
                 <Tooltip title="删除">
                   <Icon
                     type="delete"
                     style={examDelIconStyle}
+                    onClick={() => { this.removeStepExam(index); }}
                   />
                 </Tooltip>
               </Tag>
             ))
           }
-
           <Button
             size="small"
             type="dashed"
@@ -207,5 +213,18 @@ class ExamForm extends React.Component {
   }
 }
 
-export default Form.create()(ExamForm);
+const ExamForm = Form.create()(Exam);
+
+ExamForm.prototype.getExam = function getExam() {
+  const answers = []; //  todo
+  const basicInfo = this.getFieldsValue();
+  const exam = {
+    answers,
+    ...basicInfo,
+  };
+
+  return exam;
+};
+
+export default ExamForm;
 

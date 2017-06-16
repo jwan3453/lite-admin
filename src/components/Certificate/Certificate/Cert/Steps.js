@@ -65,7 +65,6 @@ export default class CertSteps extends React.Component {
 
   goTo = (index) => {
     const { steps } = this.state;
-    console.log('goto', index, steps[index]);
     this.setState({
       currentStep: steps[index],
       currentStepIndex: index,
@@ -88,9 +87,12 @@ export default class CertSteps extends React.Component {
     });
   };
 
-  updateStep = (currentStep, values) => {
+  updateStep = (currentStep, basicInfo, exams = []) => {
     if (currentStep) {
-      const step = _.assign(currentStep, values);
+      const step = _.assign(currentStep, basicInfo, {
+        exams,
+      });
+
       this.setState({
         currentStep: step,
       });
@@ -207,8 +209,8 @@ export default class CertSteps extends React.Component {
               ? (
                 <StepForm
                   step={currentStep}
-                  onChange={(values) => {
-                    this.updateStep(currentStep, values);
+                  onChange={(basicInfo, exams) => {
+                    this.updateStep(currentStep, basicInfo, exams);
                   }}
                 />
                 )

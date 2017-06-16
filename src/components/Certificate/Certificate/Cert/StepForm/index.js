@@ -23,10 +23,21 @@ const FormItem = Form.Item;
 
 const CERT_STEP_TYPES = CERT_STEP_TYPE.default;
 
+const EMPTY_EXAM = {
+  id: -1,
+  title: '',
+  description: '',
+  picture: '',
+  sound: '',
+  answer_picture: 0,
+  answers: [],
+};
+
 class StepForm extends React.Component {
   static propTypes = {
+    step: React.PropTypes.object.isRequired,
     form: React.PropTypes.object.isRequired,
-    step: React.PropTypes.object,
+    onChange: React.PropTypes.func,
   };
 
   static defaultProps = {
@@ -36,22 +47,94 @@ class StepForm extends React.Component {
       type: '',
       description: '',
     },
+    onChange: () => {},
   };
 
   state = {
     fileList: [],
     examDialogVisible: false,
+    currentExam: EMPTY_EXAM,
+    currentExamIndex: -1,
   };
 
   uploadFile = ({ fileList }) => this.setState({ fileList });
 
-  render() {
+  createStepExam = () => {
+    const exam = this.examForm.getExam();
+    const {
+      form,
+      step,
+      onChange,
+    } = this.props;
+
+    step.exams.push(exam);
+
+    onChange(form.getFieldsValue(), step.exams);
+
+    this.hideExamDialog();
+  };
+
+  updateStepExam = () => {
+    const {
+      currentExam,
+      currentExamIndex,
+    } = this.state;
+
+    const exam = _.assign(currentExam, this.examForm.getExam());
+
     const {
       step,
       form,
+      onChange,
     } = this.props;
 
-    const { getFieldDecorator } = form;
+    step.exams.splice(currentExamIndex, 1, exam);
+
+    onChange(form.getFieldsValue(), step.exams);
+
+    this.hideExamDialog();
+  };
+
+  removeStepExam = (index) => {
+    const {
+      form,
+      step,
+      onChange,
+    } = this.props;
+
+    const exams = step.exams;
+
+    exams.splice(index, 1);
+
+    onChange(form.getFieldsValue(), exams);
+  };
+
+  showExamDialog = (exam, index) => {
+    this.setState({
+      examDialogVisible: true,
+      currentExam: exam || EMPTY_EXAM,
+      currentExamIndex: index,
+    });
+  };
+
+  hideExamDialog = () => {
+    this.setState({
+      examDialogVisible: false,
+      currentExam: EMPTY_EXAM,
+      currentExamIndex: -1,
+    });
+  };
+
+  render() {
+    const {
+      currentExam,
+      currentExamIndex,
+      examDialogVisible,
+    } = this.state;
+
+    const { step } = this.props;
+
+    const { getFieldDecorator } = this.props.form;
 
     const stepType = step.type;
 
@@ -215,14 +298,19 @@ class StepForm extends React.Component {
             >
               {
                 _.map(exams, (item, index) => (
-                  <Tag
-                    key={item.id}
-                    onClick={() => { this.removeStepExam(index); }}
-                  >{item.title}
+                  <Tag key={item.id}>{item.title}
+                    <Tooltip title="编辑">
+                      <Icon
+                        type="edit"
+                        style={examDelIconStyle}
+                        onClick={() => { this.showExamDialog(item, index); }}
+                      />
+                    </Tooltip>
                     <Tooltip title="删除">
                       <Icon
                         type="delete"
                         style={examDelIconStyle}
+                        onClick={() => { this.removeStepExam(index); }}
                       />
                     </Tooltip>
                   </Tag>
@@ -232,11 +320,7 @@ class StepForm extends React.Component {
                 size="small"
                 type="dashed"
                 icon="plus"
-                onClick={() => {
-                  this.setState({
-                    examDialogVisible: true,
-                  });
-                }}
+                onClick={() => { this.showExamDialog(); }}
               >添加题目</Button>
             </FormItem>
             )
@@ -247,18 +331,26 @@ class StepForm extends React.Component {
           ? (
             <Modal
               width={700}
-              title="测试题目1"
+              key={currentExam.id}
+              title={
+                currentExam.id < 0
+                ? '添加题目'
+                : '编辑题目'
+              }
               okText="保存"
               cancelText="取消"
-              onOk={() => {
-                console.log('saving data...');
-              }}
-              onCancel={() => {
-                this.setState({ examDialogVisible: false });
-              }}
-              visible={this.state.examDialogVisible}
+              onOk={
+                currentExamIndex !== -1
+                ? this.updateStepExam
+                : this.createStepExam
+              }
+              onCancel={this.hideExamDialog}
+              visible={examDialogVisible}
             >
-              <ExamForm />
+              <ExamForm
+                exam={currentExam}
+                ref={(node) => { this.examForm = node; }}
+              />
             </Modal>
             )
           : null
