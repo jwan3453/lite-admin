@@ -24,13 +24,11 @@ const FormItem = Form.Item;
 const CERT_STEP_TYPES = CERT_STEP_TYPE.default;
 
 const EMPTY_EXAM = {
-  id: -1,
   title: '',
   description: '',
   picture: '',
   sound: '',
   answer_picture: 0,
-  answers: [],
 };
 
 class StepForm extends React.Component {
@@ -53,14 +51,20 @@ class StepForm extends React.Component {
   state = {
     fileList: [],
     examDialogVisible: false,
-    currentExam: EMPTY_EXAM,
+    currentExam: _.assign({ answers: [] }, EMPTY_EXAM),
     currentExamIndex: -1,
   };
 
-  uploadFile = ({ fileList }) => this.setState({ fileList });
+  onExamFormChange = (values) => {
+    const { currentExam } = this.state;
 
-  createStepExam = () => {
-    const exam = this.examForm.getExam();
+    this.setState({
+      currentExam: _.assign(currentExam, values),
+    });
+  };
+
+  createStepExam = (closeDialog = true) => {
+    const exam = this.state.currentExam;
     const {
       form,
       step,
@@ -71,16 +75,18 @@ class StepForm extends React.Component {
 
     onChange(form.getFieldsValue(), step.exams);
 
-    this.hideExamDialog();
+    if (closeDialog) {
+      this.hideExamDialog();
+    }
   };
 
-  updateStepExam = () => {
+  updateStepExam = (closeDialog = true) => {
     const {
       currentExam,
       currentExamIndex,
     } = this.state;
 
-    const exam = _.assign(currentExam, this.examForm.getExam());
+    const exam = _.assign(currentExam, this.examForm.getFieldsValue());
 
     const {
       step,
@@ -92,7 +98,9 @@ class StepForm extends React.Component {
 
     onChange(form.getFieldsValue(), step.exams);
 
-    this.hideExamDialog();
+    if (closeDialog) {
+      this.hideExamDialog();
+    }
   };
 
   removeStepExam = (index) => {
@@ -109,21 +117,31 @@ class StepForm extends React.Component {
     onChange(form.getFieldsValue(), exams);
   };
 
-  showExamDialog = (exam, index) => {
+  showExamDialog = (exam = _.assign({ answers: [] }, EMPTY_EXAM), index = -1) => {
+    console.log('showExamDialog', exam, index);
     this.setState({
       examDialogVisible: true,
-      currentExam: exam || EMPTY_EXAM,
+      currentExam: exam,
       currentExamIndex: index,
     });
   };
 
   hideExamDialog = () => {
+    const { currentExamIndex } = this.state;
+
+    let index = -1;
+    if (currentExamIndex < 0) {
+      index = currentExamIndex - 1;
+    }
+
     this.setState({
       examDialogVisible: false,
-      currentExam: EMPTY_EXAM,
-      currentExamIndex: -1,
+      currentExam: _.assign({ answers: [] }, EMPTY_EXAM),
+      currentExamIndex: index,
     });
   };
+
+  uploadFile = ({ fileList }) => this.setState({ fileList });
 
   render() {
     const {
@@ -320,7 +338,9 @@ class StepForm extends React.Component {
                 size="small"
                 type="dashed"
                 icon="plus"
-                onClick={() => { this.showExamDialog(); }}
+                onClick={() => {
+                  this.showExamDialog();
+                }}
               >添加题目</Button>
             </FormItem>
             )
@@ -331,25 +351,27 @@ class StepForm extends React.Component {
           ? (
             <Modal
               width={700}
-              key={currentExam.id}
+              key={currentExamIndex}
               title={
-                currentExam.id < 0
+                currentExamIndex < 0
                 ? '添加题目'
                 : '编辑题目'
               }
               okText="保存"
               cancelText="取消"
               onOk={
-                currentExamIndex !== -1
-                ? this.updateStepExam
-                : this.createStepExam
+                currentExamIndex < 0
+                ? this.createStepExam
+                : this.updateStepExam
               }
               onCancel={this.hideExamDialog}
               visible={examDialogVisible}
             >
               <ExamForm
+                key={currentExamIndex}
                 exam={currentExam}
                 ref={(node) => { this.examForm = node; }}
+                onChange={this.onExamFormChange}
               />
             </Modal>
             )

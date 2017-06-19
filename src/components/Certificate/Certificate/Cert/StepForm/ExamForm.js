@@ -7,7 +7,6 @@ import {
   Upload,
   Button,
   Icon,
-  Modal,
   Tag,
   Tooltip,
 } from 'antd';
@@ -18,11 +17,19 @@ import AnswerForm from './AnswerForm';
 
 const FormItem = Form.Item;
 
+const isAnswerIncludePicture = value => value === 1;
+
+const EMPTY_ANSWER = {
+  title: '',
+  picture: '',
+  correct: 0,
+};
 
 class Exam extends React.Component {
   static propTypes = {
     form: React.PropTypes.object.isRequired,
     exam: React.PropTypes.object,
+    onChange: React.PropTypes.func,
   };
 
   static defaultProps = {
@@ -34,15 +41,97 @@ class Exam extends React.Component {
       answer_picture: 0,
       answers: [],
     },
+    onChange: () => {},
   };
 
   state = {
-    answerDialogVisible: false,
+    currentAnswer: _.assign({}, EMPTY_ANSWER),
+    currentAnswerIndex: -1,
+    answerFormVisible: false,
+  };
+
+  onAnswerFormSubmit = () => {
+    const answer = this.answerForm.getFieldsValue();
+
+    const {
+      currentAnswerIndex,
+    } = this.state;
+
+    const {
+      exam,
+      onChange,
+    } = this.props;
+
+    const { answers } = exam;
+
+    const updating = currentAnswerIndex >= 0;
+
+    if (!updating) {
+      answers.push(answer);
+    } else {
+      const currentAnswer = _.assign(this.state.currentAnswer, answer);
+      answers.splice(currentAnswerIndex, 1, currentAnswer);
+    }
+
+    onChange({
+      answers,
+    });
+
+    this.hideAnswerForm();
+  };
+
+  createAnswer = () => {
+    this.setState({
+      currentAnswerIndex: -1,
+      answerFormVisible: true,
+      currentAnswer: _.assign({}, EMPTY_ANSWER),
+    });
+  };
+
+  updateAnswer = (currentAnswerIndex) => {
+    const { exam } = this.props;
+    const currentAnswer = exam.answers[currentAnswerIndex];
+
+    this.setState({
+      currentAnswer,
+      currentAnswerIndex,
+      answerFormVisible: true,
+    });
+  };
+
+  removeAnswer = (index) => {
+    const {
+      exam,
+      onChange,
+    } = this.props;
+
+    const { answers } = exam;
+
+    answers.splice(index, 1);
+
+    onChange({
+      answers,
+    });
+  };
+
+  hideAnswerForm = () => {
+    let index = -1;
+    const { currentAnswerIndex } = this.state;
+    if (currentAnswerIndex < 0) {
+      index = currentAnswerIndex - 1;
+    }
+
+    this.setState({
+      currentAnswerIndex: index,
+      answerFormVisible: false,
+    });
   };
 
   render() {
     const { exam, form } = this.props;
     const { getFieldDecorator } = form;
+
+    const answersPicture = isAnswerIncludePicture((exam && exam.answer_picture) || 0);
 
     const formItemLayout = {
       labelCol: { span: 8 },
@@ -60,171 +149,156 @@ class Exam extends React.Component {
     };
 
     return (
-      <Form>
-        <FormItem
-          label="题目"
-          {...formItemLayout}
-        >
-          {
-            getFieldDecorator('title', {
-              initialValue: exam.title,
-              rules: [
-                {
-                  required: false,
-                },
-              ],
-            })(<Input type="textarea" rows={3} />)
-          }
-        </FormItem>
-        <FormItem
-          label="描述"
-          {...formItemLayout}
-        >
-          {
-            getFieldDecorator('description', {
-              initialValue: exam.description,
-              rules: [
-                {
-                  required: false,
-                },
-              ],
-            })(<Input type="textarea" rows={3} />)
-          }
-        </FormItem>
-        <FormItem
-          label="图片"
-          {...formItemLayout}
-        >
-          {
-            getFieldDecorator('picture', {
-              initialValue: exam.picture,
-              rules: [
-                {
-                  required: false,
-                },
-              ],
-            })(
-              <Upload
-                {...uploadProps}
-              >
-                <Button>
-                  <Icon type="upload" /> Click to Upload
-                </Button>
-              </Upload>,
+      <div>
+        <Form>
+          <FormItem
+            label="题目"
+            {...formItemLayout}
+          >
+            {
+              getFieldDecorator('title', {
+                initialValue: exam.title,
+                rules: [
+                  {
+                    required: false,
+                  },
+                ],
+              })(<Input type="textarea" rows={3} />)
+            }
+          </FormItem>
+          <FormItem
+            label="描述"
+            {...formItemLayout}
+          >
+            {
+              getFieldDecorator('description', {
+                initialValue: exam.description,
+                rules: [
+                  {
+                    required: false,
+                  },
+                ],
+              })(<Input type="textarea" rows={3} />)
+            }
+          </FormItem>
+          <FormItem
+            label="图片"
+            {...formItemLayout}
+          >
+            {
+              getFieldDecorator('picture', {
+                initialValue: exam.picture,
+                rules: [
+                  {
+                    required: false,
+                  },
+                ],
+              })(
+                <Upload
+                  {...uploadProps}
+                >
+                  <Button>
+                    <Icon type="upload" /> Click to Upload
+                  </Button>
+                </Upload>,
+                )
+            }
+          </FormItem>
+          <FormItem
+            label="声音"
+            {...formItemLayout}
+          >
+            {
+              getFieldDecorator('sound', {
+                initialValue: exam.sound,
+                rules: [
+                  {
+                    required: false,
+                  },
+                ],
+              })(
+                <Upload
+                  {...uploadProps}
+                >
+                  <Button>
+                    <Icon type="upload" /> Click to Upload
+                  </Button>
+                </Upload>,
               )
-          }
-        </FormItem>
-        <FormItem
-          label="声音"
-          {...formItemLayout}
-        >
-          {
-            getFieldDecorator('sound', {
-              initialValue: exam.sound,
-              rules: [
-                {
-                  required: false,
-                },
-              ],
-            })(
-              <Upload
-                {...uploadProps}
-              >
-                <Button>
-                  <Icon type="upload" /> Click to Upload
-                </Button>
-              </Upload>,
-            )
-          }
-        </FormItem>
-        <FormItem
-          label="答案选项是否存在图片"
-          {...formItemLayout}
-        >
-          {
-            getFieldDecorator('answer_picture', {
-              initialValue: exam.answer_picture,
-              rules: [
-                {
-                  required: false,
-                },
-              ],
-            })(
-              <Radio.Group>
-                <Radio key="1" value={1}>是</Radio>
-                <Radio key="0" value={0}>否</Radio>
-              </Radio.Group>,
-              )
-          }
-        </FormItem>
-        <FormItem
-          label="选项"
-          {...formItemLayout}
-        >
-          {
-            _.map(exam.answers, (item, index) => (
-              <Tag
-                key={item.id}
-              >{item.title}
-                <Tooltip title="编辑">
-                  <Icon
-                    type="edit"
-                    style={examDelIconStyle}
-                  />
-                </Tooltip>
-                <Tooltip title="删除">
-                  <Icon
-                    type="delete"
-                    style={examDelIconStyle}
-                    onClick={() => { this.removeStepExam(index); }}
-                  />
-                </Tooltip>
-              </Tag>
-            ))
-          }
-          <Button
-            size="small"
-            type="dashed"
-            icon="plus"
-            onClick={() => {
-              this.setState({
-                answerDialogVisible: true,
-              });
-            }}
-          >添加选项</Button>
-        </FormItem>
-        <Modal
-          width={700}
-          title="添加选项"
-          okText="保存"
-          cancelText="取消"
-          onOk={() => {
-            console.log('saving data...');
-          }}
-          onCancel={() => {
-            this.setState({ answerDialogVisible: false });
-          }}
-          visible={this.state.answerDialogVisible}
-        >
-          <AnswerForm />
-        </Modal>
-      </Form>
+            }
+          </FormItem>
+          <FormItem
+            label="答案选项是否存在图片"
+            {...formItemLayout}
+          >
+            {
+              getFieldDecorator('answer_picture', {
+                initialValue: exam.answer_picture,
+                rules: [
+                  {
+                    required: false,
+                  },
+                ],
+              })(
+                <Radio.Group>
+                  <Radio key="1" value={1}>是</Radio>
+                  <Radio key="0" value={0}>否</Radio>
+                </Radio.Group>,
+                )
+            }
+          </FormItem>
+          <FormItem
+            label="选项"
+            {...formItemLayout}
+          >
+            {
+              _.map(exam.answers, (item, index) => (
+                <Tag
+                  key={item.id}
+                >{item.title}
+                  <Tooltip title="编辑">
+                    <Icon
+                      type="edit"
+                      style={examDelIconStyle}
+                      onClick={() => { this.updateAnswer(index); }}
+                    />
+                  </Tooltip>
+                  <Tooltip title="删除">
+                    <Icon
+                      type="delete"
+                      style={examDelIconStyle}
+                      onClick={() => { this.removeAnswer(index); }}
+                    />
+                  </Tooltip>
+                </Tag>
+              ))
+            }
+            <Button
+              size="small"
+              type="dashed"
+              icon="plus"
+              onClick={() => {
+                this.createAnswer();
+              }}
+            >添加选项</Button>
+          </FormItem>
+        </Form>
+        <AnswerForm
+          key={this.state.currentAnswerIndex}
+          visible={this.state.answerFormVisible}
+          answer={this.state.currentAnswer}
+          answersPicture={answersPicture}
+          ref={(node) => { this.answerForm = node; }}
+          onSubmit={this.onAnswerFormSubmit}
+        />
+      </div>
     );
   }
 }
 
-const ExamForm = Form.create()(Exam);
-
-ExamForm.prototype.getExam = function getExam() {
-  const answers = []; //  todo
-  const basicInfo = this.getFieldsValue();
-  const exam = {
-    answers,
-    ...basicInfo,
-  };
-
-  return exam;
-};
+const ExamForm = Form.create({
+  onValuesChange: (props, values) => props.onChange(values),
+})(Exam);
 
 export default ExamForm;
 

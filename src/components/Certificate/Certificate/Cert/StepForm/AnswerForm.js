@@ -10,18 +10,46 @@ import {
 
 const FormItem = Form.Item;
 
-class AnswerForm extends React.Component {
+class Answer extends React.Component {
   static propTypes = {
     form: React.PropTypes.object.isRequired,
+    answer: React.PropTypes.object,
+    visible: React.PropTypes.bool,
+    answersPicture: React.PropTypes.bool,
+    onSubmit: React.PropTypes.func,
+  };
+
+  static defaultProps = {
+    visible: false,
+    answersPicture: false,
+    answer: {
+      title: '',
+      picture: '',
+      correct: 0,
+    },
+    onSubmit: () => {},
   };
 
   render() {
-    const { form } = this.props;
+    const {
+      form,
+      visible,
+      answer,
+      answersPicture,
+      onSubmit,
+    } = this.props;
     const { getFieldDecorator } = form;
 
     const formItemLayout = {
       labelCol: { span: 8 },
       wrapperCol: { span: 14 },
+    };
+
+    const buttonItemLayout = {
+      wrapperCol: {
+        span: 14,
+        offset: 8,
+      },
     };
 
     const uploadProps = {
@@ -31,13 +59,18 @@ class AnswerForm extends React.Component {
     };
 
     return (
-      <Form>
+      <Form
+        style={{
+          display: visible ? 'block' : 'none',
+        }}
+      >
         <FormItem
           label="选项"
           {...formItemLayout}
         >
           {
             getFieldDecorator('title', {
+              initialValue: answer.title,
               rules: [
                 {
                   required: false,
@@ -46,35 +79,41 @@ class AnswerForm extends React.Component {
             })(<Input type="textarea" rows={3} />)
           }
         </FormItem>
-        <FormItem
-          label="图片"
-          {...formItemLayout}
-        >
-          {
-            getFieldDecorator('picture', {
-              rules: [
-                {
-                  required: false,
-                },
-              ],
-            })(
-              <Upload
-                {...uploadProps}
-              >
-                <Button>
-                  <Icon type="upload" /> Click to Upload
-                </Button>
-              </Upload>,
-              )
-          }
-        </FormItem>
+        {
+          answersPicture
+          ?
+            <FormItem
+              label="图片"
+              {...formItemLayout}
+            >
+              {
+                getFieldDecorator('picture', {
+                  initialValue: answer.picture,
+                  rules: [
+                    {
+                      required: false,
+                    },
+                  ],
+                })(
+                  <Upload
+                    {...uploadProps}
+                  >
+                    <Button>
+                      <Icon type="upload" /> Click to Upload
+                    </Button>
+                  </Upload>,
+                  )
+              }
+            </FormItem>
+          : null
+        }
         <FormItem
           label="是否正确"
           {...formItemLayout}
         >
           {
             getFieldDecorator('correct', {
-              initialValue: 0,
+              initialValue: answer.correct,
               rules: [
                 {
                   required: false,
@@ -88,10 +127,15 @@ class AnswerForm extends React.Component {
               )
           }
         </FormItem>
+        <FormItem {...buttonItemLayout}>
+          <Button type="primary" onClick={onSubmit}>保存</Button>
+        </FormItem>
       </Form>
     );
   }
 }
 
-export default Form.create()(AnswerForm);
+const AnswerForm = Form.create()(Answer);
+
+export default AnswerForm;
 

@@ -208,6 +208,7 @@ export default class CertSteps extends React.Component {
               currentStep
               ? (
                 <StepForm
+                  key={this.state.currentStepIndex}
                   step={currentStep}
                   onChange={(basicInfo, exams) => {
                     this.updateStep(currentStep, basicInfo, exams);
