@@ -5,31 +5,87 @@ import {
   Row,
   Col,
   Alert,
+  Button,
+  Message,
 } from 'antd';
 import moment from 'moment';
-
-const STATUS_ACTIVATED = 2;
+import { fetchScholarshipSummary, fetchScholarshipHistoryList, applyFirstShareWeixinScholarship } from '../../../app/actions/scholarship';
 
 class Scholarship extends React.Component {
   static propTypes = {
+    dispatch: React.PropTypes.func.isRequired,
     loading: React.PropTypes.bool,
     summary: React.PropTypes.object,
-    scholarships: React.PropTypes.array,
+    historyList: React.PropTypes.object,
+    studentId: React.PropTypes.number.isRequired,
+    filters: React.PropTypes.object,
   };
 
   static defaultProps = {
     loading: false,
     summary: {},
-    scholarships: [],
+    historyList: {},
+    filters: {},
+  };
+
+  componentWillMount() {
+    const { dispatch, loading, studentId } = this.props;
+    if (!loading) {
+      console.log(studentId);
+      dispatch(fetchScholarshipSummary(studentId));
+      dispatch(fetchScholarshipHistoryList(studentId));
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { dispatch, studentId } = this.props;
+    if (nextProps.studentId > 0 && nextProps.studentId !== studentId) {
+      dispatch(fetchScholarshipSummary(nextProps.studentId));
+      dispatch(fetchScholarshipHistoryList(nextProps.studentId));
+    }
+  }
+
+  handleChange = (pagination) => {
+    const { dispatch, filters, studentId } = this.props;
+    dispatch(
+      fetchScholarshipHistoryList(studentId,
+        Object.assign(filters, {
+          page: pagination.current,
+          pageSize: pagination.pageSize,
+        }),
+      ),
+    );
+  };
+
+  handleApplyFirstWeixinShareScholarship = () => {
+    const { dispatch, studentId } = this.props;
+    dispatch(applyFirstShareWeixinScholarship(studentId)).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+      } else {
+        Message.success('首次微信分享奖学金');
+        dispatch(fetchScholarshipSummary(studentId));
+        dispatch(fetchScholarshipHistoryList(studentId));
+      }
+    });
   };
 
   render() {
     const {
       loading,
       summary,
-      scholarships,
+      historyList,
     } = this.props;
 
+    const pageSize = historyList.pageSize || 10;
+    const dataSource = historyList.result || [];
+    const pagination = {
+      total: historyList.total || 0,
+      pageSize,
+      current: historyList.page || 1,
+      showSizeChanger: true,
+      showTotal: total => `总共${total}条`,
+    };
     const columns = [
       {
         title: 'ID',
@@ -40,78 +96,64 @@ class Scholarship extends React.Component {
         title: '奖学金',
         key: 'amount',
         dataIndex: 'amount',
-        render: amount => amount.toFixed(2),
+        render: amount => amount / 100,
       },
       {
         title: '原因',
-        key: 'reason',
-        dataIndex: 'reason',
-      },
-      {
-        title: '状态',
-        key: 'status',
-        dataIndex: 'status',
-        render: status => (status !== STATUS_ACTIVATED ? '未激活' : '已激活'),
+        key: 'awardTypeText',
+        dataIndex: 'awardTypeText',
       },
       {
         title: '创建时间',
-        key: 'ctime',
-        dataIndex: 'ctime',
-        render: ctime => (moment(new Date(ctime)).format('YYYY-MM-DD hh:mm:ss')),
+        key: 'createdAt',
+        dataIndex: 'createdAt',
+        render: createdAt => (moment.unix(createdAt).format('YYYY-MM-DD hh:mm:ss')),
       },
     ];
 
     return (
       <div>
         <Row gutter={16}>
-          <Col span={8}>
-            <Alert message={`总额 ${summary.total.toFixed(2)}`} type="info" />
+          <Col span={5}>
+            <Alert message={`总额 ${summary.totalGet / 100}`} type="info" />
           </Col>
-          <Col span={8}>
-            <Alert message={`剩余 ${summary.left.toFixed(2)}`} type="info" />
+          <Col span={5}>
+            <Alert message={`剩余 ${summary.balance / 100}`} type="info" />
           </Col>
-          <Col span={8}>
-            <Alert message={`已兑换 ${summary.used} 课时`} type="info" />
+          <Col span={6}>
+            <Alert message={`已兑换 ${summary.totalExchangedProduct} 课时`} type="info" />
           </Col>
+          <Col span={6}>
+            <Button
+              size="large"
+              icon="gift"
+              disabled={summary.wxFirstShare}
+              onClick={() => this.handleApplyFirstWeixinShareScholarship()}
+            >赠送首次分享奖学金</Button>
+          </Col>1
         </Row>
         <Table
           size="small"
           loading={loading}
           rowKey="id"
           columns={columns}
-          pagination={false}
-          dataSource={scholarships}
+          pagination={pagination}
+          dataSource={dataSource}
           style={{ marginTop: 16 }}
+          onChange={this.handleChange}
         />
       </div>
     );
   }
 }
 
-function mapStateToProps() {
+function mapStateToProps(state) {
+  const { scholarship } = state;
   return {
-    loading: false,
-    summary: {
-      total: 0,
-      left: 0,
-      used: 0,
-    },
-    scholarships: [
-      {
-        id: 0,
-        amount: 0.8,
-        reason: '课后评价',
-        status: 0,
-        ctime: 1495616775000,
-      },
-      {
-        id: 1,
-        amount: 0.71,
-        reason: '课后评价',
-        status: 0,
-        ctime: 1495616773000,
-      },
-    ],
+    loading: scholarship.loading,
+    summary: scholarship.summary,
+    historyList: scholarship.historyList.result,
+    filters: scholarship.historyList.filters,
   };
 }
 

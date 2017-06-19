@@ -249,7 +249,7 @@ class LessonStatus extends React.Component {
             size="small"
             onChange={this.handleActiveChange}
             checked={this.isCourseActive()}
-          >在用户主界面显示</Checkbox>
+          >在学</Checkbox>
         </div>
         <div>
           <Table
