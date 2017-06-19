@@ -37,7 +37,6 @@ export default class CertSteps extends React.Component {
     const max = steps.length;
 
     if (next <= max - 1) {
-      //  todo change position
       const target = steps[index];
       steps.splice(index, 1);
       steps.splice(next, 0, target);

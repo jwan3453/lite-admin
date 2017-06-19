@@ -175,7 +175,7 @@ class SearchForm extends React.Component {
               style={{ marginRight: 8 }}
             >清空条件</Button>
             <Button
-              onClick={showCertDialog}
+              onClick={() => { showCertDialog(); }}
             >新建资质</Button>
           </Col>
         </Row>

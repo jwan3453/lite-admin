@@ -19,11 +19,11 @@ const FormItem = Form.Item;
 
 const isAnswerIncludePicture = value => value === 1;
 
-const EMPTY_ANSWER = {
+const getEmptyAnswer = () => _.assign({}, {
   title: '',
   picture: '',
   correct: 0,
-};
+});
 
 class Exam extends React.Component {
   static propTypes = {
@@ -45,7 +45,7 @@ class Exam extends React.Component {
   };
 
   state = {
-    currentAnswer: _.assign({}, EMPTY_ANSWER),
+    currentAnswer: getEmptyAnswer(),
     currentAnswerIndex: -1,
     answerFormVisible: false,
   };
@@ -84,7 +84,7 @@ class Exam extends React.Component {
     this.setState({
       currentAnswerIndex: -1,
       answerFormVisible: true,
-      currentAnswer: _.assign({}, EMPTY_ANSWER),
+      currentAnswer: getEmptyAnswer(),
     });
   };
 

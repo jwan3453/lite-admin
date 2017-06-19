@@ -5,6 +5,8 @@ import {
   Modal,
 } from 'antd';
 
+import _ from 'lodash';
+
 import SearchForm from './SearchForm';
 import ActionBar from './ActionBar';
 import Cert from './Cert';
@@ -12,8 +14,9 @@ import Cert from './Cert';
 import * as CERT_TYPE from '../../../common/certificationTypes';
 import * as CERT_STATUS from '../../../common/certificationStatus';
 
-const EMPTY_CERT = {
-  id: -1,
+const getEmptyCert = () => _.assign({}, {
+  id: (Math.random() + 1) * -1,
+  steps: [],
   title: '',
   required: false,
   reward: '',
@@ -22,8 +25,7 @@ const EMPTY_CERT = {
   type: CERT_TYPE.GENERAL,
   currency: 'USD',
   comment: '',
-  steps: [],
-};
+});
 
 class Certifications extends React.Component {
   static propTypes = {
@@ -44,10 +46,10 @@ class Certifications extends React.Component {
   state = {
     certDialogVisible: false,
     teachersDialogVisible: false,
-    currentCert: EMPTY_CERT,
+    currentCert: getEmptyCert(),
   };
 
-  showCertDialog = (cert) => {
+  showCertDialog = (cert = getEmptyCert()) => {
     this.setState({
       certDialogVisible: true,
       currentCert: cert,
@@ -57,7 +59,7 @@ class Certifications extends React.Component {
   hideCertDialog = () => {
     this.setState({
       certDialogVisible: false,
-      currentCert: EMPTY_CERT,
+      currentCert: getEmptyCert(),
     });
   }
 

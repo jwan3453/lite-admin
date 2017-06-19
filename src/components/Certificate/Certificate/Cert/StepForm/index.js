@@ -23,13 +23,14 @@ const FormItem = Form.Item;
 
 const CERT_STEP_TYPES = CERT_STEP_TYPE.default;
 
-const EMPTY_EXAM = {
+const getEmptyExam = () => _.assign({}, {
   title: '',
   description: '',
   picture: '',
   sound: '',
   answer_picture: 0,
-};
+  answers: [],
+});
 
 class StepForm extends React.Component {
   static propTypes = {
@@ -51,7 +52,7 @@ class StepForm extends React.Component {
   state = {
     fileList: [],
     examDialogVisible: false,
-    currentExam: _.assign({ answers: [] }, EMPTY_EXAM),
+    currentExam: getEmptyExam(),
     currentExamIndex: -1,
   };
 
@@ -117,8 +118,7 @@ class StepForm extends React.Component {
     onChange(form.getFieldsValue(), exams);
   };
 
-  showExamDialog = (exam = _.assign({ answers: [] }, EMPTY_EXAM), index = -1) => {
-    console.log('showExamDialog', exam, index);
+  showExamDialog = (exam = getEmptyExam(), index = -1) => {
     this.setState({
       examDialogVisible: true,
       currentExam: exam,
@@ -136,7 +136,7 @@ class StepForm extends React.Component {
 
     this.setState({
       examDialogVisible: false,
-      currentExam: _.assign({ answers: [] }, EMPTY_EXAM),
+      currentExam: getEmptyExam(),
       currentExamIndex: index,
     });
   };
