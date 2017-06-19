@@ -10,6 +10,7 @@ import _ from 'lodash';
 import SearchForm from './SearchForm';
 import ActionBar from './ActionBar';
 import Cert from './Cert';
+import TeacherSelector from './TeacherSelector';
 
 import * as CERT_TYPE from '../../../common/certificationTypes';
 import * as CERT_STATUS from '../../../common/certificationStatus';
@@ -205,7 +206,7 @@ class Certifications extends React.Component {
           onOk={this.invite}
           onCancel={this.hideTeachersDialog}
         >
-          this is new teachers dialog
+          <TeacherSelector />
         </Modal>
       </div>
     );
