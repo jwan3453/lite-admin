@@ -248,14 +248,20 @@ class Exam extends React.Component {
             }
           </FormItem>
           <FormItem
-            label="选项"
+            label="答案"
             {...formItemLayout}
           >
             {
               _.map(exam.answers, (item, index) => (
-                <Tag
-                  key={item.id}
-                >{item.title}
+                <Tag key={item.id}>
+                  <Icon
+                    style={{
+                      color: item.correct === 1 ? 'green' : 'red',
+                      marginRight: 8,
+                    }}
+                    type={item.correct === 1 ? 'check' : 'close'}
+                  />
+                  {item.title}
                   <Tooltip title="编辑">
                     <Icon
                       type="edit"
