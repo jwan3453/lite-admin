@@ -1,4 +1,4 @@
-export default [
+const LEVELS = [
   {
     value: 1,
     name: 'L1',
@@ -48,3 +48,12 @@ export default [
     name: 'L12',
   },
 ];
+
+const LEVEL_MAP = {};
+
+LEVELS.forEach((item) => { LEVEL_MAP[item.value] = item; });
+
+export default LEVELS;
+
+export { LEVEL_MAP };
+
