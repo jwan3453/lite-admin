@@ -12,6 +12,7 @@ import {
 
 import SearchForm from './SearchForm';
 import GroupInfoForm from './GroupInfoForm';
+import StudentSelector from '../../Common/FindStudentModal';
 
 import * as GROUP_STATUS from './status';
 import GroupMessageResult from './MessageResult';
@@ -46,11 +47,17 @@ class Schedules extends React.Component {
 
   state = {
     dialogVisible: false,
+    studentSelectorVisible: false,
+    selectedStudents: [],
     currentGroup: getEmptyGroup(),
   };
 
   search = () => {
     //  todo
+  };
+
+  handleSelectedStudentsChange = (selectedStudents) => {
+    this.setState({ selectedStudents });
   };
 
   sendScheduleMessage = () => {
@@ -79,6 +86,8 @@ class Schedules extends React.Component {
     });
   };
 
+  addStudentsToGroup = () => {};
+
   createGroup = () => {
     //  todo
   };
@@ -89,6 +98,18 @@ class Schedules extends React.Component {
 
   removeGroup = () => {
     //  todo
+  };
+
+  showStudentSelector = () => {
+    this.setState({
+      studentSelectorVisible: true,
+    });
+  };
+
+  hideStudentSelector = () => {
+    this.setState({
+      studentSelectorVisible: false,
+    });
   };
 
   showDialog = (group = getEmptyGroup()) => {
@@ -190,6 +211,7 @@ class Schedules extends React.Component {
                 style={{
                   marginRight: 8,
                 }}
+                onClick={this.showStudentSelector}
               />
             </Tooltip>
             <Popconfirm
@@ -231,6 +253,17 @@ class Schedules extends React.Component {
           onCancel={this.hideDialog}
         >
           <GroupInfoForm group={currentGroup} />
+        </Modal>
+        <Modal
+          title="添加学生"
+          visible={this.state.studentSelectorVisible}
+          onOk={() => { this.addStudentsToGroup(); }}
+          onCancel={this.hideStudentSelector}
+        >
+          <StudentSelector
+            multiSelect
+            onSelectedRowsChange={this.handleSelectedStudentsChange}
+          />
         </Modal>
       </div>
     );

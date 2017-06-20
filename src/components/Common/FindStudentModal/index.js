@@ -11,11 +11,13 @@ class StudentList extends Component {
     filters: React.PropTypes.object.isRequired,
     students: React.PropTypes.object.isRequired,
     onSelectedRowsChange: React.PropTypes.func.isRequired,
+    multiSelect: React.PropTypes.bool,
   };
   static defaultProps = {
     filters: {},
     students: {},
     onSelectedRowsChange: () => {},
+    multiSelect: false,
   };
   componentWillMount() {
     const { dispatch, filters } = this.props;
@@ -44,7 +46,8 @@ class StudentList extends Component {
   };
 
   render() {
-    const { students } = this.props;
+    const { students, multiSelect } = this.props;
+
     const columns = [
       {
         title: 'ID',
@@ -80,9 +83,10 @@ class StudentList extends Component {
     const dataSource = students.result || [];
 
     const rowSelection = {
-      type: 'radio',
+      type: !multiSelect ? 'radio' : 'checkbox',
       onChange: this.handleSelectChange,
     };
+
     return (
       <div>
         <Input.Search
@@ -120,3 +124,4 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps)(StudentList);
+
