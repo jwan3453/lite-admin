@@ -4,40 +4,167 @@ import { connect } from 'react-redux';
 import {
   Table,
   Modal,
+  Button,
+  Tooltip,
+  Popconfirm,
 } from 'antd';
 
+import moment from 'moment';
+
+import {
+  STATUS_MAP as TICKET_STATUS_MAP,
+} from '../../../common/ticketStatus';
+
+import {
+  CATEGORY_MAP as TICKET_TYPES_MAP,
+} from '../../../common/ticketTypes';
+
 import SearchForm from './SearchForm';
+import TicketForm from './TicketForm';
 
 class Tickets extends React.Component {
   static propTypes = {
     loading: React.PropTypes.bool.isRequired,
+    tickets: React.PropTypes.array,
+  };
+
+  static defaultProps = {
+    tickets: [],
   };
 
   state = {
     dialogVisible: false,
+    currentTicket: {},
+  };
+
+  showDialog = () => {
+    this.setState({
+      dialogVisible: true,
+    });
+  };
+
+  hideDialog = () => {
+    this.setState({
+      dialogVisible: false,
+    });
+  };
+
+  createTicket = () => {};
+
+  updateTicket = () => {};
+
+  removeTicket = (ticket) => {
+    console.log(ticket);
   };
 
   render() {
     const {
       loading,
+      tickets,
     } = this.props;
+
+    const columns = [
+      {
+        title: '问题',
+        dataIndex: 'subject',
+      },
+      {
+        title: '用户',
+        dataIndex: 'user',
+        render: user => user.nickname,
+      },
+      {
+        title: '工单类型',
+        dataIndex: 'type',
+        render: ticketType => TICKET_TYPES_MAP[ticketType].name,
+      },
+      {
+        title: '处理人',
+        dataIndex: 'assignee',
+        render: assignee => assignee.nickname,
+      },
+      {
+        title: '联系时间',
+        dataIndex: 'ctime',
+        render: ctime => moment(ctime).format('YYYY-MM-DD hh:mm:ss'),
+      },
+      {
+        title: '提交人',
+        dataIndex: 'submitter',
+        render: submitter => submitter.nickname,
+      },
+      {
+        title: '状态',
+        dataIndex: 'status',
+        render: ticketStatus => TICKET_STATUS_MAP[ticketStatus].name,
+      },
+      {
+        title: '操作',
+        render: (text, ticket) => (
+          <div>
+            <Tooltip title="编辑">
+              <Button icon="edit" style={{ marginRight: 8 }} />
+            </Tooltip>
+            <Popconfirm
+              title="该操作不可逆，确定继续？"
+              placement="top"
+              onConfirm={() => { this.removeTicket(ticket); }}
+            >
+              <Tooltip title="删除">
+                <Button icon="delete" />
+              </Tooltip>
+            </Popconfirm>
+          </div>
+        ),
+      },
+    ];
 
     return (
       <div>
-        <SearchForm />
+        <SearchForm
+          showDialog={this.showDialog}
+        />
         <Table
           loading={loading}
+          columns={columns}
+          dataSource={tickets}
+          style={{ marginTop: 16 }}
         />
         <Modal
           title="工单"
           visible={this.state.dialogVisible}
-        >this is ticket dialog</Modal>
+          onOk={() => { this.updateTicket(); }}
+          onCancel={this.hideDialog}
+        >
+          <TicketForm />
+        </Modal>
       </div>
     );
   }
 }
 
-function mapStateToProps() {}
+function mapStateToProps() {
+  return {
+    loading: false,
+    tickets: [
+      {
+        subject: 'test subject',
+        user: {
+          nickname: 'milo',
+        },
+        type: 0,
+        assignee: {
+          nickname: 'peter',
+        },
+        ctime: 1498015008265,
+        submitter: {
+          nickname: 'halo',
+        },
+        status: 0,
+      },
+    ],
+  };
+}
 
 export default connect(mapStateToProps)(Tickets);
 
