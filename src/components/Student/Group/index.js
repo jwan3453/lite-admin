@@ -12,7 +12,7 @@ import {
 
 import SearchForm from './SearchForm';
 import GroupInfoForm from './GroupInfoForm';
-import StudentSelector from '../../Common/FindStudentModal';
+import StudentSelector from '../../Common/StudentSelector';
 
 import * as GROUP_STATUS from './status';
 import GroupMessageResult from './MessageResult';

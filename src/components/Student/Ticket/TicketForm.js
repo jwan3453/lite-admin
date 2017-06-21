@@ -10,7 +10,7 @@ import {
 
 import _ from 'lodash';
 
-import UserSelector from '../../Common/FindStudentModal';
+import StudentSelector from '../../Common/StudentSelector';
 
 import TICKET_TYPES from '../../../common/ticketTypes';
 import * as TICKET_STATUS from '../../../common/ticketStatus';
@@ -38,7 +38,7 @@ class Ticket extends React.Component {
     this.props.form.setFieldsValue({
       user: this.state.selectedUser.id,
     });
-    this.hideUserSelector();
+    this.hideStudentSelector();
   };
 
   handleSelectChange = (selectedRowKeys, selectedRows) => {
@@ -48,13 +48,13 @@ class Ticket extends React.Component {
     });
   };
 
-  showUserSelector = () => {
+  showStudentSelector = () => {
     this.setState({
       dialogVisible: true,
     });
   };
 
-  hideUserSelector = () => {
+  hideStudentSelector = () => {
     this.setState({
       dialogVisible: false,
     });
@@ -139,7 +139,7 @@ class Ticket extends React.Component {
                 <Tooltip title="添加用户" placement="top">
                   <Icon
                     type="user-add"
-                    onClick={this.showUserSelector}
+                    onClick={this.showStudentSelector}
                     style={{ cursor: 'pointer' }}
                   />
                 </Tooltip>
@@ -226,9 +226,9 @@ class Ticket extends React.Component {
           maskClosable={false}
           visible={this.state.dialogVisible}
           onOk={this.pickUpUser}
-          onCancel={this.hideUserSelector}
+          onCancel={this.hideStudentSelector}
         >
-          <UserSelector
+          <StudentSelector
             onSelectedRowsChange={this.handleSelectChange}
           />
         </Modal>

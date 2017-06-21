@@ -13,7 +13,7 @@ import {
   studentAppointmentsStatus,
 } from '../../../common/studentAppointment';
 
-import FindStudentModal from '../FindStudentModal';
+import StudentSelector from '../StudentSelector';
 import ScheduleRooms from './scheduleRooms';
 
 import { fetchScheduleRooms } from '../../../app/actions/schedule';
@@ -289,7 +289,7 @@ class StudentAppointments extends Component {
           onOk={this.handleAddStudent}
           onCancel={() => this.setState({ findStudentModalVisible: false })}
         >
-          <FindStudentModal
+          <StudentSelector
             onSelectedRowsChange={this.handleSelectedStudentsChange}
           />
         </Modal>
