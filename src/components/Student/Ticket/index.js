@@ -11,9 +11,7 @@ import {
 
 import moment from 'moment';
 
-import {
-  STATUS_MAP as TICKET_STATUS_MAP,
-} from '../../../common/ticketStatus';
+import * as TICKET_STATUS from '../../../common/ticketStatus';
 
 import {
   CATEGORY_MAP as TICKET_TYPES_MAP,
@@ -21,6 +19,8 @@ import {
 
 import SearchForm from './SearchForm';
 import TicketForm from './TicketForm';
+
+import { getEmptyTicket } from './utils';
 
 class Tickets extends React.Component {
   static propTypes = {
@@ -34,27 +34,40 @@ class Tickets extends React.Component {
 
   state = {
     dialogVisible: false,
-    currentTicket: {},
+    currentTicket: getEmptyTicket(),
   };
 
-  showDialog = () => {
+  showDialog = (currentTicket = getEmptyTicket()) => {
     this.setState({
       dialogVisible: true,
+      currentTicket,
     });
   };
 
   hideDialog = () => {
     this.setState({
       dialogVisible: false,
+      currentTicket: getEmptyTicket(),
     });
   };
 
-  createTicket = () => {};
+  createTicket = () => {
+    const ticket = this.ticketForm.getFieldsValue();
+    console.log('createTicket', ticket);
+    //  todo create a new ticket
+    this.hideDialog();
+  };
 
-  updateTicket = () => {};
+  updateTicket = () => {
+    const ticket = this.ticketForm.getFieldsValue();
+    console.log('updateTicket', ticket);
+    //  todo update a ticket
+    this.hideDialog();
+  };
 
   removeTicket = (ticket) => {
     console.log(ticket);
+    //  todo remove a ticket
   };
 
   render() {
@@ -62,6 +75,8 @@ class Tickets extends React.Component {
       loading,
       tickets,
     } = this.props;
+
+    const { currentTicket } = this.state;
 
     const columns = [
       {
@@ -96,14 +111,18 @@ class Tickets extends React.Component {
       {
         title: '状态',
         dataIndex: 'status',
-        render: ticketStatus => TICKET_STATUS_MAP[ticketStatus].name,
+        render: ticketStatus => TICKET_STATUS.STATUS_MAP[ticketStatus].name,
       },
       {
         title: '操作',
         render: (text, ticket) => (
           <div>
             <Tooltip title="编辑">
-              <Button icon="edit" style={{ marginRight: 8 }} />
+              <Button
+                icon="edit"
+                style={{ marginRight: 8 }}
+                onClick={() => { this.showDialog(ticket); }}
+              />
             </Tooltip>
             <Popconfirm
               title="该操作不可逆，确定继续？"
@@ -131,12 +150,25 @@ class Tickets extends React.Component {
           style={{ marginTop: 16 }}
         />
         <Modal
-          title="工单"
+          key={currentTicket.id}
+          title={
+            currentTicket.id < 0
+            ? '新建工单'
+            : '编辑工单'
+          }
+          maskClosable={false}
           visible={this.state.dialogVisible}
-          onOk={() => { this.updateTicket(); }}
+          onOk={
+            currentTicket.id < 0
+            ? this.createTicket
+            : this.updateTicket
+          }
           onCancel={this.hideDialog}
         >
-          <TicketForm />
+          <TicketForm
+            ticket={currentTicket}
+            ref={(node) => { this.ticketForm = node; }}
+          />
         </Modal>
       </div>
     );

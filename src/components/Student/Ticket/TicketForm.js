@@ -3,9 +3,9 @@ import {
   Form,
   Select,
   Input,
-  Icon,
   Tooltip,
   Modal,
+  Icon,
 } from 'antd';
 
 import _ from 'lodash';
@@ -15,19 +15,37 @@ import UserSelector from '../../Common/FindStudentModal';
 import TICKET_TYPES from '../../../common/ticketTypes';
 import * as TICKET_STATUS from '../../../common/ticketStatus';
 
+import { getEmptyTicket } from './utils';
+
 const FormItem = Form.Item;
 
 class Ticket extends React.Component {
   static propTypes = {
     form: React.PropTypes.object.isRequired,
+    ticket: React.PropTypes.object,
+  };
+
+  static defaultProps = {
+    ticket: getEmptyTicket(),
   };
 
   state = {
     dialogVisible: false,
+    selectedUser: this.props.ticket.user,
   };
 
   pickUpUser = () => {
-    //  todo
+    this.props.form.setFieldsValue({
+      user: this.state.selectedUser.id,
+    });
+    this.hideUserSelector();
+  };
+
+  handleSelectChange = (selectedRowKeys, selectedRows) => {
+    const selectedUser = selectedRows[0];
+    this.setState({
+      selectedUser,
+    });
   };
 
   showUserSelector = () => {
@@ -43,7 +61,7 @@ class Ticket extends React.Component {
   };
 
   render() {
-    const { form } = this.props;
+    const { form, ticket } = this.props;
 
     const { getFieldDecorator } = form;
 
@@ -51,6 +69,8 @@ class Ticket extends React.Component {
       labelCol: { span: 6 },
       wrapperCol: { span: 16 },
     };
+
+    const { selectedUser } = this.state;
 
     return (
       <div>
@@ -61,6 +81,7 @@ class Ticket extends React.Component {
           >
             {
               getFieldDecorator('type', {
+                initialValue: ticket.type,
                 rules: [
                   {
                     required: false,
@@ -89,6 +110,7 @@ class Ticket extends React.Component {
           >
             {
               getFieldDecorator('subject', {
+                initialValue: ticket.subject,
                 rules: [
                   {
                     required: true,
@@ -103,25 +125,26 @@ class Ticket extends React.Component {
           >
             {
               getFieldDecorator('user', {
+                initialValue: ticket.user.id,
                 rules: [
                   {
                     required: true,
                   },
                 ],
-              })(
-                <Input
-                  placeholder="选择用户"
-                  addonAfter={
-                    <Tooltip title="添加用户" placement="top">
-                      <Icon
-                        type="user-add"
-                        onClick={this.showUserSelector}
-                      />
-                    </Tooltip>
-                  }
-                />,
-              )
+              })(<input type="hidden" />)
             }
+            <Input
+              value={selectedUser.nickname}
+              addonAfter={
+                <Tooltip title="添加用户" placement="top">
+                  <Icon
+                    type="user-add"
+                    onClick={this.showUserSelector}
+                    style={{ cursor: 'pointer' }}
+                  />
+                </Tooltip>
+              }
+            />
           </FormItem>
           <FormItem
             label="提交给"
@@ -129,6 +152,7 @@ class Ticket extends React.Component {
           >
             {
               getFieldDecorator('assignee', {
+                initialValue: ticket.assignee.nickname,
                 rules: [
                   {
                     required: false,
@@ -143,6 +167,7 @@ class Ticket extends React.Component {
           >
             {
               getFieldDecorator('ctime', {
+                initialValue: ticket.ctime,
                 rules: [
                   {
                     required: false,
@@ -157,7 +182,7 @@ class Ticket extends React.Component {
           >
             {
               getFieldDecorator('status', {
-                initialValue: TICKET_STATUS.CREATED,
+                initialValue: ticket.status,
                 rules: [
                   {
                     required: false,
@@ -186,23 +211,25 @@ class Ticket extends React.Component {
           >
             {
               getFieldDecorator('comment', {
+                initialValue: ticket.comment,
                 rules: [
                   {
                     required: false,
                   },
                 ],
-              })(<Input type="textarea" placeholder="问题描述" />)
+              })(<Input type="textarea" placeholder="备注" />)
             }
           </FormItem>
         </Form>
         <Modal
           title="选择用户"
+          maskClosable={false}
           visible={this.state.dialogVisible}
-          onOk={this.hideUserSelector}
+          onOk={this.pickUpUser}
           onCancel={this.hideUserSelector}
         >
           <UserSelector
-            onSelectedRowsChange={this.pickUpUser}
+            onSelectedRowsChange={this.handleSelectChange}
           />
         </Modal>
       </div>

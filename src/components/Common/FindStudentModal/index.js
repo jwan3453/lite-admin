@@ -13,16 +13,19 @@ class StudentList extends Component {
     onSelectedRowsChange: React.PropTypes.func.isRequired,
     multiSelect: React.PropTypes.bool,
   };
+
   static defaultProps = {
     filters: {},
     students: {},
     onSelectedRowsChange: () => {},
     multiSelect: false,
   };
+
   componentWillMount() {
     const { dispatch, filters } = this.props;
     dispatch(searchStudent(filters));
   }
+
   handleChangePage = (pagination) => {
     const { dispatch, filters } = this.props;
     dispatch(
@@ -34,8 +37,9 @@ class StudentList extends Component {
       ),
     );
   };
-  handleSelectChange = (selectedRowKeys) => {
-    this.props.onSelectedRowsChange(selectedRowKeys);
+
+  handleSelectChange = (selectedRowKeys, selectedRows) => {
+    this.props.onSelectedRowsChange(selectedRowKeys, selectedRows);
   };
 
   handleSearch = (value) => {
