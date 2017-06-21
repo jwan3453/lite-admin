@@ -1,6 +1,5 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import _ from 'lodash';
 import {
   Button,
   Table,
@@ -9,19 +8,15 @@ import {
 } from 'antd';
 import moment from 'moment';
 
+import TicketForm from './TicketForm/index';
+
 import {
-  TicketForm,
-  TICKET_TYPES,
-  TICKET_STATUS,
-} from './TicketForm/index';
+  CATEGORY_MAP as TICKET_TYPES_MAP,
+} from '../../../common/ticketTypes';
 
-const TICKET_TYPES_MAP = {};
-
-_.each(TICKET_TYPES, (item) => { TICKET_TYPES_MAP[`${item.value}`] = item.name; });
-
-const TICKET_STATUS_MAP = {};
-
-_.each(TICKET_STATUS, (item) => { TICKET_STATUS_MAP[`${item.value}`] = item.name; });
+import {
+  STATUS_MAP as TICKET_STATUS_MAP,
+} from '../../../common/ticketStatus';
 
 class UserTicket extends React.Component {
   static propTypes = {
@@ -101,7 +96,7 @@ class UserTicket extends React.Component {
         title: '工单类型',
         key: 'type',
         dataIndex: 'type',
-        render: ticketType => TICKET_TYPES_MAP[ticketType],
+        render: ticketType => TICKET_TYPES_MAP[ticketType].name,
       },
       {
         title: '处理人',
@@ -125,7 +120,7 @@ class UserTicket extends React.Component {
         title: '状态',
         key: 'status',
         dataIndex: 'status',
-        render: status => TICKET_STATUS_MAP[status],
+        render: status => TICKET_STATUS_MAP[status].name,
       },
       {
         title: '操作',
