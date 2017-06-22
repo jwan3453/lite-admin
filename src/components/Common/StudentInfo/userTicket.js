@@ -5,74 +5,155 @@ import {
   Table,
   Modal,
   Popconfirm,
+  Message,
 } from 'antd';
 import moment from 'moment';
 
 import TicketForm from './TicketForm/index';
 
+import { fetchTicket, createTicket, updateTicket, deleteTicket } from '../../../app/actions/ticket';
+import { fetchAdmins } from '../../../app/actions/admin';
+
 import {
   CATEGORY_MAP as TICKET_TYPES_MAP,
 } from '../../../common/ticketTypes';
-
 import {
   STATUS_MAP as TICKET_STATUS_MAP,
 } from '../../../common/ticketStatus';
 
+
 class UserTicket extends React.Component {
   static propTypes = {
-    tickets: React.PropTypes.array,
+    dispatch: React.PropTypes.func.isRequired,
+    ticketData: React.PropTypes.object,
     loading: React.PropTypes.bool,
-    page: React.PropTypes.number,
-    pageSize: React.PropTypes.number,
-    total: React.PropTypes.number,
+    studentId: React.PropTypes.number.isRequired,
+    adminUsers: React.PropTypes.array.isRequired,
+    filters: React.PropTypes.object,
   };
 
   static defaultProps = {
-    tickets: [],
-    page: 1,
-    pageSize: 10,
-    total: 0,
+    ticketData: {},
     loading: false,
+    adminUsers: [],
+    filters: {},
   };
 
   state = {
     dialogVisible: false,
-    ticket: {},
+    ticketFormData: {},
   };
 
+  componentWillMount() {
+    const { dispatch, loading, studentId } = this.props;
+    if (!loading) {
+      dispatch(fetchAdmins());
+      dispatch(fetchTicket(studentId));
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { dispatch, studentId } = this.props;
+    if (nextProps.studentId > 0 && nextProps.studentId !== studentId) {
+      dispatch(fetchTicket(nextProps.studentId));
+    }
+  }
+
   showDialog = (ticket = {}) => {
+    const { studentId } = this.props;
+    const ticketInfo = {
+      ...ticket,
+      studentId,
+    };
     this.setState({
       dialogVisible: true,
-      ticket,
+      ticketFormData: ticketInfo,
     });
   };
 
-  updateTicket = () => {
-    //  todo
+  handleUpdateTicket = (ticketId, data) => {
+    const { dispatch, studentId } = this.props;
+    dispatch(updateTicket(ticketId, data)).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+      } else {
+        Message.success('更新工单成功');
+        this.setState({
+          dialogVisible: false,
+          ticketFormData: {},
+        });
+        dispatch(fetchTicket(studentId));
+      }
+    });
   };
 
-  createTicket = () => {
-    //  todo create a new ticket
+  handleCreateTicket = (data) => {
+    const { dispatch, studentId } = this.props;
+    dispatch(createTicket({ ...data, studentId })).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+      } else {
+        Message.success('创建工单成功');
+        this.setState({
+          dialogVisible: false,
+          ticketFormData: {},
+        });
+        dispatch(fetchTicket(studentId));
+      }
+    });
   };
 
-  removeTicket = () => {
-    //  todo
+  handleDeleteTicket = (ticket) => {
+    const { dispatch, studentId } = this.props;
+    dispatch(deleteTicket(ticket.id)).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+      } else {
+        Message.success('删除工单成功');
+        this.setState({
+          dialogVisible: false,
+          ticketFormData: {},
+        });
+        dispatch(fetchTicket(studentId));
+      }
+    });
+  };
+
+  handleSubmitTicketForm = (data) => {
+    if (data.id) {
+      this.handleUpdateTicket(data.id, data);
+    } else {
+      this.handleCreateTicket(data);
+    }
+  };
+
+  handlePaginationChange = (pagination) => {
+    const { dispatch, filters, studentId } = this.props;
+    dispatch(
+      fetchTicket(studentId,
+        Object.assign(filters, {
+          page: pagination.current,
+          pageSize: pagination.pageSize,
+        }),
+      ),
+    );
   };
 
   render() {
     const { dialogVisible } = this.state;
     const {
       loading,
-      total,
-      page,
-      pageSize,
-      tickets,
+      ticketData,
     } = this.props;
 
+    const pageSize = ticketData.pageSize || 10;
+    const dataSource = ticketData.result || [];
     const pagination = {
-      current: page,
+      total: ticketData.total || 0,
       pageSize,
-      total,
+      current: ticketData.page || 1,
+      showSizeChanger: true,
+      showTotal: total => `总共${total}条`,
     };
 
     const columns = [
@@ -80,6 +161,7 @@ class UserTicket extends React.Component {
         title: 'ID',
         key: 'id',
         dataIndex: 'id',
+        width: 30,
       },
       {
         title: '问题',
@@ -89,38 +171,35 @@ class UserTicket extends React.Component {
       {
         title: '用户',
         key: 'user',
-        dataIndex: 'user',
-        render: user => `[${user.id}] ${user.name}`,
+        dataIndex: 'studentId',
       },
       {
         title: '工单类型',
         key: 'type',
         dataIndex: 'type',
-        render: ticketType => TICKET_TYPES_MAP[ticketType].name,
+        render(ticketType) { return TICKET_TYPES_MAP[ticketType] ? TICKET_TYPES_MAP[ticketType].name : ''; },
       },
       {
         title: '处理人',
         key: 'assignee',
-        dataIndex: 'assignee',
-        render: assignee => assignee.name,
+        dataIndex: 'assignedAdminUsername',
       },
       {
         title: '联系时间',
         key: 'ctime',
-        dataIndex: 'ctime',
-        render: ctime => moment(new Date(ctime)).format('YYYY-MM-DD hh:mm:ss'),
+        dataIndex: 'contactAt',
+        render: ctime => moment.unix(ctime).format('YYYY-MM-DD HH:mm:ss'),
       },
       {
         title: '提交人',
         key: 'submitter',
-        dataIndex: 'submitter',
-        render: submitter => submitter.name,
+        dataIndex: 'submittedAdminUsername',
       },
       {
         title: '状态',
         key: 'status',
         dataIndex: 'status',
-        render: status => TICKET_STATUS_MAP[status].name,
+        render(status) { return TICKET_STATUS_MAP[status] ? TICKET_STATUS_MAP[status].name : ''; },
       },
       {
         title: '操作',
@@ -137,7 +216,7 @@ class UserTicket extends React.Component {
               placement="top"
               okText="确定"
               cancelText="取消"
-              onConfirm={() => this.removeTicket(ticket)}
+              onConfirm={() => this.handleDeleteTicket(ticket)}
             >
               <Button icon="delete" />
             </Popconfirm>
@@ -150,26 +229,7 @@ class UserTicket extends React.Component {
       <div>
         <Button
           onClick={() => {
-            this.showDialog({
-              id: 0,
-              subject: '',
-              user: {
-                id: 0,
-                name: '',
-              },
-              type: 6,
-              assignee: {
-                id: 0,
-                name: '0',
-              },
-              submitter: {
-                id: 0,
-                name: '',
-              },
-              status: 1,
-              ctime: (new Date()).getTime(),
-              comment: '',
-            });
+            this.showDialog();
           }}
         >新建工单</Button>
         <Table
@@ -177,18 +237,21 @@ class UserTicket extends React.Component {
           size="small"
           loading={loading}
           columns={columns}
-          dataSource={tickets}
+          dataSource={dataSource}
           pagination={pagination}
+          onChange={this.handlePaginationChange}
           style={{ marginTop: 16 }}
         />
         <Modal
           title="工单"
           visible={dialogVisible}
-          onOk={this.createTicket}
           onCancel={() => this.setState({ dialogVisible: false })}
+          footer={null}
         >
           <TicketForm
-            ticket={this.state.ticket}
+            onSubmit={this.handleSubmitTicketForm}
+            ticket={this.state.ticketFormData}
+            assignees={this.props.adminUsers}
           />
         </Modal>
       </div>
@@ -196,73 +259,14 @@ class UserTicket extends React.Component {
   }
 }
 
-function mapStateToProps() {
+function mapStateToProps(state) {
+  const { ticket, admin } = state;
   return {
-    page: 1,
-    pageSize: 10,
-    total: 20,
-    tickets: [
-      {
-        id: 0,
-        subject: '新增一个工单',
-        user: {
-          id: 5,
-          name: 'nickname',
-        },
-        type: 6,
-        assignee: {
-          id: 0,
-          name: 'milo',
-        },
-        submitter: {
-          id: 0,
-          name: 'admin',
-        },
-        status: -1,
-        ctime: 1488189894000,
-      },
-      {
-        id: 1,
-        subject: '新增一个工单',
-        user: {
-          id: 5,
-          name: 'nickname',
-        },
-        type: 6,
-        assignee: {
-          id: 0,
-          name: 'milo',
-        },
-        submitter: {
-          id: 0,
-          name: 'admin',
-        },
-        status: 0,
-        ctime: 1488189894000,
-      },
-      {
-        id: 2,
-        subject: '新增一个工单',
-        user: {
-          id: 5,
-          name: 'nickname',
-        },
-        type: 6,
-        assignee: {
-          id: 0,
-          name: 'milo',
-        },
-        submitter: {
-          id: 0,
-          name: 'admin',
-        },
-        status: 1,
-        ctime: 1488189894000,
-      },
-
-    ],
+    loading: ticket.loading,
+    ticketData: ticket.result,
+    filters: ticket.filters,
+    adminUsers: admin.users,
   };
 }
 
 export default connect(mapStateToProps)(UserTicket);
-

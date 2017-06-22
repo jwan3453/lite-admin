@@ -3,6 +3,7 @@ import {
   Form,
   Input,
   Select,
+  Button,
 } from 'antd';
 import moment from 'moment';
 
@@ -16,11 +17,31 @@ class TicketForm extends React.Component {
     form: React.PropTypes.object.isRequired,
     assignees: React.PropTypes.array,
     ticket: React.PropTypes.object,
+    onSubmit: React.PropTypes.func.isRequired,
   };
 
   static defaultProps = {
     assignees: [],
     ticket: {},
+  };
+
+  handleSubmit = (e) => {
+    e.preventDefault();
+    this.props.form.validateFieldsAndScroll((err, values) => {
+      if (!err) {
+        const newTicket = {
+          adminId: parseInt(values.assignee, 10),
+          type: parseInt(values.type, 10),
+          status: parseInt(values.status, 10),
+          subject: values.subject,
+          remark: values.remark,
+          contactAt: moment(values.ctime).unix(),
+          id: this.props.ticket.id,
+        };
+        this.props.onSubmit(newTicket);
+        this.props.form.resetFields();
+      }
+    });
   };
 
   render() {
@@ -35,25 +56,42 @@ class TicketForm extends React.Component {
       ticket,
     } = this.props;
 
+    const tailFormItemLayout = {
+      wrapperCol: {
+        xs: {
+          span: 24,
+          offset: 0,
+        },
+        sm: {
+          span: 14,
+          offset: 6,
+        },
+      },
+    };
+
     return (
-      <Form>
+      <Form
+        onSubmit={this.handleSubmit}
+      >
         <FormItem
           label="分类"
           {...formItemLayout}
         >
           {
             getFieldDecorator('type', {
-              initialValue: ticket.type,
               rules: [
                 {
-                  required: false,
+                  required: true,
                 },
               ],
             })(
               <Select>
                 {
                   TICKET_TYPES.map(item => (
-                    <Select.Option key={item.value} value={item.value}>{item.name}</Select.Option>
+                    <Select.Option
+                      key={item.value}
+                      value={String(item.value)}
+                    >{item.name}</Select.Option>
                   ))
                 }
               </Select>,
@@ -76,15 +114,15 @@ class TicketForm extends React.Component {
           }
         </FormItem>
         <FormItem
-          label="问题"
+          label="用户"
           {...formItemLayout}
         >
           {
-            getFieldDecorator('userId', {
-              initialValue: ticket.user.id,
+            getFieldDecorator('studentId', {
+              initialValue: ticket.studentId,
               rules: [
                 {
-                  required: true,
+                  required: false,
                 },
               ],
             })(<Input disabled size="default" />)
@@ -96,17 +134,24 @@ class TicketForm extends React.Component {
         >
           {
             getFieldDecorator('assignee', {
-              initialValue: ticket.assignee.id,
               rules: [
                 {
-                  required: false,
+                  required: true,
                 },
               ],
             })(
-              <Select>
+              <Select
+                showSearch
+                filterOption={
+                  (input, option) =>
+                  option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+              >
                 {
                   assignees.map(item => (
-                    <Select.Option key={item.id} value={item.id}>{item.name}</Select.Option>
+                    <Select.Option
+                      key={item.id}
+                      value={String(item.id)}
+                    >{item.username}</Select.Option>
                   ))
                 }
               </Select>,
@@ -119,7 +164,7 @@ class TicketForm extends React.Component {
         >
           {
             getFieldDecorator('ctime', {
-              initialValue: `${moment(ticket.ctime || (new Date())).format('YYYY-MM-DD hh:mm:ss')}`,
+              initialValue: `${moment(ticket.ctime || (new Date())).format('YYYY-MM-DD HH:mm:ss')}`,
               rules: [
                 {
                   required: false,
@@ -134,7 +179,7 @@ class TicketForm extends React.Component {
         >
           {
             getFieldDecorator('status', {
-              initialValue: ticket.status,
+              initialValue: '1',
               rules: [
                 {
                   required: false,
@@ -144,7 +189,10 @@ class TicketForm extends React.Component {
               <Select>
                 {
                   TICKET_STATUS.map(item => (
-                    <Select.Option key={item.value} value={item.value}>{item.name}</Select.Option>
+                    <Select.Option
+                      key={item.value}
+                      value={String(item.value)}
+                    >{item.name}</Select.Option>
                   ))
                 }
               </Select>,
@@ -156,20 +204,31 @@ class TicketForm extends React.Component {
           {...formItemLayout}
         >
           {
-            getFieldDecorator('comment', {
-              initialValue: ticket.comment,
+            getFieldDecorator('remark', {
+              initialValue: ticket.remark,
               rules: [
                 {
-                  required: true,
+                  required: false,
                 },
               ],
             })(<Input type="textarea" rows={3} />)
           }
+        </FormItem>
+        <FormItem {...tailFormItemLayout}>
+          <Button type="primary" htmlType="submit" size="large">提交</Button>
         </FormItem>
       </Form>
     );
   }
 }
 
-export default Form.create()(TicketForm);
+function mapPropsToFields(props) {
+  const { ticket } = props;
+  return {
+    type: { value: ticket.type ? String(ticket.type) : '' },
+    assignee: { value: ticket.assignedAdminId ? String(ticket.assignedAdminId) : '' },
+    status: { value: ticket.status ? String(ticket.status) : '' },
+  };
+}
 
+export default Form.create({ mapPropsToFields })(TicketForm);

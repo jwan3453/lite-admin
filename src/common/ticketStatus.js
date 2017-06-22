@@ -1,19 +1,24 @@
-export const FAILED = -1;
-export const CREATED = 0;
-export const DONE = 1;
+export const UNRESOLVED = 1;
+export const RESOLVED = 2;
+export const PENDING = 3;
+export const RESOLVE_FAILED = 4;
 
 const STATUS = [
   {
-    value: FAILED,
-    name: '解决失败',
-  },
-  {
-    value: CREATED,
+    value: UNRESOLVED,
     name: '未解决',
   },
   {
-    value: DONE,
+    value: RESOLVED,
     name: '已解决',
+  },
+  {
+    value: PENDING,
+    name: '挂起',
+  },
+  {
+    value: RESOLVE_FAILED,
+    name: '解决失败',
   },
 ];
 
@@ -24,4 +29,3 @@ STATUS.forEach((item) => { STATUS_MAP[item.value] = item; });
 export default STATUS;
 
 export { STATUS_MAP };
-

@@ -202,3 +202,21 @@ export const Scholarship = {
   Apply_FIRST_SHARE_SCHOLARSHIP_SUCCESS: 'apply_first_share_scholarship_success',
   Apply_FIRST_SHARE_SCHOLARSHIP_FAIL: 'apply_first_share_scholarship_fail',
 };
+
+export const Ticket = {
+  CREATE: 'ticket_create',
+  CREATE_SUCCESS: 'ticket_create_success',
+  CREATE_FAIL: 'ticket_create_fail',
+
+  FETCH: 'ticket_fetch',
+  FETCH_SUCCESS: 'ticket_fetch_success',
+  FETCH_FAIL: 'ticket_fetch_fail',
+
+  UPDATE: 'ticket_update',
+  UPDATE_SUCCESS: 'ticket_update_success',
+  UPDATE_FAIL: 'ticket_update_fail',
+
+  DELETE: 'ticket_delete',
+  DELETE_SUCCESS: 'ticket_delete_success',
+  DELETE_FAIL: 'ticket_delete_fail',
+};
