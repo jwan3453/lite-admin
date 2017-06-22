@@ -14,6 +14,7 @@ import SearchForm from './SearchForm';
 import ReplyForm from './ReplyForm';
 import TicketForm from '../../Common/TicketForm';
 import StudentInfo from '../../Common/StudentInfo';
+import RoomInfo from '../../Common/RoomInfo';
 
 import {
   STATUS_MAP as PROGRESS_STATUS_MAP,
@@ -61,12 +62,18 @@ class Feedback extends React.Component {
     });
   };
 
-  showClassRoomInfo = () => {
-    //  todo
+  showClassRoomInfo = (currentClassRoom) => {
+    this.setState({
+      classRoomDialogVisible: true,
+      currentClassRoom,
+    });
   };
 
   hideClassRoomInfo = () => {
-    //  todo
+    this.setState({
+      classRoomDialogVisible: false,
+      currentClassRoom: { id: -1 },
+    });
   };
 
   showReplyDialog = (currentFeedback) => {
@@ -125,6 +132,7 @@ class Feedback extends React.Component {
     const {
       currentFeedback,
       currentStudent,
+      currentClassRoom,
     } = this.state;
 
     const columns = [
@@ -274,6 +282,24 @@ class Feedback extends React.Component {
         >
           <StudentInfo studentId={currentStudent.id} />
         </Modal>
+        <Modal
+          width={700}
+          key={
+            `student-feedback-classRoomInfo-${
+              !currentClassRoom
+                ? 'empty'
+                : currentClassRoom.id
+            }`
+          }
+          title="课堂详情"
+          maskClosable={false}
+          visible={this.state.classRoomDialogVisible}
+          onOk={this.hideClassRoomInfo}
+          onCancel={this.hideClassRoomInfo}
+        >
+          <RoomInfo roomInfo={currentClassRoom} />
+        </Modal>
+
       </div>
     );
   }
