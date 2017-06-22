@@ -15,7 +15,7 @@ export function scholarship(
   switch (action.type) {
     case Scholarship.FETCH_SUMMARY:
     case Scholarship.FETCH_HISTORY_LIST:
-    case Scholarship.Apply_FIRST_SHARE_SCHOLARSHIP:
+    case Scholarship.APPLY_FIRST_SHARE_SCHOLARSHIP:
       return assign({}, state, {
         loading: true,
       });
@@ -34,8 +34,8 @@ export function scholarship(
       });
     case Scholarship.FETCH_SUMMARY_FAIL:
     case Scholarship.FETCH_HISTORY_LIST_FAIL:
-    case Scholarship.Apply_FIRST_SHARE_SCHOLARSHIP_SUCCESS:
-    case Scholarship.Apply_FIRST_SHARE_SCHOLARSHIP_FAIL:
+    case Scholarship.APPLY_FIRST_SHARE_SCHOLARSHIP_SUCCESS:
+    case Scholarship.APPLY_FIRST_SHARE_SCHOLARSHIP_FAIL:
       return assign({}, state, {
         loading: false,
       });

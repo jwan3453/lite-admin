@@ -198,9 +198,9 @@ export const Scholarship = {
   FETCH_HISTORY_LIST_SUCCESS: 'scholarship_fetch_history_list_success',
   FETCH_HISTORY_LIST_FAIL: 'scholarship_fetch_history_list_fail',
 
-  Apply_FIRST_SHARE_SCHOLARSHIP: 'apply_first_share_scholarship',
-  Apply_FIRST_SHARE_SCHOLARSHIP_SUCCESS: 'apply_first_share_scholarship_success',
-  Apply_FIRST_SHARE_SCHOLARSHIP_FAIL: 'apply_first_share_scholarship_fail',
+  APPLY_FIRST_SHARE_SCHOLARSHIP: 'apply_first_share_scholarship',
+  APPLY_FIRST_SHARE_SCHOLARSHIP_SUCCESS: 'apply_first_share_scholarship_success',
+  APPLY_FIRST_SHARE_SCHOLARSHIP_FAIL: 'apply_first_share_scholarship_fail',
 };
 
 export const Ticket = {

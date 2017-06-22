@@ -37,9 +37,9 @@ export function applyFirstShareWeixinScholarship(studentId) {
     studentId,
     [CALL_JQ_API]: {
       types: [
-        Scholarship.Apply_FIRST_SHARE_SCHOLARSHIP,
-        Scholarship.Apply_FIRST_SHARE_SCHOLARSHIP_SUCCESS,
-        Scholarship.Apply_FIRST_SHARE_SCHOLARSHIP_FAIL,
+        Scholarship.APPLY_FIRST_SHARE_SCHOLARSHIP,
+        Scholarship.APPLY_FIRST_SHARE_SCHOLARSHIP_SUCCESS,
+        Scholarship.APPLY_FIRST_SHARE_SCHOLARSHIP_FAIL,
       ],
       uri: `/admin/scholarship/${studentId}/giftWxFirstShare`,
       method: 'PUT',
