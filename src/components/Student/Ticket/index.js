@@ -7,6 +7,7 @@ import {
   Button,
   Tooltip,
   Popconfirm,
+  Message,
 } from 'antd';
 
 import moment from 'moment';
@@ -21,21 +22,31 @@ import SearchForm from './SearchForm';
 import TicketForm from '../../Common/TicketForm';
 
 import { getEmptyTicket } from './utils';
+import { manageTicket, deleteTicket, updateTicket, createTicket } from '../../../app/actions/ticket';
 
 class Tickets extends React.Component {
   static propTypes = {
+    dispatch: React.PropTypes.func.isRequired,
+    ticketData: React.PropTypes.object,
     loading: React.PropTypes.bool.isRequired,
-    tickets: React.PropTypes.array,
+    filters: React.PropTypes.object,
   };
 
   static defaultProps = {
-    tickets: [],
+    ticketData: {},
+    loading: false,
+    filters: {},
   };
 
   state = {
     dialogVisible: false,
     currentTicket: getEmptyTicket(),
   };
+
+  componentWillMount() {
+    const { dispatch } = this.props;
+    dispatch(manageTicket());
+  }
 
   showDialog = (currentTicket = getEmptyTicket()) => {
     this.setState({
@@ -51,67 +62,136 @@ class Tickets extends React.Component {
     });
   };
 
-  createTicket = () => {
-    const ticket = this.ticketForm.getFieldsValue();
-    console.log('createTicket', ticket);
-    //  todo create a new ticket
-    this.hideDialog();
+  handleCreateTicket = (ticket) => {
+    const { dispatch } = this.props;
+    dispatch(createTicket(ticket)).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+      } else {
+        this.hideDialog();
+        Message.success('更新工单成功');
+        this.setState({
+          dialogVisible: false,
+          ticketFormData: {},
+        });
+        dispatch(manageTicket());
+      }
+    });
   };
 
-  updateTicket = () => {
-    const ticket = this.ticketForm.getFieldsValue();
-    console.log('updateTicket', ticket);
-    //  todo update a ticket
-    this.hideDialog();
+  handleSubmitTicketForm = (ticket) => {
+    if (ticket.id > 0) {
+      this.handleUpdateTicket(ticket);
+    } else {
+      this.handleCreateTicket(ticket);
+    }
+  };
+
+  handleUpdateTicket = (ticket) => {
+    const { dispatch } = this.props;
+    dispatch(updateTicket(ticket)).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+      } else {
+        Message.success('更新工单成功');
+        this.setState({
+          dialogVisible: false,
+          ticketFormData: {},
+        });
+        dispatch(manageTicket());
+      }
+    });
   };
 
   removeTicket = (ticket) => {
-    console.log(ticket);
-    //  todo remove a ticket
+    const { dispatch } = this.props;
+    dispatch(deleteTicket(ticket.id)).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+      } else {
+        Message.success('删除工单成功');
+        this.setState({
+          dialogVisible: false,
+          ticketFormData: {},
+        });
+        dispatch(manageTicket());
+      }
+    });
+  };
+
+  handlePaginationChange = (pagination) => {
+    const { dispatch, filters } = this.props;
+    dispatch(
+      manageTicket(
+        Object.assign(filters, {
+          page: pagination.current,
+          pageSize: pagination.pageSize,
+        }),
+      ),
+    );
+  };
+
+  handleSearchTickets = (data) => {
+    const { dispatch } = this.props;
+    dispatch(manageTicket(data));
   };
 
   render() {
     const {
       loading,
-      tickets,
+      ticketData,
     } = this.props;
 
     const { currentTicket } = this.state;
 
+    const pageSize = ticketData.pageSize || 10;
+    const dataSource = ticketData.result || [];
+    const pagination = {
+      total: ticketData.total || 0,
+      pageSize,
+      current: ticketData.page || 1,
+      showSizeChanger: true,
+      showTotal: total => `总共${total}条`,
+    };
+
     const columns = [
       {
         title: '问题',
+        key: 'subject',
         dataIndex: 'subject',
       },
       {
         title: '用户',
-        dataIndex: 'user',
-        render: user => user.nickname,
+        key: 'user',
+        dataIndex: 'studentId',
       },
       {
         title: '工单类型',
+        key: 'type',
         dataIndex: 'type',
-        render: ticketType => TICKET_TYPES_MAP[ticketType].name,
+        render(ticketType) { return TICKET_TYPES_MAP[ticketType] ? TICKET_TYPES_MAP[ticketType].name : ''; },
       },
       {
         title: '处理人',
-        dataIndex: 'assignee',
-        render: assignee => assignee.nickname,
+        key: 'assignee',
+        dataIndex: 'assignedAdminUsername',
       },
       {
         title: '联系时间',
-        dataIndex: 'ctime',
-        render: ctime => moment(ctime).format('YYYY-MM-DD hh:mm:ss'),
+        key: 'ctime',
+        dataIndex: 'contactAt',
+        render: ctime => moment.unix(ctime).format('YYYY-MM-DD HH:mm:ss'),
       },
       {
         title: '提交人',
-        dataIndex: 'submitter',
-        render: submitter => submitter.nickname,
+        key: 'submitter',
+        dataIndex: 'submittedAdminUsername',
       },
       {
         title: '状态',
+        key: 'status',
         dataIndex: 'status',
-        render: ticketStatus => TICKET_STATUS.STATUS_MAP[ticketStatus].name,
+        render(ticketStatus) { return TICKET_STATUS.STATUS_MAP[ticketStatus] ? TICKET_STATUS.STATUS_MAP[ticketStatus].name : ''; },
       },
       {
         title: '操作',
@@ -142,11 +222,14 @@ class Tickets extends React.Component {
       <div>
         <SearchForm
           showDialog={this.showDialog}
+          search={this.handleSearchTickets}
         />
         <Table
           loading={loading}
           columns={columns}
-          dataSource={tickets}
+          dataSource={dataSource}
+          pagination={pagination}
+          onChange={this.handlePaginationChange}
           style={{ marginTop: 16 }}
         />
         <Modal
@@ -158,16 +241,13 @@ class Tickets extends React.Component {
           }
           maskClosable={false}
           visible={this.state.dialogVisible}
-          onOk={
-            currentTicket.id < 0
-            ? this.createTicket
-            : this.updateTicket
-          }
           onCancel={this.hideDialog}
+          footer={null}
         >
           <TicketForm
             ticket={currentTicket}
             ref={(node) => { this.ticketForm = node; }}
+            onSubmit={this.handleSubmitTicketForm}
           />
         </Modal>
       </div>
@@ -175,26 +255,13 @@ class Tickets extends React.Component {
   }
 }
 
-function mapStateToProps() {
+function mapStateToProps(state) {
+  const { ticket } = state;
   return {
-    loading: false,
-    tickets: [
-      {
-        subject: 'test subject',
-        user: {
-          nickname: 'milo',
-        },
-        type: 0,
-        status: 1,
-        assignee: {
-          nickname: 'peter',
-        },
-        ctime: 1498015008265,
-        submitter: {
-          nickname: 'halo',
-        },
-      },
-    ],
+    loading: ticket.loading,
+    ticketData: ticket.manage.result,
+    filters: ticket.manage.filters,
+    adminUsers: [],
   };
 }
 

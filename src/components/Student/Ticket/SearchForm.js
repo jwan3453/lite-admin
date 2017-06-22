@@ -26,8 +26,34 @@ class SearchForm extends React.Component {
     showDialog: () => {},
   };
 
-  search = () => {
-    this.props.search();
+  search = (e) => {
+    e.preventDefault();
+    this.props.form.validateFieldsAndScroll((err, values) => {
+      if (!err) {
+        const filters = {};
+        if (values.subject) {
+          filters.subject = values.subject;
+        }
+
+        if (values.status && parseInt(values.status, 10) >= 0) {
+          filters.status = parseInt(values.status, 10);
+        }
+
+        if (values.type && parseInt(values.type, 10) >= 0) {
+          filters.type = parseInt(values.type, 10);
+        }
+
+        if (values.studentId) {
+          filters.studentId = parseInt(values.studentId, 10);
+        }
+
+        console.log('loging...', values.assignee);
+        if (values.assignee) {
+          filters.adminId = parseInt(values.assignee, 10);
+        }
+        this.props.search(filters);
+      }
+    });
   };
 
   reset = () => {
@@ -76,7 +102,7 @@ class SearchForm extends React.Component {
               {...formItemLayout}
             >
               {
-                getFieldDecorator('nickname', {
+                getFieldDecorator('studentId', {
                   rules: [
                     {
                       required: false,
@@ -129,7 +155,7 @@ class SearchForm extends React.Component {
                         item => (
                           <Select.Option
                             key={item.value}
-                            value={item.value}
+                            value={String(item.value)}
                           >{item.name}</Select.Option>
                         ),
                       )
@@ -164,7 +190,7 @@ class SearchForm extends React.Component {
                         item => (
                           <Select.Option
                             key={item.value}
-                            value={item.value}
+                            value={String(item.value)}
                           >{item.name}</Select.Option>
                         ),
                       )

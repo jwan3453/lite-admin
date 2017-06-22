@@ -208,9 +208,9 @@ export const Ticket = {
   CREATE_SUCCESS: 'ticket_create_success',
   CREATE_FAIL: 'ticket_create_fail',
 
-  FETCH: 'ticket_fetch',
-  FETCH_SUCCESS: 'ticket_fetch_success',
-  FETCH_FAIL: 'ticket_fetch_fail',
+  FETCH_BY_USER: 'ticket_fetch_by_user',
+  FETCH_BY_USER_SUCCESS: 'ticket_fetch_by_user_success',
+  FETCH_BY_USER_FAIL: 'ticket_fetch_by_user_fail',
 
   UPDATE: 'ticket_update',
   UPDATE_SUCCESS: 'ticket_update_success',
@@ -219,6 +219,10 @@ export const Ticket = {
   DELETE: 'ticket_delete',
   DELETE_SUCCESS: 'ticket_delete_success',
   DELETE_FAIL: 'ticket_delete_fail',
+
+  MANAGE: 'ticket_manage',
+  MANAGE_SUCCESS: 'ticket_manage_success',
+  MANAGE_FAIL: 'ticket_manage_fail',
 };
 
 export const Crm = {

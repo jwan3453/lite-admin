@@ -15,7 +15,7 @@ export function createTicket(data) {
 export function fetchTicket(studentId, filters = {}) {
   return {
     [CALL_JQ_API]: {
-      types: [Ticket.FETCH, Ticket.FETCH_SUCCESS, Ticket.FETCH_FAIL],
+      types: [Ticket.FETCH_BY_USER, Ticket.FETCH_BY_USER_SUCCESS, Ticket.FETCH_BY_USER_FAIL],
       uri: `/admin/tickets/${studentId}`,
       body: filters,
       method: 'GET',
@@ -23,13 +23,24 @@ export function fetchTicket(studentId, filters = {}) {
   };
 }
 
-export function updateTicket(ticketId, data) {
+export function manageTicket(filters = {}) {
+  return {
+    [CALL_JQ_API]: {
+      types: [Ticket.MANAGE, Ticket.MANAGE_SUCCESS, Ticket.MANAGE_FAIL],
+      uri: '/admin/tickets/manage',
+      body: filters,
+      method: 'POST',
+    },
+  };
+}
+
+export function updateTicket(ticket) {
   return {
     [CALL_JQ_API]: {
       types: [Ticket.UPDATE, Ticket.UPDATE_SUCCESS, Ticket.UPDATE_FAIL],
-      uri: `/admin/tickets/${ticketId}`,
+      uri: `/admin/tickets/${ticket.id}`,
       method: 'PUT',
-      body: data,
+      body: ticket,
     },
   };
 }

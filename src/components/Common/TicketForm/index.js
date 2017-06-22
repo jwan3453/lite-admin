@@ -6,9 +6,11 @@ import {
   Tooltip,
   Modal,
   Icon,
+  Button,
 } from 'antd';
 
 import _ from 'lodash';
+import moment from 'moment';
 
 import StudentSelector from '../StudentSelector';
 
@@ -38,6 +40,7 @@ class Ticket extends React.Component {
   static propTypes = {
     form: React.PropTypes.object.isRequired,
     ticket: React.PropTypes.object,
+    onSubmit: React.PropTypes.func.isRequired,
   };
 
   static defaultProps = {
@@ -46,20 +49,17 @@ class Ticket extends React.Component {
 
   state = {
     studentSelectorVisible: false,
-    selectedUser: this.props.ticket.user,
+    selectedStudent: {},
   };
 
   pickUpUser = () => {
-    this.props.form.setFieldsValue({
-      user: this.state.selectedUser.id,
-    });
     this.hideStudentSelector();
   };
 
   handleSelectChange = (selectedRowKeys, selectedRows) => {
     const selectedUser = selectedRows[0];
     this.setState({
-      selectedUser,
+      selectedStudent: selectedUser,
     });
   };
 
@@ -75,6 +75,26 @@ class Ticket extends React.Component {
     });
   };
 
+  handleSubmit = (e) => {
+    e.preventDefault();
+    this.props.form.validateFieldsAndScroll((err, values) => {
+      if (!err) {
+        const newTicket = {
+          adminId: parseInt(values.assignee, 10),
+          type: parseInt(values.type, 10),
+          status: parseInt(values.status, 10),
+          subject: values.subject,
+          remark: values.remark,
+          contactAt: moment(values.ctime).unix(),
+          id: this.props.ticket.id,
+          studentId: this.state.selectedStudent.id,
+        };
+        this.props.onSubmit(newTicket);
+        this.props.form.resetFields();
+      }
+    });
+  };
+
   render() {
     const { form, ticket } = this.props;
 
@@ -86,20 +106,31 @@ class Ticket extends React.Component {
     };
 
     const {
-      selectedUser,
       studentSelectorVisible,
     } = this.state;
+    const tailFormItemLayout = {
+      wrapperCol: {
+        xs: {
+          span: 24,
+          offset: 0,
+        },
+        sm: {
+          span: 14,
+          offset: 6,
+        },
+      },
+    };
 
     return (
       <div>
-        <Form>
+        <Form onSubmit={this.handleSubmit}>
           <FormItem
             label="分类"
             {...formItemLayout}
           >
             {
               getFieldDecorator('type', {
-                initialValue: ticket.type,
+                initialValue: String(ticket.type),
                 rules: [
                   {
                     required: false,
@@ -113,7 +144,7 @@ class Ticket extends React.Component {
                       item => (
                         <Select.Option
                           key={item.value}
-                          value={item.value}
+                          value={String(item.value)}
                         >{item.name}</Select.Option>
                       ),
                     )
@@ -142,8 +173,8 @@ class Ticket extends React.Component {
             {...formItemLayout}
           >
             {
-              getFieldDecorator('user', {
-                initialValue: ticket.user.id,
+              getFieldDecorator('studentId', {
+                initialValue: ticket.studentId,
                 rules: [
                   {
                     required: true,
@@ -152,7 +183,6 @@ class Ticket extends React.Component {
               })(<input type="hidden" />)
             }
             <Input
-              value={selectedUser.nickname}
               addonAfter={
                 <Tooltip title="添加用户" placement="top">
                   <Icon
@@ -170,7 +200,7 @@ class Ticket extends React.Component {
           >
             {
               getFieldDecorator('assignee', {
-                initialValue: ticket.assignee.nickname,
+                initialValue: ticket.assignedAdminId,
                 rules: [
                   {
                     required: false,
@@ -185,7 +215,7 @@ class Ticket extends React.Component {
           >
             {
               getFieldDecorator('ctime', {
-                initialValue: ticket.ctime,
+                initialValue: `${moment(ticket.ctime || (new Date())).format('YYYY-MM-DD HH:mm:ss')}`,
                 rules: [
                   {
                     required: false,
@@ -200,7 +230,7 @@ class Ticket extends React.Component {
           >
             {
               getFieldDecorator('status', {
-                initialValue: ticket.status,
+                initialValue: String(ticket.status),
                 rules: [
                   {
                     required: false,
@@ -214,7 +244,7 @@ class Ticket extends React.Component {
                       item => (
                         <Select.Option
                           key={item.value}
-                          value={item.value}
+                          value={String(item.value)}
                         >{item.name}</Select.Option>
                       ),
                     )
@@ -228,8 +258,8 @@ class Ticket extends React.Component {
             {...formItemLayout}
           >
             {
-              getFieldDecorator('comment', {
-                initialValue: ticket.comment,
+              getFieldDecorator('remark', {
+                initialValue: ticket.remark,
                 rules: [
                   {
                     required: false,
@@ -237,6 +267,9 @@ class Ticket extends React.Component {
                 ],
               })(<Input type="textarea" placeholder="备注" />)
             }
+          </FormItem>
+          <FormItem {...tailFormItemLayout}>
+            <Button type="primary" htmlType="submit" size="large">提交</Button>
           </FormItem>
         </Form>
         <Modal
