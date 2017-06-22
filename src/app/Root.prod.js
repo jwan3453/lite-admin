@@ -12,6 +12,6 @@ export default class Root extends Component {
       <Provider store={store}>
         <Router history={hashHistory} routes={routes} />
       </Provider>
-    )
+    );
   }
 }
