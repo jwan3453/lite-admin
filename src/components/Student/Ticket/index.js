@@ -18,7 +18,7 @@ import {
 } from '../../../common/ticketTypes';
 
 import SearchForm from './SearchForm';
-import TicketForm from './TicketForm';
+import TicketForm from '../../Common/TicketForm';
 
 import { getEmptyTicket } from './utils';
 

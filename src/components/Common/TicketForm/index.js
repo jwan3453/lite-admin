@@ -15,7 +15,22 @@ import StudentSelector from '../../Common/StudentSelector';
 import TICKET_TYPES from '../../../common/ticketTypes';
 import * as TICKET_STATUS from '../../../common/ticketStatus';
 
-import { getEmptyTicket } from './utils';
+const getEmptyTicket = () => ({
+  id: -1,
+  subject: '',
+  user: {
+    id: -1,
+    nickname: '',
+  },
+  assignee: {
+    id: '',
+    nickname: '',
+  },
+  ctime: '',
+  status: TICKET_STATUS.CREATED,
+  type: null,
+});
+
 
 const FormItem = Form.Item;
 
