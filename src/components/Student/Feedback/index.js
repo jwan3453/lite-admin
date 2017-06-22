@@ -13,6 +13,7 @@ import ActionBar from './ActionBar';
 import SearchForm from './SearchForm';
 import ReplyForm from './ReplyForm';
 import TicketForm from '../../Common/TicketForm';
+import StudentInfo from '../../Common/StudentInfo';
 
 import {
   STATUS_MAP as PROGRESS_STATUS_MAP,
@@ -39,15 +40,25 @@ class Feedback extends React.Component {
 
   state = {
     replyDialogVisible: false,
+    studentDialogVisible: false,
     currentFeedback: {},
+    currentStudent: {
+      id: -1,
+    },
   };
 
-  showStudentInfo = () => {
-    //  todo
+  showStudentInfo = (currentStudent) => {
+    this.setState({
+      studentDialogVisible: true,
+      currentStudent,
+    });
   };
 
   hideStudentInfo = () => {
-    //  todo
+    this.setState({
+      studentDialogVisible: false,
+      currentStudent: { id: -1 },
+    });
   };
 
   showClassRoomInfo = () => {
@@ -111,19 +122,22 @@ class Feedback extends React.Component {
       feedbacks,
     } = this.props;
 
-    const { currentFeedback } = this.state;
+    const {
+      currentFeedback,
+      currentStudent,
+    } = this.state;
 
     const columns = [
       {
         title: '用户',
-        dataIndex: 'user',
-        render: user => (
+        dataIndex: 'student',
+        render: student => (
           <Tooltip title="查看用户信息" placement="top">
             <a
               role="button"
               tabIndex="0"
-              onClick={() => { this.showStudentInfo(user); }}
-            >{`[${user.id}] ${user.nickname}`}</a>
+              onClick={() => { this.showStudentInfo(student); }}
+            >{`[${student.id}] ${student.nickname}`}</a>
           </Tooltip>
         ),
       },
@@ -243,6 +257,23 @@ class Feedback extends React.Component {
             ref={(node) => { this.ticketForm = node; }}
           />
         </Modal>
+        <Modal
+          width={700}
+          key={
+            `student-feedback-studentInfo-${
+              !currentStudent
+                ? 'empty'
+                : currentStudent.id
+            }`
+          }
+          title="学生信息"
+          maskClosable={false}
+          visible={this.state.studentDialogVisible}
+          onOk={this.hideStudentInfo}
+          onCancel={this.hideStudentInfo}
+        >
+          <StudentInfo studentId={currentStudent.id} />
+        </Modal>
       </div>
     );
   }
@@ -253,8 +284,8 @@ function mapStateToProps() {
     loading: false,
     feedbacks: [
       {
-        id: 0,
-        user: {
+        id: 1,
+        student: {
           id: 0,
           nickname: 'user 1',
         },
