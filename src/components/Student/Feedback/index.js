@@ -12,6 +12,7 @@ import moment from 'moment';
 import ActionBar from './ActionBar';
 import SearchForm from './SearchForm';
 import ReplyForm from './ReplyForm';
+import TicketForm from '../../Common/TicketForm';
 
 import {
   STATUS_MAP as PROGRESS_STATUS_MAP,
@@ -38,6 +39,7 @@ class Feedback extends React.Component {
 
   state = {
     replyDialogVisible: false,
+    currentFeedback: {},
   };
 
   showStudentInfo = () => {
@@ -56,27 +58,51 @@ class Feedback extends React.Component {
     //  todo
   };
 
-  showReplyDialog = () => {
+  showReplyDialog = (currentFeedback) => {
     this.setState({
       replyDialogVisible: true,
+      currentFeedback,
     });
   };
 
   hideReplyDialog = () => {
     this.setState({
       replyDialogVisible: false,
+      currentFeedback: null,
+    });
+  };
+
+  showTicketDialog = (currentFeedback) => {
+    this.setState({
+      ticketDialogVisible: true,
+      currentFeedback,
+    });
+  };
+
+  hideTicketDialog = () => {
+    this.setState({
+      ticketDialogVisible: false,
+      currentFeedback: null,
     });
   };
 
   reply = () => {
     const me = this;
+    const { currentFeedback } = me.state;
+
     me.replyForm.validateFields((err, values) => {
       if (!err) {
         //  todo submit replay message
-        console.log('replay messages', values);
+        console.log('replay messages', values, currentFeedback);
         me.hideReplyDialog();
       }
     });
+  };
+
+  createTicket = () => {
+    //  todo
+    const ticket = this.ticketForm.getFieldsValue();
+    console.log('createTicket', ticket);
   };
 
   render() {
@@ -84,6 +110,8 @@ class Feedback extends React.Component {
       loading,
       feedbacks,
     } = this.props;
+
+    const { currentFeedback } = this.state;
 
     const columns = [
       {
@@ -166,9 +194,10 @@ class Feedback extends React.Component {
       {
         title: '操作',
         key: 'actions',
-        render: () => (
+        render: (text, feedback) => (
           <ActionBar
-            showReplyDialog={this.showReplyDialog}
+            showReplyDialog={() => { this.showReplyDialog(feedback); }}
+            showTicketDialog={() => { this.showTicketDialog(feedback); }}
           />
         ),
       },
@@ -185,14 +214,33 @@ class Feedback extends React.Component {
           style={{ marginTop: 16 }}
         />
         <Modal
-          key={`open-${new Date()}`}
+          key={`student-feedback-reply-${new Date()}`}
           title="回复用户反馈"
+          maskClosable={false}
           visible={this.state.replyDialogVisible}
           onOk={this.reply}
           onCancel={this.hideReplyDialog}
         >
           <ReplyForm
             ref={(node) => { this.replyForm = node; }}
+          />
+        </Modal>
+        <Modal
+          key={
+            `student-feedback-ticket-${
+              !currentFeedback
+                ? 'empty'
+                : currentFeedback.id
+            }`
+          }
+          title="新建工单"
+          maskClosable={false}
+          visible={this.state.ticketDialogVisible}
+          onOk={this.createTicket}
+          onCancel={this.hideTicketDialog}
+        >
+          <TicketForm
+            ref={(node) => { this.ticketForm = node; }}
           />
         </Modal>
       </div>

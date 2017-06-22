@@ -402,35 +402,41 @@ class Search extends React.Component {
           </Row>
         </Form>
         <Modal
-          key="StudentSelector"
+          key="student-feedback-StudentSelector"
           title="选择学生"
           visible={this.state.studentSelectorVisible}
+          maskClosable={false}
           onOk={this.pickUpStudent}
           onCancel={this.hideStudentSelector}
         >
           <StudentSelector
+            key="student-feedback-StudentSelector-selector"
             onSelectedRowsChange={this.onSelectedStudentChange}
           />
         </Modal>
         <Modal
-          key="AssistantSelector"
+          key="student-feedback-AssistantSelector"
           title="选择助教"
           visible={this.state.assistantSelectorVisible}
+          maskClosable={false}
           onOk={this.pickUpAssistant}
           onCancel={this.hideAssistantSelector}
         >
           <StudentSelector
+            key="student-feedback-AssistantSelector-selector"
             onSelectedRowsChange={this.onSelectedAssistantChange}
           />
         </Modal>
         <Modal
-          key="AssigneeSelector"
+          key="student-feedback-AssigneeSelector"
           title="选择处理人"
           visible={this.state.assigneeSelectorVisible}
+          maskClosable={false}
           onOk={this.pickUpAssignee}
           onCancel={this.hideAssigneeSelector}
         >
           <StudentSelector
+            key="student-feedback-AssigneeSelector-selector"
             onSelectedRowsChange={this.onSelectedAssigneeChange}
           />
         </Modal>

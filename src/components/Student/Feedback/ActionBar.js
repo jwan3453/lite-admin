@@ -8,10 +8,12 @@ import {
 export default class ActionBar extends React.Component {
   static propTypes = {
     showReplyDialog: React.PropTypes.func,
+    showTicketDialog: React.PropTypes.func,
   };
 
   static defaultProps = {
     showReplyDialog: () => {},
+    showTicketDialog: () => {},
   };
 
   render() {
@@ -21,6 +23,7 @@ export default class ActionBar extends React.Component {
 
     const {
       showReplyDialog,
+      showTicketDialog,
     } = this.props;
 
     return (
@@ -36,6 +39,7 @@ export default class ActionBar extends React.Component {
           <Button
             icon="file-add"
             style={buttonStyle}
+            onClick={showTicketDialog}
           />
         </Tooltip>
         <Popconfirm

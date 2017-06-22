@@ -10,7 +10,7 @@ import {
 
 import _ from 'lodash';
 
-import StudentSelector from '../../Common/StudentSelector';
+import StudentSelector from '../StudentSelector';
 
 import TICKET_TYPES from '../../../common/ticketTypes';
 import * as TICKET_STATUS from '../../../common/ticketStatus';
@@ -45,7 +45,7 @@ class Ticket extends React.Component {
   };
 
   state = {
-    dialogVisible: false,
+    studentSelectorVisible: false,
     selectedUser: this.props.ticket.user,
   };
 
@@ -65,13 +65,13 @@ class Ticket extends React.Component {
 
   showStudentSelector = () => {
     this.setState({
-      dialogVisible: true,
+      studentSelectorVisible: true,
     });
   };
 
   hideStudentSelector = () => {
     this.setState({
-      dialogVisible: false,
+      studentSelectorVisible: false,
     });
   };
 
@@ -85,7 +85,10 @@ class Ticket extends React.Component {
       wrapperCol: { span: 16 },
     };
 
-    const { selectedUser } = this.state;
+    const {
+      selectedUser,
+      studentSelectorVisible,
+    } = this.state;
 
     return (
       <div>
@@ -237,9 +240,10 @@ class Ticket extends React.Component {
           </FormItem>
         </Form>
         <Modal
+          key="common-ticketform"
           title="选择用户"
           maskClosable={false}
-          visible={this.state.dialogVisible}
+          visible={studentSelectorVisible}
           onOk={this.pickUpUser}
           onCancel={this.hideStudentSelector}
         >
