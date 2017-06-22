@@ -29,7 +29,7 @@ export function manageTicket(filters = {}) {
       types: [Ticket.MANAGE, Ticket.MANAGE_SUCCESS, Ticket.MANAGE_FAIL],
       uri: '/admin/tickets/manage',
       body: filters,
-      method: 'POST',
+      method: 'GET',
     },
   };
 }
