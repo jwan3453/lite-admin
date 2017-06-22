@@ -220,3 +220,21 @@ export const Ticket = {
   DELETE_SUCCESS: 'ticket_delete_success',
   DELETE_FAIL: 'ticket_delete_fail',
 };
+
+export const Crm = {
+  FETCH_CRM: 'crm_fetch',
+  FETCH_CRM_SUCCESS: 'crm_fetch_success',
+  FETCH_CRM_FAIL: 'crm_fetch_fail',
+
+  UPDATE_CRM_STATUS: 'update_crm_status',
+  UPDATE_CRM_STATUS_SUCCESS: 'update_crm_status_success',
+  UPDATE_CRM_STATUS_FAIL: 'update_crm_status_fail',
+
+  DELETE_CRM: 'delete_crm',
+  DELETE_CRM_SUCCESS: 'delete_crm_success',
+  DELETE_CRM_FAIL: 'delete_crm_fail',
+
+  CREATE_CRM: 'create_crm',
+  CREATE_CRM_SUCCESS: 'create_crm_success',
+  CREATE_CRM_FAIL: 'create_crm_fail',
+};

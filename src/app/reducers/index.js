@@ -14,6 +14,7 @@ import * as adminReducers from './admin';
 import * as productReducers from './product';
 import * as scholarshipReducers from './scholarship';
 import * as ticketReducers from './ticket';
+import * as crmReducers from './crm';
 
 const rootReducer = combineReducers({
   routing,
@@ -30,6 +31,7 @@ const rootReducer = combineReducers({
   ...productReducers,
   ...scholarshipReducers,
   ...ticketReducers,
+  ...crmReducers,
 });
 
 export default rootReducer;

@@ -2,7 +2,7 @@ import React from 'react';
 import {
   Form,
   Input,
-  Icon,
+  Button,
 } from 'antd';
 
 const FormItem = Form.Item;
@@ -10,9 +10,23 @@ const FormItem = Form.Item;
 class CreateCommentForm extends React.Component {
   static propTypes = {
     form: React.PropTypes.object.isRequired,
+    onSubmit: React.PropTypes.func.isRequired,
   };
 
   static defaultProps = {
+  };
+
+  handleSubmit = (e) => {
+    e.preventDefault();
+    this.props.form.validateFieldsAndScroll((err, values) => {
+      if (!err) {
+        const newCrm = {
+          comments: values.comment,
+        };
+        this.props.onSubmit(newCrm);
+        this.props.form.resetFields();
+      }
+    });
   };
 
   render() {
@@ -22,8 +36,23 @@ class CreateCommentForm extends React.Component {
       wrapperCol: { span: 18 },
     };
 
+    const tailFormItemLayout = {
+      wrapperCol: {
+        xs: {
+          span: 24,
+          offset: 0,
+        },
+        sm: {
+          span: 14,
+          offset: 6,
+        },
+      },
+    };
+
     return (
-      <Form>
+      <Form
+        onSubmit={this.handleSubmit}
+      >
         <FormItem
           label="用户备注"
           {...formItemLayout}
@@ -32,18 +61,20 @@ class CreateCommentForm extends React.Component {
             getFieldDecorator('comment', {
               rules: [
                 {
-                  required: false,
+                  required: true,
                 },
               ],
             })(<Input type="textarea" rows={5} />)
           }
-          <p><Icon type="info-circle" style={{ color: '#108ee9', marginRight: 8 }} />将用户设置到此跟进状态，若不选择，将不更新用户的状态。</p>
-          <p><Icon type="info-circle" style={{ color: '#108ee9', marginRight: 8 }} />若只想更新用户的跟进状态，该备注可以不填。</p>
+        </FormItem>
+        <FormItem {...tailFormItemLayout}>
+          <Button type="primary" htmlType="submit" size="large">提交</Button>
         </FormItem>
       </Form>
     );
   }
 }
+
 
 export default Form.create()(CreateCommentForm);
 

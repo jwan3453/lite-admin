@@ -40,7 +40,7 @@ export default class StudentInfo extends Component {
           <UserTicket studentId={studentId} />
         </Tabs.TabPane>
         <Tabs.TabPane tab="CRM跟进" key="crm">
-          <Crm />
+          <Crm studentId={studentId} />
         </Tabs.TabPane>
       </Tabs>
     );
