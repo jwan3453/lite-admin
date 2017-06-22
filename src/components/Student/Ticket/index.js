@@ -185,6 +185,7 @@ function mapStateToProps() {
           nickname: 'milo',
         },
         type: 0,
+        status: 1,
         assignee: {
           nickname: 'peter',
         },
@@ -192,7 +193,6 @@ function mapStateToProps() {
         submitter: {
           nickname: 'halo',
         },
-        status: 0,
       },
     ],
   };
