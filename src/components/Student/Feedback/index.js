@@ -36,12 +36,47 @@ class Feedback extends React.Component {
     feedbacks: [],
   };
 
+  state = {
+    replyDialogVisible: false,
+  };
+
   showStudentInfo = () => {
+    //  todo
+  };
+
+  hideStudentInfo = () => {
     //  todo
   };
 
   showClassRoomInfo = () => {
     //  todo
+  };
+
+  hideClassRoomInfo = () => {
+    //  todo
+  };
+
+  showReplyDialog = () => {
+    this.setState({
+      replyDialogVisible: true,
+    });
+  };
+
+  hideReplyDialog = () => {
+    this.setState({
+      replyDialogVisible: false,
+    });
+  };
+
+  reply = () => {
+    const me = this;
+    me.replyForm.validateFields((err, values) => {
+      if (!err) {
+        //  todo submit replay message
+        console.log('replay messages', values);
+        me.hideReplyDialog();
+      }
+    });
   };
 
   render() {
@@ -132,7 +167,9 @@ class Feedback extends React.Component {
         title: '操作',
         key: 'actions',
         render: () => (
-          <ActionBar />
+          <ActionBar
+            showReplyDialog={this.showReplyDialog}
+          />
         ),
       },
     ];
@@ -147,8 +184,16 @@ class Feedback extends React.Component {
           dataSource={feedbacks}
           style={{ marginTop: 16 }}
         />
-        <Modal>
-          <ReplyForm />
+        <Modal
+          key={`open-${new Date()}`}
+          title="回复用户反馈"
+          visible={this.state.replyDialogVisible}
+          onOk={this.reply}
+          onCancel={this.hideReplyDialog}
+        >
+          <ReplyForm
+            ref={(node) => { this.replyForm = node; }}
+          />
         </Modal>
       </div>
     );

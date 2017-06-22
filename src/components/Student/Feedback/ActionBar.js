@@ -6,10 +6,22 @@ import {
 } from 'antd';
 
 export default class ActionBar extends React.Component {
+  static propTypes = {
+    showReplyDialog: React.PropTypes.func,
+  };
+
+  static defaultProps = {
+    showReplyDialog: () => {},
+  };
+
   render() {
     const buttonStyle = {
       marginRight: 8,
     };
+
+    const {
+      showReplyDialog,
+    } = this.props;
 
     return (
       <div>
@@ -17,6 +29,7 @@ export default class ActionBar extends React.Component {
           <Button
             icon="message"
             style={buttonStyle}
+            onClick={showReplyDialog}
           />
         </Tooltip>
         <Tooltip title="创建工单" placement="top">
