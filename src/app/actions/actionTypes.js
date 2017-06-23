@@ -7,6 +7,10 @@ export const Admin = {
   FETCH_SUCCESS: 'admin_fetch_success',
   FETCH_FAIL: 'admin_fetch_fail',
 
+  SEARCH: 'admin_search',
+  SEARCH_SUCCESS: 'admin_search_success',
+  SEARCH_FAIL: 'admin_search_fail',
+
   MANAGE: 'admin_manage',
   MANAGE_SUCCESS: 'admin_manage_success',
   MANAGE_FAIL: 'admin_manage_fail',

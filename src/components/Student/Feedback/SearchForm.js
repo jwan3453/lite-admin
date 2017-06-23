@@ -18,6 +18,7 @@ import PROGRESS_STATUS from './progressStatus';
 import FOLLOW_STATUS from './followStatus';
 
 import StudentSelector from '../../Common/StudentSelector';
+import AssigneeSelector from '../../Common/AssigneeSelector';
 
 const FormItem = Form.Item;
 
@@ -378,7 +379,7 @@ class Search extends React.Component {
                 <Input
                   placeholder="选择处理人"
                   addonAfter={
-                    <Tooltip title="选择助教" placement="top">
+                    <Tooltip title="选择处理人" placement="top">
                       <Icon
                         type="user-add"
                         onClick={
@@ -435,7 +436,7 @@ class Search extends React.Component {
           onOk={this.pickUpAssignee}
           onCancel={this.hideAssigneeSelector}
         >
-          <StudentSelector
+          <AssigneeSelector
             key="student-feedback-AssigneeSelector-selector"
             onSelectedRowsChange={this.onSelectedAssigneeChange}
           />

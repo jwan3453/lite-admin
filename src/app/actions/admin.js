@@ -23,6 +23,19 @@ export function manageAdmins(filters) {
   };
 }
 
+export function searchAdmin(filters) {
+  //  todo
+  return {
+    filters,
+    [CALL_JQ_API]: {
+      types: [Admin.SEARCH, Admin.SEARCH_SUCCESS, Admin.SEARCH_FAIL],
+      uri: '/admin/users/search',
+      method: 'GET',
+      body: filters,
+    },
+  };
+}
+
 export function createAdmin(data) {
   return {
     [CALL_JQ_API]: {
