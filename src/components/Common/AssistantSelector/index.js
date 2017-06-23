@@ -86,7 +86,7 @@ class Assistants extends Component {
           size="default"
           onSearch={this.handleSearch}
           prefix={<Icon type="mobile" style={{ fontSize: 13 }} />}
-          placeholder="手机尾号 或 手机号"
+          placeholder="学生助教ID／姓名"
         />
         <Table
           size="small"
