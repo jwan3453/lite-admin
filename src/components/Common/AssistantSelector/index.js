@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, Input, Icon } from 'antd';
+import { Table, Input } from 'antd';
 import { connect } from 'react-redux';
 
 import { searchAdmin } from '../../../app/actions/admin';
@@ -85,7 +85,6 @@ class Assistants extends Component {
         <Input.Search
           size="default"
           onSearch={this.handleSearch}
-          prefix={<Icon type="mobile" style={{ fontSize: 13 }} />}
           placeholder="学生助教ID／姓名"
         />
         <Table

@@ -2,34 +2,34 @@ import React, { Component } from 'react';
 import { Table, Input } from 'antd';
 import { connect } from 'react-redux';
 
-import { searchAdmin } from '../../../app/actions/admin';
+import { searchTeacher } from '../../../app/actions/teacher';
 
-class Assignees extends Component {
+class Teachers extends Component {
   static propTypes = {
     dispatch: React.PropTypes.func.isRequired,
     loading: React.PropTypes.bool.isRequired,
     filters: React.PropTypes.object.isRequired,
-    assignees: React.PropTypes.object.isRequired,
+    students: React.PropTypes.object.isRequired,
     onSelectedRowsChange: React.PropTypes.func.isRequired,
     multiSelect: React.PropTypes.bool,
   };
 
   static defaultProps = {
     filters: {},
-    assignees: {},
+    students: {},
     onSelectedRowsChange: () => {},
     multiSelect: false,
   };
 
   componentWillMount() {
     const { dispatch, filters } = this.props;
-    dispatch(searchAdmin(filters));
+    dispatch(searchTeacher(filters.searchText));
   }
 
   handleChangePage = (pagination) => {
     const { dispatch, filters } = this.props;
     dispatch(
-      searchAdmin(
+      searchTeacher(
         Object.assign(filters, {
           page: pagination.current,
           pageSize: pagination.pageSize,
@@ -44,13 +44,13 @@ class Assignees extends Component {
 
   handleSearch = (value) => {
     const { dispatch } = this.props;
-    dispatch(searchAdmin({
+    dispatch(searchTeacher({
       searchText: value,
     }));
   };
 
   render() {
-    const { assignees, multiSelect } = this.props;
+    const { students, multiSelect } = this.props;
 
     const columns = [
       {
@@ -67,13 +67,13 @@ class Assignees extends Component {
     ];
 
     const pagination = {
-      total: assignees.total || 0,
-      pageSize: assignees.pageSize || 10,
-      current: assignees.page || 1,
+      total: students.total || 0,
+      pageSize: students.pageSize || 10,
+      current: students.page || 1,
       simple: true,
     };
 
-    const dataSource = assignees.result || [];
+    const dataSource = students.result || [];
 
     const rowSelection = {
       type: !multiSelect ? 'radio' : 'checkbox',
@@ -85,7 +85,7 @@ class Assignees extends Component {
         <Input.Search
           size="default"
           onSearch={this.handleSearch}
-          placeholder="处理人ID／姓名"
+          placeholder="老师ID／姓名"
         />
         <Table
           size="small"
@@ -111,9 +111,9 @@ function mapStateToProps(state) {
   return {
     loading,
     filters,
-    assignees: result,
+    students: result,
   };
 }
 
-export default connect(mapStateToProps)(Assignees);
+export default connect(mapStateToProps)(Teachers);
 
