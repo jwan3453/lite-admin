@@ -2,34 +2,34 @@ import React, { Component } from 'react';
 import { Table, Input } from 'antd';
 import { connect } from 'react-redux';
 
-import { searchAdmin } from '../../../app/actions/admin';
+import { manageAdmins } from '../../../app/actions/admin';
 
 class Assistants extends Component {
   static propTypes = {
     dispatch: React.PropTypes.func.isRequired,
     loading: React.PropTypes.bool.isRequired,
     filters: React.PropTypes.object.isRequired,
-    students: React.PropTypes.object.isRequired,
+    assistants: React.PropTypes.object.isRequired,
     onSelectedRowsChange: React.PropTypes.func.isRequired,
     multiSelect: React.PropTypes.bool,
   };
 
   static defaultProps = {
     filters: {},
-    students: {},
+    assistants: {},
     onSelectedRowsChange: () => {},
     multiSelect: false,
   };
 
   componentWillMount() {
     const { dispatch, filters } = this.props;
-    dispatch(searchAdmin(filters));
+    dispatch(manageAdmins(filters));
   }
 
   handleChangePage = (pagination) => {
     const { dispatch, filters } = this.props;
     dispatch(
-      searchAdmin(
+      manageAdmins(
         Object.assign(filters, {
           page: pagination.current,
           pageSize: pagination.pageSize,
@@ -44,13 +44,13 @@ class Assistants extends Component {
 
   handleSearch = (value) => {
     const { dispatch } = this.props;
-    dispatch(searchAdmin({
+    dispatch(manageAdmins({
       searchText: value,
     }));
   };
 
   render() {
-    const { students, multiSelect } = this.props;
+    const { assistants, multiSelect } = this.props;
 
     const columns = [
       {
@@ -61,19 +61,18 @@ class Assistants extends Component {
       },
       {
         title: '昵称',
-        dataIndex: 'nickname',
-        key: 'nickname',
+        dataIndex: 'username',
       },
     ];
 
     const pagination = {
-      total: students.total || 0,
-      pageSize: students.pageSize || 10,
-      current: students.page || 1,
+      total: assistants.total || 0,
+      pageSize: assistants.pageSize || 10,
+      current: assistants.page || 1,
       simple: true,
     };
 
-    const dataSource = students.result || [];
+    const dataSource = assistants.result || [];
 
     const rowSelection = {
       type: !multiSelect ? 'radio' : 'checkbox',
@@ -104,14 +103,14 @@ class Assistants extends Component {
 }
 
 function mapStateToProps(state) {
-  const { student } = state;
-  const { loading, search } = student;
-  const { filters, result } = search;
+  const { admin } = state;
+  const { loading, manage } = admin;
+  const { filters, result } = manage;
 
   return {
     loading,
     filters,
-    students: result,
+    assistants: result,
   };
 }
 

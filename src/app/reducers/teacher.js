@@ -35,6 +35,7 @@ export function teacher(
       return assign({}, state, {
         loading: false,
         search: {
+          filters: action.filters,
           result: action.response,
         },
       });

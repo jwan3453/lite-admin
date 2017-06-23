@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Table, Input } from 'antd';
 import { connect } from 'react-redux';
 
-import { searchAdmin } from '../../../app/actions/admin';
+import { manageAdmins } from '../../../app/actions/admin';
 
 class Assignees extends Component {
   static propTypes = {
@@ -23,13 +23,13 @@ class Assignees extends Component {
 
   componentWillMount() {
     const { dispatch, filters } = this.props;
-    dispatch(searchAdmin(filters));
+    dispatch(manageAdmins(filters));
   }
 
   handleChangePage = (pagination) => {
     const { dispatch, filters } = this.props;
     dispatch(
-      searchAdmin(
+      manageAdmins(
         Object.assign(filters, {
           page: pagination.current,
           pageSize: pagination.pageSize,
@@ -44,7 +44,7 @@ class Assignees extends Component {
 
   handleSearch = (value) => {
     const { dispatch } = this.props;
-    dispatch(searchAdmin({
+    dispatch(manageAdmins({
       searchText: value,
     }));
   };
@@ -56,13 +56,11 @@ class Assignees extends Component {
       {
         title: 'ID',
         dataIndex: 'id',
-        key: 'id',
         width: 100,
       },
       {
         title: '昵称',
-        dataIndex: 'nickname',
-        key: 'nickname',
+        dataIndex: 'username',
       },
     ];
 
@@ -104,9 +102,9 @@ class Assignees extends Component {
 }
 
 function mapStateToProps(state) {
-  const { student } = state;
-  const { loading, search } = student;
-  const { filters, result } = search;
+  const { admin } = state;
+  const { loading, manage } = admin;
+  const { filters, result } = manage;
 
   return {
     loading,
