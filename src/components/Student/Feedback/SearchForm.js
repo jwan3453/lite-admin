@@ -18,7 +18,7 @@ import PROGRESS_STATUS from './progressStatus';
 import FOLLOW_STATUS from './followStatus';
 
 import TeacherInput from '../../Common/TeacherInput';
-import StudentSelector from '../../Common/StudentSelector';
+import StudentInput from '../../Common/StudentInput';
 import AdminSelector from '../../Common/AdminSelector';
 
 const FormItem = Form.Item;
@@ -35,12 +35,6 @@ class Search extends React.Component {
     studentSelectorVisible: false,
     assigneeSelectorVisible: false,
     assistantSelectorVisible: false,
-  };
-  onSelectedStudentChange = (selectedRowKeys, selectedRows) => {
-    const selected = selectedRows[0];
-    this.setState({
-      selectedUser: selected,
-    });
   };
 
   onSelectedAssistantChange = (selectedRowKeys, selectedRows) => {
@@ -67,12 +61,6 @@ class Search extends React.Component {
   reset = () => {
     this.props.form.resetFields();
   };
-  pickUpStudent = () => {
-    const { form } = this.props;
-    form.setFieldsValue({
-      user: this.state.selectedUser.id,
-    });
-  };
 
   pickUpAssignee = () => {
     const { form } = this.props;
@@ -85,17 +73,6 @@ class Search extends React.Component {
     const { form } = this.props;
     form.setFieldsValue({
       assistant: this.state.selectedUser.id,
-    });
-  };
-  showStudentSelector = () => {
-    this.setState({
-      studentSelectorVisible: true,
-    });
-  };
-
-  hideStudentSelector = () => {
-    this.setState({
-      studentSelectorVisible: false,
     });
   };
 
@@ -163,22 +140,8 @@ class Search extends React.Component {
                         required: false,
                       },
                     ],
-                  })(<input type="hidden" />)
+                  })(<StudentInput />)
                 }
-                <Input
-                  placeholder="选择学生"
-                  addonAfter={
-                    <Tooltip title="选择学生" placement="top">
-                      <Icon
-                        type="user-add"
-                        onClick={
-                          () => { this.showStudentSelector(); }
-                        }
-                        style={{ cursor: 'pointer' }}
-                      />
-                    </Tooltip>
-                  }
-                />
               </FormItem>
             </Col>
             <Col span={8}>
@@ -401,19 +364,6 @@ class Search extends React.Component {
             </Col>
           </Row>
         </Form>
-        <Modal
-          key="student-feedback-StudentSelector"
-          title="选择学生"
-          visible={this.state.studentSelectorVisible}
-          maskClosable={false}
-          onOk={this.pickUpStudent}
-          onCancel={this.hideStudentSelector}
-        >
-          <StudentSelector
-            key="student-feedback-StudentSelector-selector"
-            onSelectedRowsChange={this.onSelectedStudentChange}
-          />
-        </Modal>
         <Modal
           key="student-feedback-AssistantSelector"
           title="选择助教"

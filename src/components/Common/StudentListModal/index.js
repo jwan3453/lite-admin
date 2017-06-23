@@ -1,5 +1,10 @@
 import React, { Component } from 'react';
-import { Table, Input, Icon } from 'antd';
+import {
+  Table,
+  Input,
+  Icon,
+  Modal,
+} from 'antd';
 import { connect } from 'react-redux';
 
 import { searchStudent } from '../../../app/actions/student';
@@ -50,7 +55,11 @@ class StudentList extends Component {
   };
 
   render() {
-    const { students, multiSelect } = this.props;
+    const {
+      students,
+      multiSelect,
+      ...modalProps
+    } = this.props;
 
     const columns = [
       {
@@ -92,7 +101,7 @@ class StudentList extends Component {
     };
 
     return (
-      <div>
+      <Modal {...modalProps}>
         <Input.Search
           size="default"
           onSearch={this.handleSearch}
@@ -110,7 +119,7 @@ class StudentList extends Component {
           onChange={this.handleChangePage}
           rowSelection={rowSelection}
         />
-      </div>
+      </Modal>
     );
   }
 }

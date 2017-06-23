@@ -4,7 +4,6 @@ import {
   Select,
   Input,
   Tooltip,
-  Modal,
   Icon,
   Button,
 } from 'antd';
@@ -12,7 +11,7 @@ import {
 import _ from 'lodash';
 import moment from 'moment';
 
-import StudentSelector from '../StudentSelector';
+import StudentListModal from '../StudentListModal';
 
 import TICKET_TYPES from '../../../common/ticketTypes';
 import * as TICKET_STATUS from '../../../common/ticketStatus';
@@ -53,7 +52,7 @@ class Ticket extends React.Component {
   };
 
   pickUpUser = () => {
-    this.hideStudentSelector();
+    this.hideStudentListModal();
   };
 
   handleSelectChange = (selectedRowKeys, selectedRows) => {
@@ -63,13 +62,13 @@ class Ticket extends React.Component {
     });
   };
 
-  showStudentSelector = () => {
+  showStudentListModal = () => {
     this.setState({
       studentSelectorVisible: true,
     });
   };
 
-  hideStudentSelector = () => {
+  hideStudentListModal = () => {
     this.setState({
       studentSelectorVisible: false,
     });
@@ -187,7 +186,7 @@ class Ticket extends React.Component {
                 <Tooltip title="添加用户" placement="top">
                   <Icon
                     type="user-add"
-                    onClick={this.showStudentSelector}
+                    onClick={this.showStudentListModal}
                     style={{ cursor: 'pointer' }}
                   />
                 </Tooltip>
@@ -272,18 +271,15 @@ class Ticket extends React.Component {
             <Button type="primary" htmlType="submit" size="large">提交</Button>
           </FormItem>
         </Form>
-        <Modal
+        <StudentListModal
           key="common-ticketform"
           title="选择用户"
           maskClosable={false}
           visible={studentSelectorVisible}
           onOk={this.pickUpUser}
-          onCancel={this.hideStudentSelector}
-        >
-          <StudentSelector
-            onSelectedRowsChange={this.handleSelectChange}
-          />
-        </Modal>
+          onCancel={this.hideStudentListModal}
+          onSelectedRowsChange={this.handleSelectChange}
+        />
       </div>
     );
   }

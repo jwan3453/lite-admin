@@ -12,7 +12,7 @@ import {
 
 import SearchForm from './SearchForm';
 import GroupInfoForm from './GroupInfoForm';
-import StudentSelector from '../../Common/StudentSelector';
+import StudentListModal from '../../Common/StudentListModal';
 
 import * as GROUP_STATUS from './status';
 import GroupMessageResult from './MessageResult';
@@ -100,13 +100,13 @@ class Schedules extends React.Component {
     //  todo
   };
 
-  showStudentSelector = () => {
+  showStudentListModal = () => {
     this.setState({
       studentSelectorVisible: true,
     });
   };
 
-  hideStudentSelector = () => {
+  hideStudentListModal = () => {
     this.setState({
       studentSelectorVisible: false,
     });
@@ -211,7 +211,7 @@ class Schedules extends React.Component {
                 style={{
                   marginRight: 8,
                 }}
-                onClick={this.showStudentSelector}
+                onClick={this.showStudentListModal}
               />
             </Tooltip>
             <Popconfirm
@@ -254,17 +254,14 @@ class Schedules extends React.Component {
         >
           <GroupInfoForm group={currentGroup} />
         </Modal>
-        <Modal
+        <StudentListModal
+          multiSelect
           title="添加学生"
           visible={this.state.studentSelectorVisible}
           onOk={() => { this.addStudentsToGroup(); }}
-          onCancel={this.hideStudentSelector}
-        >
-          <StudentSelector
-            multiSelect
-            onSelectedRowsChange={this.handleSelectedStudentsChange}
-          />
-        </Modal>
+          onCancel={this.hideStudentListModal}
+          onSelectedRowsChange={this.handleSelectedStudentsChange}
+        />
       </div>
     );
   }

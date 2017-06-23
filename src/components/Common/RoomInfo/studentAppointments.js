@@ -13,7 +13,7 @@ import {
   studentAppointmentsStatus,
 } from '../../../common/studentAppointment';
 
-import StudentSelector from '../StudentSelector';
+import StudentListModal from '../StudentListModal';
 import ScheduleRooms from './scheduleRooms';
 
 import { fetchScheduleRooms } from '../../../app/actions/schedule';
@@ -289,7 +289,11 @@ class StudentAppointments extends Component {
           onOk={this.handleAddStudent}
           onCancel={() => this.setState({ findStudentModalVisible: false })}
         >
-          <StudentSelector
+          <StudentListModal
+            title="添加学生"
+            visible={this.state.findStudentModalVisible}
+            onOk={this.handleAddStudent}
+            onCancel={() => this.setState({ findStudentModalVisible: false })}
             onSelectedRowsChange={this.handleSelectedStudentsChange}
           />
         </Modal>
