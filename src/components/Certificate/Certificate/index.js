@@ -10,7 +10,7 @@ import _ from 'lodash';
 import SearchForm from './SearchForm';
 import ActionBar from './ActionBar';
 import Cert from './Cert';
-import TeacherSelector from './TeacherSelector';
+import TeacherListModal from '../../Common/TeacherListModal';
 
 import * as CERT_TYPE from '../../../common/certificationTypes';
 import * as CERT_STATUS from '../../../common/certificationStatus';
@@ -199,15 +199,17 @@ class Certifications extends React.Component {
             ref={(node) => { this.certForm = node; }}
           />
         </Modal>
-        <Modal
+        <TeacherListModal
+          key="Certifications-Certifications-Modal"
           title="选择老师"
-          width={700}
           visible={teachersDialogVisible}
+          onSelectChange={(selectedRowKeys, selectedRows) => {
+            //  todo save seleced teacher
+            console.log(selectedRowKeys, selectedRows);
+          }}
           onOk={this.invite}
           onCancel={this.hideTeachersDialog}
-        >
-          <TeacherSelector />
-        </Modal>
+        />
       </div>
     );
   }

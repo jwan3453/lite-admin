@@ -17,7 +17,7 @@ import _ from 'lodash';
 import PROGRESS_STATUS from './progressStatus';
 import FOLLOW_STATUS from './followStatus';
 
-import TeacherSelector from '../../Common/TeacherSelector';
+import TeacherInput from '../../Common/TeacherInput';
 import StudentSelector from '../../Common/StudentSelector';
 import AdminSelector from '../../Common/AdminSelector';
 
@@ -36,14 +36,6 @@ class Search extends React.Component {
     assigneeSelectorVisible: false,
     assistantSelectorVisible: false,
   };
-
-  onSelectedTeacherChange = (selectedRowKeys, selectedRows) => {
-    const selected = selectedRows[0];
-    this.setState({
-      selectedTeacher: selected,
-    });
-  };
-
   onSelectedStudentChange = (selectedRowKeys, selectedRows) => {
     const selected = selectedRows[0];
     this.setState({
@@ -66,21 +58,15 @@ class Search extends React.Component {
   };
 
 
-  search = () => {
+  search = (eventArgs) => {
     //  todo
+    eventArgs.preventDefault();
+    console.log('search', this.props.form.getFieldsValue());
   };
 
   reset = () => {
     this.props.form.resetFields();
   };
-
-  pickUpTeacher = () => {
-    const { form } = this.props;
-    form.setFieldsValue({
-      teacher: this.state.selectedTeacher.id,
-    });
-  };
-
   pickUpStudent = () => {
     const { form } = this.props;
     form.setFieldsValue({
@@ -101,19 +87,6 @@ class Search extends React.Component {
       assistant: this.state.selectedUser.id,
     });
   };
-
-  showTeacherSelector = () => {
-    this.setState({
-      teacherSelectorVisible: true,
-    });
-  };
-
-  hideTeacherSelector = () => {
-    this.setState({
-      teacherSelectorVisible: false,
-    });
-  };
-
   showStudentSelector = () => {
     this.setState({
       studentSelectorVisible: true,
@@ -174,22 +147,8 @@ class Search extends React.Component {
                         required: false,
                       },
                     ],
-                  })(<input type="hidden" />)
+                  })(<TeacherInput />)
                 }
-                <Input
-                  placeholder="选择老师"
-                  addonAfter={
-                    <Tooltip title="选择老师" placement="top">
-                      <Icon
-                        type="user-add"
-                        onClick={
-                          () => { this.showTeacherSelector(); }
-                        }
-                        style={{ cursor: 'pointer' }}
-                      />
-                    </Tooltip>
-                  }
-                />
               </FormItem>
             </Col>
             <Col span={8}>
@@ -442,19 +401,6 @@ class Search extends React.Component {
             </Col>
           </Row>
         </Form>
-        <Modal
-          key="student-feedback-TeacherSelector"
-          title="选择老师"
-          visible={this.state.teacherSelectorVisible}
-          maskClosable={false}
-          onOk={this.pickUpTeacher}
-          onCancel={this.hideTeacherSelector}
-        >
-          <TeacherSelector
-            key="student-feedback-TeacherSelector-selector"
-            onSelectedRowsChange={this.onSelectedTeacherChange}
-          />
-        </Modal>
         <Modal
           key="student-feedback-StudentSelector"
           title="选择学生"

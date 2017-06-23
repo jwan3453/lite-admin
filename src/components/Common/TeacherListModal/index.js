@@ -1,23 +1,27 @@
-import React, { Component } from 'react';
-import { Table, Input } from 'antd';
+import React from 'react';
+import {
+  Table,
+  Input,
+  Modal,
+} from 'antd';
 import { connect } from 'react-redux';
 
 import { searchTeacher } from '../../../app/actions/teacher';
 
-class Teachers extends Component {
+class Teachers extends React.Component {
   static propTypes = {
     dispatch: React.PropTypes.func.isRequired,
+    onSelectChange: React.PropTypes.func.isRequired,
     loading: React.PropTypes.bool.isRequired,
     filters: React.PropTypes.object.isRequired,
     teachers: React.PropTypes.object.isRequired,
-    onSelectedRowsChange: React.PropTypes.func.isRequired,
     multiSelect: React.PropTypes.bool,
   };
 
   static defaultProps = {
     filters: {},
     teachers: {},
-    onSelectedRowsChange: () => {},
+    onSelectChange: () => {},
     multiSelect: false,
   };
 
@@ -36,10 +40,6 @@ class Teachers extends Component {
     ));
   };
 
-  handleSelectChange = (selectedRowKeys, selectedRows) => {
-    this.props.onSelectedRowsChange(selectedRowKeys, selectedRows);
-  };
-
   handleSearch = (text) => {
     const { dispatch } = this.props;
     dispatch(searchTeacher({
@@ -51,6 +51,8 @@ class Teachers extends Component {
     const {
       teachers,
       multiSelect,
+      onSelectChange,
+      ...modalProps
     } = this.props;
 
     const columns = [
@@ -72,7 +74,7 @@ class Teachers extends Component {
 
     const rowSelection = {
       type: !multiSelect ? 'radio' : 'checkbox',
-      onChange: this.handleSelectChange,
+      onChange: onSelectChange,
     };
 
     const pagination = {
@@ -83,14 +85,16 @@ class Teachers extends Component {
     };
 
     return (
-      <div>
+      <Modal {...modalProps}>
         <Input.Search
+          key="Common-TeacherListModal-InputSearch"
           size="default"
           onSearch={(value) => { this.handleSearch(value); }}
           placeholder="老师ID／姓名"
         />
         <Table
           size="small"
+          key="Common-TeacherListModal-Table"
           loading={this.props.loading}
           style={{ marginTop: 16 }}
           columns={columns}
@@ -100,7 +104,7 @@ class Teachers extends Component {
           onChange={this.handleChangePage}
           rowSelection={rowSelection}
         />
-      </div>
+      </Modal>
     );
   }
 }
