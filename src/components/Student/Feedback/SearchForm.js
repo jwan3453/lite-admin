@@ -19,8 +19,7 @@ import FOLLOW_STATUS from './followStatus';
 
 import TeacherSelector from '../../Common/TeacherSelector';
 import StudentSelector from '../../Common/StudentSelector';
-import AssigneeSelector from '../../Common/AssigneeSelector';
-import AssistantSelector from '../../Common/AssistantSelector';
+import AdminSelector from '../../Common/AdminSelector';
 
 const FormItem = Form.Item;
 
@@ -477,7 +476,7 @@ class Search extends React.Component {
           onOk={this.pickUpAssistant}
           onCancel={this.hideAssistantSelector}
         >
-          <AssistantSelector
+          <AdminSelector
             key="student-feedback-AssistantSelector-selector"
             onSelectedRowsChange={this.onSelectedAssistantChange}
           />
@@ -490,7 +489,7 @@ class Search extends React.Component {
           onOk={this.pickUpAssignee}
           onCancel={this.hideAssigneeSelector}
         >
-          <AssigneeSelector
+          <AdminSelector
             key="student-feedback-AssigneeSelector-selector"
             onSelectedRowsChange={this.onSelectedAssigneeChange}
           />

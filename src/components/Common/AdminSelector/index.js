@@ -84,7 +84,7 @@ class Assistants extends Component {
         <Input.Search
           size="default"
           onSearch={this.handleSearch}
-          placeholder="学生助教ID／姓名"
+          placeholder="员工ID／姓名"
         />
         <Table
           size="small"
