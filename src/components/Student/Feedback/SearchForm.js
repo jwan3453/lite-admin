@@ -19,6 +19,7 @@ import FOLLOW_STATUS from './followStatus';
 
 import StudentSelector from '../../Common/StudentSelector';
 import AssigneeSelector from '../../Common/AssigneeSelector';
+import AssistantSelector from '../../Common/AssistantSelector';
 
 const FormItem = Form.Item;
 
@@ -423,7 +424,7 @@ class Search extends React.Component {
           onOk={this.pickUpAssistant}
           onCancel={this.hideAssistantSelector}
         >
-          <StudentSelector
+          <AssistantSelector
             key="student-feedback-AssistantSelector-selector"
             onSelectedRowsChange={this.onSelectedAssistantChange}
           />
