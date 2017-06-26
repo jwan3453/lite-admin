@@ -1,23 +1,23 @@
 import React, { Component } from 'react';
-import { Table, Input } from 'antd';
+import { Table, Input, Modal } from 'antd';
 import { connect } from 'react-redux';
 
 import { manageAdmins } from '../../../app/actions/admin';
 
-class Assistants extends Component {
+class AdminListModal extends Component {
   static propTypes = {
     dispatch: React.PropTypes.func.isRequired,
     loading: React.PropTypes.bool.isRequired,
     filters: React.PropTypes.object.isRequired,
     assistants: React.PropTypes.object.isRequired,
-    onSelectedRowsChange: React.PropTypes.func.isRequired,
+    onSelectChange: React.PropTypes.func.isRequired,
     multiSelect: React.PropTypes.bool,
   };
 
   static defaultProps = {
     filters: {},
     assistants: {},
-    onSelectedRowsChange: () => {},
+    onSelectChange: () => {},
     multiSelect: false,
   };
 
@@ -39,18 +39,24 @@ class Assistants extends Component {
   };
 
   handleSelectChange = (selectedRowKeys, selectedRows) => {
-    this.props.onSelectedRowsChange(selectedRowKeys, selectedRows);
+    this.props.onSelectChange(selectedRowKeys, selectedRows);
   };
 
   handleSearch = (value) => {
     const { dispatch } = this.props;
-    dispatch(manageAdmins({
-      searchText: value,
-    }));
+    dispatch(
+      manageAdmins({
+        searchText: value,
+      }),
+    );
   };
 
   render() {
-    const { assistants, multiSelect } = this.props;
+    const {
+      assistants,
+      multiSelect,
+      ...modalProps
+    } = this.props;
 
     const columns = [
       {
@@ -80,7 +86,7 @@ class Assistants extends Component {
     };
 
     return (
-      <div>
+      <Modal {...modalProps}>
         <Input.Search
           size="default"
           onSearch={this.handleSearch}
@@ -97,7 +103,7 @@ class Assistants extends Component {
           onChange={this.handleChangePage}
           rowSelection={rowSelection}
         />
-      </div>
+      </Modal>
     );
   }
 }
@@ -114,5 +120,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(Assistants);
-
+export default connect(mapStateToProps)(AdminListModal);

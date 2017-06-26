@@ -5,7 +5,7 @@ import {
   Icon,
 } from 'antd';
 
-import TeacherListModal from '../TeacherListModal';
+import AdminListModal from '../AdminListModal';
 
 export default class Teachers extends React.Component {
   static propTypes = {
@@ -20,37 +20,37 @@ export default class Teachers extends React.Component {
   };
 
   state = {
-    teacherSelectorVisible: false,
-    teacherId: '',
-    teacherName: '',
+    adminSelectorVisible: false,
+    adminId: '',
+    adminName: '',
     inputValue: '',
   };
 
   handleSelectChange = (selectedRowKeys, selectedRows) => {
     const selected = selectedRows[0];
     this.setState({
-      teacherId: selected.id,
-      teacherName: selected.username,
+      adminId: selected.id,
+      adminName: selected.username,
     });
   };
 
-  pickUpTeacher = () => {
+  pickUpAdmin = () => {
     this.setState({
-      inputValue: this.state.teacherName,
+      inputValue: this.state.adminName,
     });
-    this.props.onChange(this.state.teacherId);
+    this.props.onChange(this.state.adminId);
     this.hideListModal();
   };
 
   showListModal = () => {
     this.setState({
-      teacherSelectorVisible: true,
+      adminSelectorVisible: true,
     });
   };
 
   hideListModal = () => {
     this.setState({
-      teacherSelectorVisible: false,
+      adminSelectorVisible: false,
     });
   };
 
@@ -59,11 +59,11 @@ export default class Teachers extends React.Component {
     return (
       <div>
         <Input
-          key="Common-TeacherInput-Input"
+          size="default"
           value={inputValue}
-          placeholder="选择老师"
+          placeholder="选择员工"
           addonAfter={
-            <Tooltip title="选择老师" placement="top">
+            <Tooltip title="选择员工" placement="top">
               <Icon
                 type="user-add"
                 onClick={
@@ -74,12 +74,11 @@ export default class Teachers extends React.Component {
             </Tooltip>
           }
         />
-        <TeacherListModal
-          key="Common-TeacherInput-Modal"
-          title="选择老师"
-          visible={this.state.teacherSelectorVisible}
+        <AdminListModal
+          title="选择员工"
+          visible={this.state.adminSelectorVisible}
           maskClosable={false}
-          onOk={this.pickUpTeacher}
+          onOk={this.pickUpAdmin}
           onCancel={this.hideListModal}
           onSelectChange={this.handleSelectChange}
         />
@@ -87,4 +86,3 @@ export default class Teachers extends React.Component {
     );
   }
 }
-

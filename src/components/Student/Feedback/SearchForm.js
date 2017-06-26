@@ -4,12 +4,9 @@ import {
   Row,
   Col,
   Button,
-  Icon,
   Input,
-  Modal,
   DatePicker,
   Select,
-  Tooltip,
 } from 'antd';
 
 import _ from 'lodash';
@@ -17,9 +14,9 @@ import _ from 'lodash';
 import PROGRESS_STATUS from './progressStatus';
 import FOLLOW_STATUS from './followStatus';
 
-import TeacherInput from '../../Common/TeacherInput';
-import StudentInput from '../../Common/StudentInput';
-import AdminSelector from '../../Common/AdminSelector';
+import TeacherSearchInput from '../../Common/TeacherSearchInput';
+import StudentSearchInput from '../../Common/StudentSearchInput';
+import AdminSearchInput from '../../Common/AdminSearchInput';
 
 const FormItem = Form.Item;
 
@@ -111,8 +108,8 @@ class Search extends React.Component {
     return (
       <div>
         <Form className="jiuqu-search-form" onSubmit={this.search}>
-          <Row>
-            <Col span={8}>
+          <Row style={{ marginBottom: 0 }}>
+            <Col span={6}>
               <FormItem
                 label="老师"
                 {...formItemLayout}
@@ -124,11 +121,11 @@ class Search extends React.Component {
                         required: false,
                       },
                     ],
-                  })(<TeacherInput />)
+                  })(<TeacherSearchInput />)
                 }
               </FormItem>
             </Col>
-            <Col span={8}>
+            <Col span={6}>
               <FormItem
                 label="学生"
                 {...formItemLayout}
@@ -140,11 +137,27 @@ class Search extends React.Component {
                         required: false,
                       },
                     ],
-                  })(<StudentInput />)
+                  })(<StudentSearchInput />)
                 }
               </FormItem>
             </Col>
-            <Col span={8}>
+            <Col span={6}>
+              <FormItem
+                label="处理人"
+                {...formItemLayout}
+              >
+                {
+                  getFieldDecorator('assignee', {
+                    rules: [
+                      {
+                        required: false,
+                      },
+                    ],
+                  })(<AdminSearchInput />)
+                }
+              </FormItem>
+            </Col>
+            <Col span={6}>
               <FormItem
                 label="教室"
                 {...formItemLayout}
@@ -156,11 +169,11 @@ class Search extends React.Component {
                         required: false,
                       },
                     ],
-                  })(<Input placeholder="输入教室编号" />)
+                  })(<Input size="default" placeholder="输入教室编号" />)
                 }
               </FormItem>
             </Col>
-            <Col span={8}>
+            <Col span={6}>
               <FormItem
                 label="综合评分"
                 {...formItemLayout}
@@ -172,11 +185,11 @@ class Search extends React.Component {
                         required: false,
                       },
                     ],
-                  })(<Input placeholder="[·=,<,<=,>,>=·][·1-5·]" />)
+                  })(<Input size="default" placeholder="[·=,<,<=,>,>=·][·1-5·]" />)
                 }
               </FormItem>
             </Col>
-            <Col span={8}>
+            <Col span={6}>
               <FormItem
                 label="系统评分"
                 {...formItemLayout}
@@ -188,11 +201,11 @@ class Search extends React.Component {
                         required: false,
                       },
                     ],
-                  })(<Input placeholder="[·=,<,<=,>,>=·][·1-5·]" />)
+                  })(<Input size="default" placeholder="[·=,<,<=,>,>=·][·1-5·]" />)
                 }
               </FormItem>
             </Col>
-            <Col span={8}>
+            <Col span={6}>
               <FormItem
                 label="教师评分"
                 {...formItemLayout}
@@ -204,11 +217,27 @@ class Search extends React.Component {
                         required: false,
                       },
                     ],
-                  })(<Input placeholder="[·=,<,<=,>,>=·][·1-5·]" />)
+                  })(<Input size="default" placeholder="[·=,<,<=,>,>=·][·1-5·]" />)
                 }
               </FormItem>
             </Col>
-            <Col span={8}>
+            <Col span={6}>
+              <FormItem
+                label="上课时间"
+                {...formItemLayout}
+              >
+                {
+                  getFieldDecorator('beginAt', {
+                    rules: [
+                      {
+                        required: false,
+                      },
+                    ],
+                  })(<DatePicker.RangePicker size="default" />)
+                }
+              </FormItem>
+            </Col>
+            <Col span={6}>
               <FormItem
                 label="处理状态"
                 {...formItemLayout}
@@ -222,7 +251,7 @@ class Search extends React.Component {
                       },
                     ],
                   })(
-                    <Select>
+                    <Select size="default" >
                       <Select.Option
                         key="-1"
                         value="-1"
@@ -243,7 +272,7 @@ class Search extends React.Component {
                 }
               </FormItem>
             </Col>
-            <Col span={8}>
+            <Col span={6}>
               <FormItem
                 label="跟进状态"
                 {...formItemLayout}
@@ -257,7 +286,7 @@ class Search extends React.Component {
                       },
                     ],
                   })(
-                    <Select>
+                    <Select size="default">
                       <Select.Option
                         key="-1"
                         value="-1"
@@ -278,83 +307,7 @@ class Search extends React.Component {
                 }
               </FormItem>
             </Col>
-            <Col span={8}>
-              <FormItem
-                label="上课时间"
-                {...formItemLayout}
-              >
-                {
-                  getFieldDecorator('beginAt', {
-                    rules: [
-                      {
-                        required: false,
-                      },
-                    ],
-                  })(<DatePicker.RangePicker />)
-                }
-              </FormItem>
-            </Col>
-            <Col span={8}>
-              <FormItem
-                label="学生助教"
-                {...formItemLayout}
-              >
-                {
-                  getFieldDecorator('assistant', {
-                    rules: [
-                      {
-                        required: false,
-                      },
-                    ],
-                  })(<input type="hidden" />)
-                }
-                <Input
-                  placeholder="选择助教"
-                  addonAfter={
-                    <Tooltip title="选择助教" placement="top">
-                      <Icon
-                        type="user-add"
-                        onClick={
-                          () => { this.showAssistantSelector(); }
-                        }
-                        style={{ cursor: 'pointer' }}
-                      />
-                    </Tooltip>
-                  }
-                />
-              </FormItem>
-            </Col>
-            <Col span={8}>
-              <FormItem
-                label="处理人"
-                {...formItemLayout}
-              >
-                {
-                  getFieldDecorator('assignee', {
-                    rules: [
-                      {
-                        required: false,
-                      },
-                    ],
-                  })(<input type="hidden" />)
-                }
-                <Input
-                  placeholder="选择处理人"
-                  addonAfter={
-                    <Tooltip title="选择处理人" placement="top">
-                      <Icon
-                        type="user-add"
-                        onClick={
-                          () => { this.showAssigneeSelector(); }
-                        }
-                        style={{ cursor: 'pointer' }}
-                      />
-                    </Tooltip>
-                  }
-                />
-              </FormItem>
-            </Col>
-            <Col span={8} style={{ textAlign: 'right' }}>
+            <Col span={12} style={{ textAlign: 'right' }}>
               <Button
                 type="primary"
                 htmlType="submit"
@@ -364,32 +317,6 @@ class Search extends React.Component {
             </Col>
           </Row>
         </Form>
-        <Modal
-          key="student-feedback-AssistantSelector"
-          title="选择助教"
-          visible={this.state.assistantSelectorVisible}
-          maskClosable={false}
-          onOk={this.pickUpAssistant}
-          onCancel={this.hideAssistantSelector}
-        >
-          <AdminSelector
-            key="student-feedback-AssistantSelector-selector"
-            onSelectedRowsChange={this.onSelectedAssistantChange}
-          />
-        </Modal>
-        <Modal
-          key="student-feedback-AssigneeSelector"
-          title="选择处理人"
-          visible={this.state.assigneeSelectorVisible}
-          maskClosable={false}
-          onOk={this.pickUpAssignee}
-          onCancel={this.hideAssigneeSelector}
-        >
-          <AdminSelector
-            key="student-feedback-AssigneeSelector-selector"
-            onSelectedRowsChange={this.onSelectedAssigneeChange}
-          />
-        </Modal>
       </div>
     );
   }
