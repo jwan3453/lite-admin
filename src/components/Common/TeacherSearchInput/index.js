@@ -27,7 +27,7 @@ export default class Teachers extends React.Component {
     teacherSelectorVisible: false,
     teacherId: '',
     teacherName: '',
-    inputValue: '',
+    inputValue: !this.props.value || this.props.value < 0 ? '' : this.props.value,
   };
 
   componentWillReceiveProps(nextProps) {
@@ -51,7 +51,7 @@ export default class Teachers extends React.Component {
 
   pickUpTeacher = () => {
     this.setState({
-      inputValue: this.state.teacherName,
+      inputValue: `${this.state.teacherId} - ${this.state.teacherName}`,
     });
     this.props.onChange(this.state.teacherId);
     this.hideListModal();

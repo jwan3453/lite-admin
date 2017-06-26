@@ -26,7 +26,7 @@ export default class Admins extends React.Component {
     adminSelectorVisible: false,
     adminId: '',
     adminName: '',
-    inputValue: '',
+    inputValue: !this.props.value || this.props.value < 0 ? '' : this.props.value,
   };
 
   componentWillReceiveProps(nextProps) {
@@ -50,7 +50,7 @@ export default class Admins extends React.Component {
 
   pickUpAdmin = () => {
     this.setState({
-      inputValue: this.state.adminName,
+      inputValue: `${this.state.adminId} - ${this.state.adminName}`,
     });
     this.props.onChange(this.state.adminId);
     this.hideListModal();
@@ -105,3 +105,4 @@ export default class Admins extends React.Component {
     );
   }
 }
+

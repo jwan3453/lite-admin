@@ -26,7 +26,7 @@ export default class StudentInput extends React.Component {
     studentDialogVisible: false,
     studentId: '',
     studentName: '',
-    inputValue: '',
+    inputValue: !this.props.value || this.props.value < 0 ? '' : this.props.value,
   };
 
   componentWillReceiveProps(nextProps) {
@@ -50,7 +50,7 @@ export default class StudentInput extends React.Component {
 
   pickUpStudent = () => {
     this.setState({
-      inputValue: this.state.studentName,
+      inputValue: `${this.state.studentId} - ${this.state.studentName}`,
     });
     this.props.onChange(this.state.studentId);
     this.hideStudentListModal();
