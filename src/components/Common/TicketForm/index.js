@@ -3,15 +3,14 @@ import {
   Form,
   Select,
   Input,
-  Tooltip,
-  Icon,
   Button,
 } from 'antd';
 
 import _ from 'lodash';
 import moment from 'moment';
 
-import StudentListModal from '../StudentListModal';
+import AdminSearchInput from '../../Common/AdminSearchInput';
+import StudentSearchInput from '../../Common/StudentSearchInput';
 
 import TICKET_TYPES from '../../../common/ticketTypes';
 import * as TICKET_STATUS from '../../../common/ticketStatus';
@@ -40,38 +39,16 @@ class Ticket extends React.Component {
     form: React.PropTypes.object.isRequired,
     ticket: React.PropTypes.object,
     onSubmit: React.PropTypes.func.isRequired,
+    studentInputDisabled: React.PropTypes.bool,
   };
 
   static defaultProps = {
     ticket: getEmptyTicket(),
+    studentInputDisabled: false,
   };
 
   state = {
     studentSelectorVisible: false,
-    selectedStudent: {},
-  };
-
-  pickUpUser = () => {
-    this.hideStudentListModal();
-  };
-
-  handleSelectChange = (selectedRowKeys, selectedRows) => {
-    const selectedUser = selectedRows[0];
-    this.setState({
-      selectedStudent: selectedUser,
-    });
-  };
-
-  showStudentListModal = () => {
-    this.setState({
-      studentSelectorVisible: true,
-    });
-  };
-
-  hideStudentListModal = () => {
-    this.setState({
-      studentSelectorVisible: false,
-    });
   };
 
   handleSubmit = (e) => {
@@ -79,14 +56,14 @@ class Ticket extends React.Component {
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         const newTicket = {
-          adminId: parseInt(values.assignee, 10),
+          adminId: values.assignee,
           type: parseInt(values.type, 10),
           status: parseInt(values.status, 10),
           subject: values.subject,
           remark: values.remark,
           contactAt: moment(values.ctime).unix(),
           id: this.props.ticket.id,
-          studentId: this.state.selectedStudent.id,
+          studentId: values.studentId,
         };
         this.props.onSubmit(newTicket);
         this.props.form.resetFields();
@@ -95,7 +72,7 @@ class Ticket extends React.Component {
   };
 
   render() {
-    const { form, ticket } = this.props;
+    const { form, ticket, studentInputDisabled } = this.props;
 
     const { getFieldDecorator } = form;
 
@@ -104,9 +81,6 @@ class Ticket extends React.Component {
       wrapperCol: { span: 16 },
     };
 
-    const {
-      studentSelectorVisible,
-    } = this.state;
     const tailFormItemLayout = {
       wrapperCol: {
         xs: {
@@ -179,19 +153,8 @@ class Ticket extends React.Component {
                     required: true,
                   },
                 ],
-              })(<input type="hidden" />)
+              })(<StudentSearchInput disabled={studentInputDisabled} />)
             }
-            <Input
-              addonAfter={
-                <Tooltip title="添加用户" placement="top">
-                  <Icon
-                    type="user-add"
-                    onClick={this.showStudentListModal}
-                    style={{ cursor: 'pointer' }}
-                  />
-                </Tooltip>
-              }
-            />
           </FormItem>
           <FormItem
             label="提交给"
@@ -205,7 +168,7 @@ class Ticket extends React.Component {
                     required: false,
                   },
                 ],
-              })(<Input />)
+              })(<AdminSearchInput />)
             }
           </FormItem>
           <FormItem
@@ -271,15 +234,6 @@ class Ticket extends React.Component {
             <Button type="primary" htmlType="submit" size="large">提交</Button>
           </FormItem>
         </Form>
-        <StudentListModal
-          key="common-ticketform"
-          title="选择用户"
-          maskClosable={false}
-          visible={studentSelectorVisible}
-          onOk={this.pickUpUser}
-          onCancel={this.hideStudentListModal}
-          onSelectedRowsChange={this.handleSelectChange}
-        />
       </div>
     );
   }
