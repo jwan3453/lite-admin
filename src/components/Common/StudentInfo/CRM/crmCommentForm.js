@@ -38,14 +38,8 @@ class CreateCommentForm extends React.Component {
 
     const tailFormItemLayout = {
       wrapperCol: {
-        xs: {
-          span: 24,
-          offset: 0,
-        },
-        sm: {
-          span: 14,
-          offset: 6,
-        },
+        span: 18,
+        offset: 4,
       },
     };
 
