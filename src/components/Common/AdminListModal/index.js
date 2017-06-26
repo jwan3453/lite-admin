@@ -9,14 +9,14 @@ class AdminListModal extends Component {
     dispatch: React.PropTypes.func.isRequired,
     loading: React.PropTypes.bool.isRequired,
     filters: React.PropTypes.object.isRequired,
-    assistants: React.PropTypes.object.isRequired,
+    employees: React.PropTypes.object.isRequired,
     onSelectChange: React.PropTypes.func.isRequired,
     multiSelect: React.PropTypes.bool,
   };
 
   static defaultProps = {
     filters: {},
-    assistants: {},
+    employees: {},
     onSelectChange: () => {},
     multiSelect: false,
   };
@@ -53,7 +53,7 @@ class AdminListModal extends Component {
 
   render() {
     const {
-      assistants,
+      employees,
       multiSelect,
       ...modalProps
     } = this.props;
@@ -72,13 +72,13 @@ class AdminListModal extends Component {
     ];
 
     const pagination = {
-      total: assistants.total || 0,
-      pageSize: assistants.pageSize || 10,
-      current: assistants.page || 1,
+      total: employees.total || 0,
+      pageSize: employees.pageSize || 10,
+      current: employees.page || 1,
       simple: true,
     };
 
-    const dataSource = assistants.result || [];
+    const dataSource = employees.result || [];
 
     const rowSelection = {
       type: !multiSelect ? 'radio' : 'checkbox',
@@ -116,7 +116,7 @@ function mapStateToProps(state) {
   return {
     loading,
     filters,
-    assistants: result,
+    employees: result,
   };
 }
 
