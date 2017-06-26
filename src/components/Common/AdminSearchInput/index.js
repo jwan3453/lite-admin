@@ -7,14 +7,13 @@ import {
 
 import AdminListModal from '../AdminListModal';
 
-export default class Teachers extends React.Component {
+export default class Admins extends React.Component {
   static propTypes = {
     onChange: React.PropTypes.func.isRequired,
   };
 
   static defaultProps = {
     filters: {},
-    teachers: {},
     onChange: () => {},
     multiSelect: false,
   };

@@ -75,3 +75,15 @@ export function enableAdmin(userId, enable) {
     },
   };
 }
+
+export function searchAdmins(filters) {
+  return {
+    filters,
+    [CALL_JQ_API]: {
+      types: [Admin.SEARCH, Admin.SEARCH_SUCCESS, Admin.SEARCH_FAIL],
+      uri: '/admin/users/search',
+      method: 'GET',
+      body: filters,
+    },
+  };
+}

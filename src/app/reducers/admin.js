@@ -9,6 +9,10 @@ export function admin(
       filters: {},
       result: [],
     },
+    search: {
+      filters: {},
+      result: {},
+    },
   },
   action = {},
 ) {
@@ -25,6 +29,13 @@ export function admin(
           filters: action.filters,
         },
       });
+    case Admin.SEARCH:
+      return assign({}, state, {
+        loading: true,
+        search: {
+          filters: action.filters,
+        },
+      });
     case Admin.FETCH_SUCCESS:
       return assign({}, state, {
         loading: false,
@@ -38,10 +49,19 @@ export function admin(
           result: action.response,
         },
       });
+    case Admin.SEARCH_SUCCESS:
+      return assign({}, state, {
+        loading: false,
+        search: {
+          filters: action.filters,
+          result: action.response,
+        },
+      });
     case Admin.CREATE_SUCCESS:
     case Admin.CREATE_FAIL:
     case Admin.MANAGE_FAIL:
     case Admin.FETCH_FAIL:
+    case Admin.SEARCH_FAIL:
       return assign({}, state, {
         loading: false,
       });

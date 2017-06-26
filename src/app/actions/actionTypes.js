@@ -26,6 +26,10 @@ export const Admin = {
   ENABLE: 'admin_enable',
   ENABLE_SUCCESS: 'admin_enable_success',
   ENABLE_FAIL: 'admin_enable_fail',
+
+  SEARCH: 'admin_search',
+  SEARCH_SUCCESS: 'admin_search_success',
+  SEARCH_FAIL: 'admin_search_fail',
 };
 
 export const Student = {

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Table, Input, Modal } from 'antd';
 import { connect } from 'react-redux';
 
-import { manageAdmins } from '../../../app/actions/admin';
+import { searchAdmins } from '../../../app/actions/admin';
 
 class AdminListModal extends Component {
   static propTypes = {
@@ -23,13 +23,13 @@ class AdminListModal extends Component {
 
   componentWillMount() {
     const { dispatch, filters } = this.props;
-    dispatch(manageAdmins(filters));
+    dispatch(searchAdmins(filters));
   }
 
   handleChangePage = (pagination) => {
     const { dispatch, filters } = this.props;
     dispatch(
-      manageAdmins(
+      searchAdmins(
         Object.assign(filters, {
           page: pagination.current,
           pageSize: pagination.pageSize,
@@ -45,7 +45,7 @@ class AdminListModal extends Component {
   handleSearch = (value) => {
     const { dispatch } = this.props;
     dispatch(
-      manageAdmins({
+      searchAdmins({
         searchText: value,
       }),
     );
@@ -110,8 +110,8 @@ class AdminListModal extends Component {
 
 function mapStateToProps(state) {
   const { admin } = state;
-  const { loading, manage } = admin;
-  const { filters, result } = manage;
+  const { loading, search } = admin;
+  const { filters, result } = search;
 
   return {
     loading,

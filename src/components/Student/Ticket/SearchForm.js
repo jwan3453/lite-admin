@@ -11,6 +11,8 @@ import _ from 'lodash';
 
 import TICKET_STATUS from '../../../common/ticketStatus';
 import TICKET_TYPES from '../../../common/ticketTypes';
+import StudentSearchInput from '../../Common/StudentSearchInput';
+import AdminSearchInput from '../../Common/AdminSearchInput';
 
 const FormItem = Form.Item;
 
@@ -108,7 +110,7 @@ class SearchForm extends React.Component {
                       required: false,
                     },
                   ],
-                })(<Input placeholder="用户ID／用户姓名" />)
+                })(<StudentSearchInput placeholder="用户ID" />)
               }
             </FormItem>
           </Col>
@@ -124,7 +126,7 @@ class SearchForm extends React.Component {
                       required: false,
                     },
                   ],
-                })(<Input placeholder="处理人" />)
+                })(<AdminSearchInput placeholder="处理人" />)
               }
             </FormItem>
           </Col>
