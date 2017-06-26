@@ -42,7 +42,7 @@ class Feedback extends React.Component {
   state = {
     replyDialogVisible: false,
     studentDialogVisible: false,
-    currentFeedback: {},
+    currentFeedback: null,
     currentStudent: {
       id: -1,
     },
@@ -262,6 +262,12 @@ class Feedback extends React.Component {
           onCancel={this.hideTicketDialog}
         >
           <TicketForm
+            studentInputDisabled
+            ticket={
+              TicketForm.getEmptyTicket({
+                studentId: !currentFeedback ? null : currentFeedback.student.id,
+              })
+            }
             ref={(node) => { this.ticketForm = node; }}
           />
         </Modal>
@@ -312,8 +318,8 @@ function mapStateToProps() {
       {
         id: 1,
         student: {
-          id: 0,
-          nickname: 'user 1',
+          id: 1,
+          nickname: 'Mark',
         },
         beginAt: 1498096330482,
         teacher: {

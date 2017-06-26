@@ -9,18 +9,13 @@ import {
 } from 'antd';
 import moment from 'moment';
 
-import TicketForm from './TicketForm/index';
+import TicketForm from '../../Common/TicketForm';
 
 import { fetchTicket, createTicket, updateTicket, deleteTicket } from '../../../app/actions/ticket';
 import { fetchAdmins } from '../../../app/actions/admin';
 
-import {
-  CATEGORY_MAP as TICKET_TYPES_MAP,
-} from '../../../common/ticketTypes';
-import {
-  STATUS_MAP as TICKET_STATUS_MAP,
-} from '../../../common/ticketStatus';
-
+import * as TICKET_TYPES from '../../../common/ticketTypes';
+import * as TICKET_STATUS from '../../../common/ticketStatus';
 
 class UserTicket extends React.Component {
   static propTypes = {
@@ -28,7 +23,6 @@ class UserTicket extends React.Component {
     ticketData: React.PropTypes.object,
     loading: React.PropTypes.bool,
     studentId: React.PropTypes.number.isRequired,
-    adminUsers: React.PropTypes.array.isRequired,
     filters: React.PropTypes.object,
   };
 
@@ -59,7 +53,11 @@ class UserTicket extends React.Component {
     }
   }
 
-  showDialog = (ticket = {}) => {
+  showDialog = (ticket = {
+    status: TICKET_STATUS.UNRESOLVED,
+    type: TICKET_TYPES.OTHERS,
+  }) => {
+    //  todo should assign assignedAdminId to ticketInfo
     const { studentId } = this.props;
     const ticketInfo = {
       ...ticket,
@@ -177,7 +175,11 @@ class UserTicket extends React.Component {
         title: '工单类型',
         key: 'type',
         dataIndex: 'type',
-        render(ticketType) { return TICKET_TYPES_MAP[ticketType] ? TICKET_TYPES_MAP[ticketType].name : ''; },
+        render(ticketType) {
+          return TICKET_TYPES.CATEGORY_MAP[ticketType]
+            ? TICKET_TYPES.CATEGORY_MAP[ticketType].name
+            : '';
+        },
       },
       {
         title: '处理人',
@@ -199,7 +201,11 @@ class UserTicket extends React.Component {
         title: '状态',
         key: 'status',
         dataIndex: 'status',
-        render(status) { return TICKET_STATUS_MAP[status] ? TICKET_STATUS_MAP[status].name : ''; },
+        render(status) {
+          return TICKET_STATUS.STATUS_MAP[status]
+            ? TICKET_STATUS.STATUS_MAP[status].name
+            : '';
+        },
       },
       {
         title: '操作',
@@ -243,15 +249,16 @@ class UserTicket extends React.Component {
           style={{ marginTop: 16 }}
         />
         <Modal
+          key={`Common-StudentInfo-Ticket-Modal-${new Date()}`}
           title="工单"
           visible={dialogVisible}
           onCancel={() => this.setState({ dialogVisible: false })}
           footer={null}
         >
           <TicketForm
+            studentInputDisabled
             onSubmit={this.handleSubmitTicketForm}
             ticket={this.state.ticketFormData}
-            assignees={this.props.adminUsers}
           />
         </Modal>
       </div>
@@ -260,12 +267,11 @@ class UserTicket extends React.Component {
 }
 
 function mapStateToProps(state) {
-  const { ticket, admin } = state;
+  const { ticket } = state;
   return {
     loading: ticket.loading,
     ticketData: ticket.result,
     filters: ticket.filters,
-    adminUsers: admin.users,
   };
 }
 

@@ -12,27 +12,23 @@ import moment from 'moment';
 import AdminSearchInput from '../../Common/AdminSearchInput';
 import StudentSearchInput from '../../Common/StudentSearchInput';
 
-import TICKET_TYPES from '../../../common/ticketTypes';
+import * as TICKET_TYPES from '../../../common/ticketTypes';
 import * as TICKET_STATUS from '../../../common/ticketStatus';
 
-const getEmptyTicket = () => ({
-  id: -1,
-  subject: '',
-  user: {
-    id: -1,
-    nickname: '',
-  },
-  assignee: {
-    id: '',
-    nickname: '',
-  },
-  ctime: '',
-  status: TICKET_STATUS.CREATED,
-  type: null,
-});
-
-
 const FormItem = Form.Item;
+
+const getEmptyTicket = (values = {}) => (
+  _.assign({}, {
+    id: -1,
+    subject: '',
+    studentId: -1,
+    assignedAdminId: -1,
+    contactAt: '',
+    status: TICKET_STATUS.UNRESOLVED,
+    type: TICKET_TYPES.OTHERS,
+    remark: '',
+  }, values)
+);
 
 class Ticket extends React.Component {
   static propTypes = {
@@ -46,6 +42,7 @@ class Ticket extends React.Component {
     ticket: getEmptyTicket(),
     studentInputDisabled: false,
   };
+
 
   state = {
     studentSelectorVisible: false,
@@ -61,7 +58,7 @@ class Ticket extends React.Component {
           status: parseInt(values.status, 10),
           subject: values.subject,
           remark: values.remark,
-          contactAt: moment(values.ctime).unix(),
+          contactAt: moment(values.contactAt).unix(),
           id: this.props.ticket.id,
           studentId: values.studentId,
         };
@@ -113,7 +110,7 @@ class Ticket extends React.Component {
                 <Select>
                   {
                     _.map(
-                      TICKET_TYPES,
+                      TICKET_TYPES.default,
                       item => (
                         <Select.Option
                           key={item.value}
@@ -176,8 +173,8 @@ class Ticket extends React.Component {
             {...formItemLayout}
           >
             {
-              getFieldDecorator('ctime', {
-                initialValue: `${moment(ticket.ctime || (new Date())).format('YYYY-MM-DD HH:mm:ss')}`,
+              getFieldDecorator('contactAt', {
+                initialValue: `${moment(ticket.contactAt || (new Date())).format('YYYY-MM-DD HH:mm:ss')}`,
                 rules: [
                   {
                     required: false,
@@ -239,5 +236,9 @@ class Ticket extends React.Component {
   }
 }
 
-export default Form.create()(Ticket);
+const TicketForm = Form.create()(Ticket);
+
+TicketForm.getEmptyTicket = getEmptyTicket;
+
+export default TicketForm;
 

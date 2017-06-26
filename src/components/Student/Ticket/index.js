@@ -8,6 +8,7 @@ import {
   Tooltip,
   Popconfirm,
   Message,
+  Icon,
 } from 'antd';
 
 import moment from 'moment';
@@ -19,7 +20,6 @@ import { CATEGORY_MAP as TICKET_TYPES_MAP } from '../../../common/ticketTypes';
 import SearchForm from './SearchForm';
 import TicketForm from '../../Common/TicketForm';
 
-import { getEmptyTicket } from './utils';
 import {
   manageTicket,
   deleteTicket,
@@ -44,7 +44,7 @@ class Tickets extends React.Component {
   state = {
     dialogVisible: false,
     studentInputDisabled: false,
-    currentTicket: getEmptyTicket(),
+    currentTicket: TicketForm.getEmptyTicket(),
   };
 
   componentWillMount() {
@@ -53,7 +53,7 @@ class Tickets extends React.Component {
   }
 
   showDialog = (
-    currentTicket = getEmptyTicket(),
+    currentTicket = TicketForm.getEmptyTicket(),
     studentInputDisabled = false,
   ) => {
     this.setState({
@@ -66,7 +66,7 @@ class Tickets extends React.Component {
   hideDialog = () => {
     this.setState({
       dialogVisible: false,
-      currentTicket: getEmptyTicket(),
+      currentTicket: TicketForm.getEmptyTicket(),
     });
   };
 
