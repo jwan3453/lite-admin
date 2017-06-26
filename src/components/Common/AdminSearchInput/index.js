@@ -9,6 +9,7 @@ import AdminListModal from '../AdminListModal';
 
 export default class Admins extends React.Component {
   static propTypes = {
+    value: React.PropTypes.number,
     onChange: React.PropTypes.func.isRequired,
   };
 
@@ -16,6 +17,7 @@ export default class Admins extends React.Component {
     filters: {},
     onChange: () => {},
     multiSelect: false,
+    value: null,
   };
 
   state = {
@@ -24,6 +26,17 @@ export default class Admins extends React.Component {
     adminName: '',
     inputValue: '',
   };
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.value !== nextProps.value) {
+      if (!nextProps.value) {
+        this.setState({
+          adminId: nextProps.value,
+          inputValue: '',
+        });
+      }
+    }
+  }
 
   handleSelectChange = (selectedRowKeys, selectedRows) => {
     const selected = selectedRows[0];

@@ -10,6 +10,7 @@ import TeacherListModal from '../TeacherListModal';
 export default class Teachers extends React.Component {
   static propTypes = {
     onChange: React.PropTypes.func.isRequired,
+    value: React.PropTypes.number,
   };
 
   static defaultProps = {
@@ -17,6 +18,7 @@ export default class Teachers extends React.Component {
     teachers: {},
     onChange: () => {},
     multiSelect: false,
+    value: null,
   };
 
   state = {
@@ -25,6 +27,17 @@ export default class Teachers extends React.Component {
     teacherName: '',
     inputValue: '',
   };
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.value !== nextProps.value) {
+      if (!nextProps.value) {
+        this.setState({
+          adminId: nextProps.value,
+          inputValue: '',
+        });
+      }
+    }
+  }
 
   handleSelectChange = (selectedRowKeys, selectedRows) => {
     const selected = selectedRows[0];

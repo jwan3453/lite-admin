@@ -131,7 +131,7 @@ class Search extends React.Component {
                 {...formItemLayout}
               >
                 {
-                  getFieldDecorator('user', {
+                  getFieldDecorator('student', {
                     rules: [
                       {
                         required: false,
@@ -313,7 +313,9 @@ class Search extends React.Component {
                 htmlType="submit"
                 style={{ marginRight: 8 }}
               >搜索</Button>
-              <Button>清空条件</Button>
+              <Button
+                onClick={this.reset}
+              >清空条件</Button>
             </Col>
           </Row>
         </Form>
