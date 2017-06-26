@@ -12,12 +12,14 @@ export default class StudentInput extends React.Component {
     onChange: React.PropTypes.func.isRequired,
     multiSelect: React.PropTypes.bool,
     value: React.PropTypes.number,
+    disabled: React.PropTypes.bool,
   };
 
   static defaultProps = {
     onChange: () => {},
     multiSelect: false,
     value: null,
+    disabled: false,
   };
 
   state = {
@@ -67,22 +69,25 @@ export default class StudentInput extends React.Component {
   };
 
   render() {
-    const { multiSelect } = this.props;
+    const { multiSelect, disabled } = this.props;
     const { inputValue } = this.state;
+    const iconStyle = !disabled ? { cursor: 'pointer' } : null;
+    const onIconClick = !disabled
+      ? () => { this.showStudentListModal(); }
+      : () => {};
 
     return (
       <div>
         <Input
           value={inputValue}
+          disabled={disabled}
           placeholder="选择学生"
           addonAfter={
             <Tooltip title="选择学生" placement="top">
               <Icon
                 type="user-add"
-                onClick={
-                  () => { this.showStudentListModal(); }
-                }
-                style={{ cursor: 'pointer' }}
+                onClick={onIconClick}
+                style={iconStyle}
               />
             </Tooltip>
           }

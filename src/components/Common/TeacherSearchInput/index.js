@@ -11,6 +11,7 @@ export default class Teachers extends React.Component {
   static propTypes = {
     onChange: React.PropTypes.func.isRequired,
     value: React.PropTypes.number,
+    disabled: React.PropTypes.bool,
   };
 
   static defaultProps = {
@@ -19,6 +20,7 @@ export default class Teachers extends React.Component {
     onChange: () => {},
     multiSelect: false,
     value: null,
+    disabled: false,
   };
 
   state = {
@@ -69,19 +71,24 @@ export default class Teachers extends React.Component {
 
   render() {
     const { inputValue } = this.state;
+    const { disabled } = this.props;
+    const iconStyle = !disabled ? { cursor: 'pointer' } : null;
+    const onIconClick = !disabled
+      ? () => { this.showListModal(); }
+      : () => {};
+
     return (
       <div>
         <Input
           value={inputValue}
+          disabled={disabled}
           placeholder="选择老师"
           addonAfter={
             <Tooltip title="选择老师" placement="top">
               <Icon
                 type="user-add"
-                onClick={
-                  () => { this.showListModal(); }
-                }
-                style={{ cursor: 'pointer' }}
+                onClick={onIconClick}
+                style={iconStyle}
               />
             </Tooltip>
           }

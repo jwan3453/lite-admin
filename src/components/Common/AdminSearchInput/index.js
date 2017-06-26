@@ -11,6 +11,7 @@ export default class Admins extends React.Component {
   static propTypes = {
     value: React.PropTypes.number,
     onChange: React.PropTypes.func.isRequired,
+    disabled: React.PropTypes.bool,
   };
 
   static defaultProps = {
@@ -18,6 +19,7 @@ export default class Admins extends React.Component {
     onChange: () => {},
     multiSelect: false,
     value: null,
+    disabled: false,
   };
 
   state = {
@@ -68,20 +70,25 @@ export default class Admins extends React.Component {
 
   render() {
     const { inputValue } = this.state;
+    const { disabled } = this.props;
+    const iconStyle = !disabled ? { cursor: 'pointer' } : null;
+    const onIconClick = !disabled
+      ? () => { this.showListModal(); }
+      : () => {};
+
     return (
       <div>
         <Input
           size="default"
           value={inputValue}
+          disabled={disabled}
           placeholder="选择员工"
           addonAfter={
             <Tooltip title="选择员工" placement="top">
               <Icon
                 type="user-add"
-                onClick={
-                  () => { this.showListModal(); }
-                }
-                style={{ cursor: 'pointer' }}
+                onClick={onIconClick}
+                style={iconStyle}
               />
             </Tooltip>
           }
