@@ -1,28 +1,24 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import {
-  Table,
-  Modal,
-  Button,
-  Tooltip,
-  Popconfirm,
-  Message,
-} from 'antd';
+import { Table, Modal, Button, Tooltip, Popconfirm, Message, Icon } from 'antd';
 
 import moment from 'moment';
 
 import * as TICKET_STATUS from '../../../common/ticketStatus';
 
-import {
-  CATEGORY_MAP as TICKET_TYPES_MAP,
-} from '../../../common/ticketTypes';
+import { CATEGORY_MAP as TICKET_TYPES_MAP } from '../../../common/ticketTypes';
 
 import SearchForm from './SearchForm';
 import TicketForm from '../../Common/TicketForm';
 
 import { getEmptyTicket } from './utils';
-import { manageTicket, deleteTicket, updateTicket, createTicket } from '../../../app/actions/ticket';
+import {
+  manageTicket,
+  deleteTicket,
+  updateTicket,
+  createTicket,
+} from '../../../app/actions/ticket';
 
 class Tickets extends React.Component {
   static propTypes = {
@@ -137,10 +133,7 @@ class Tickets extends React.Component {
   };
 
   render() {
-    const {
-      loading,
-      ticketData,
-    } = this.props;
+    const { loading, ticketData } = this.props;
 
     const { currentTicket } = this.state;
 
@@ -169,7 +162,11 @@ class Tickets extends React.Component {
         title: '工单类型',
         key: 'type',
         dataIndex: 'type',
-        render(ticketType) { return TICKET_TYPES_MAP[ticketType] ? TICKET_TYPES_MAP[ticketType].name : ''; },
+        render(ticketType) {
+          return TICKET_TYPES_MAP[ticketType]
+            ? TICKET_TYPES_MAP[ticketType].name
+            : '';
+        },
       },
       {
         title: '处理人',
@@ -191,7 +188,38 @@ class Tickets extends React.Component {
         title: '状态',
         key: 'status',
         dataIndex: 'status',
-        render(ticketStatus) { return TICKET_STATUS.STATUS_MAP[ticketStatus] ? TICKET_STATUS.STATUS_MAP[ticketStatus].name : ''; },
+        render: (status) => {
+          const statusText = TICKET_STATUS.STATUS_MAP[status]
+            ? TICKET_STATUS.STATUS_MAP[status].name
+            : '';
+          let color = 'black';
+          let icon = '';
+          switch (status) {
+            case 1:
+              color = '#108ee9';
+              icon = 'question-circle-o';
+              break;
+            case 2:
+              color = '#00a854';
+              icon = 'check-circle-o';
+              break;
+            case 3:
+              color = '#ffbf00';
+              icon = 'exclamation-circle-o';
+              break;
+            case 4:
+              color = '#f04134';
+              icon = 'close-circle-o';
+              break;
+            default:
+          }
+          return (
+            <div>
+              <Icon type={icon} style={{ color, marginRight: 5 }} />
+              {statusText}
+            </div>
+          );
+        },
       },
       {
         title: '操作',
@@ -201,13 +229,17 @@ class Tickets extends React.Component {
               <Button
                 icon="edit"
                 style={{ marginRight: 8 }}
-                onClick={() => { this.showDialog(ticket); }}
+                onClick={() => {
+                  this.showDialog(ticket);
+                }}
               />
             </Tooltip>
             <Popconfirm
               title="该操作不可逆，确定继续？"
               placement="top"
-              onConfirm={() => { this.removeTicket(ticket); }}
+              onConfirm={() => {
+                this.removeTicket(ticket);
+              }}
             >
               <Tooltip title="删除">
                 <Button icon="delete" />
@@ -234,11 +266,7 @@ class Tickets extends React.Component {
         />
         <Modal
           key={currentTicket.id}
-          title={
-            currentTicket.id < 0
-            ? '新建工单'
-            : '编辑工单'
-          }
+          title={currentTicket.id < 0 ? '新建工单' : '编辑工单'}
           maskClosable={false}
           visible={this.state.dialogVisible}
           onCancel={this.hideDialog}
@@ -246,7 +274,9 @@ class Tickets extends React.Component {
         >
           <TicketForm
             ticket={currentTicket}
-            ref={(node) => { this.ticketForm = node; }}
+            ref={(node) => {
+              this.ticketForm = node;
+            }}
             onSubmit={this.handleSubmitTicketForm}
           />
         </Modal>
@@ -266,4 +296,3 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps)(Tickets);
-
