@@ -1,7 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { Table, Modal, Button, Tooltip, Popconfirm, Message, Icon } from 'antd';
+import {
+  Table,
+  Modal,
+  Button,
+  Tooltip,
+  Popconfirm,
+  Message,
+} from 'antd';
 
 import moment from 'moment';
 
@@ -36,6 +43,7 @@ class Tickets extends React.Component {
 
   state = {
     dialogVisible: false,
+    studentInputDisabled: false,
     currentTicket: getEmptyTicket(),
   };
 
@@ -44,10 +52,14 @@ class Tickets extends React.Component {
     dispatch(manageTicket());
   }
 
-  showDialog = (currentTicket = getEmptyTicket()) => {
+  showDialog = (
+    currentTicket = getEmptyTicket(),
+    studentInputDisabled = false,
+  ) => {
     this.setState({
       dialogVisible: true,
       currentTicket,
+      studentInputDisabled,
     });
   };
 
@@ -135,7 +147,7 @@ class Tickets extends React.Component {
   render() {
     const { loading, ticketData } = this.props;
 
-    const { currentTicket } = this.state;
+    const { currentTicket, studentInputDisabled } = this.state;
 
     const pageSize = ticketData.pageSize || 10;
     const dataSource = ticketData.result || [];
@@ -230,7 +242,7 @@ class Tickets extends React.Component {
                 icon="edit"
                 style={{ marginRight: 8 }}
                 onClick={() => {
-                  this.showDialog(ticket);
+                  this.showDialog(ticket, true);
                 }}
               />
             </Tooltip>
@@ -277,6 +289,7 @@ class Tickets extends React.Component {
             ref={(node) => {
               this.ticketForm = node;
             }}
+            studentInputDisabled={studentInputDisabled}
             onSubmit={this.handleSubmitTicketForm}
           />
         </Modal>
