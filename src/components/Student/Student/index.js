@@ -14,7 +14,6 @@ class StudentList extends Component {
   static propTypes = {
     dispatch: React.PropTypes.func.isRequired,
     loading: React.PropTypes.bool.isRequired,
-    adminUsers: React.PropTypes.array.isRequired,
     filters: React.PropTypes.object.isRequired,
     students: React.PropTypes.object.isRequired,
     mobile: React.PropTypes.object.isRequired,
@@ -178,7 +177,6 @@ class StudentList extends Component {
       <div>
         <SearchForm
           onSearch={this.handleSearch}
-          assistants={this.props.adminUsers}
           pageSize={pageSize}
         />
         <Table
@@ -207,7 +205,7 @@ class StudentList extends Component {
 }
 
 function mapStateToProps(state) {
-  const { student, admin } = state;
+  const { student } = state;
   const { loading, manage, mobile } = student;
   const { filters, result } = manage;
 
@@ -215,7 +213,7 @@ function mapStateToProps(state) {
     loading,
     filters,
     students: result,
-    adminUsers: admin.users,
+    // adminUsers: admin.users,
     mobile,
   };
 }

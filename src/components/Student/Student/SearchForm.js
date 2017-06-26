@@ -6,11 +6,9 @@ import {
   Button,
   Select,
   DatePicker,
-  // Message,
   Input,
-  // Radio,
-  AutoComplete,
 } from 'antd';
+import AdminSearchInput from '../../Common/AdminSearchInput';
 
 import levels from '../../../common/levels';
 import crmStatus from '../../../common/crmStatus';
@@ -21,7 +19,6 @@ class StudentSearchForm extends Component {
   static propTypes = {
     form: React.PropTypes.object.isRequired,
     onSearch: React.PropTypes.func.isRequired,
-    assistants: React.PropTypes.array.isRequired,
     pageSize: React.PropTypes.number.isRequired,
   };
   static defaultProps = {
@@ -30,7 +27,6 @@ class StudentSearchForm extends Component {
   state = {
     visible: false,
     expand: false,
-    assistants: [],
     pageSize: 10,
   };
 
@@ -74,18 +70,6 @@ class StudentSearchForm extends Component {
     });
   };
 
-  handleSearchAssistant = (value) => {
-    if (value.length < 2) {
-      this.setState({ assistants: [] });
-      return;
-    }
-    const assistants = this.props.assistants.filter((assistant) => {
-      const name = `${assistant.username || ''}`;
-      return name.toLowerCase().indexOf(value.toLowerCase()) >= 0;
-    });
-    this.setState({ assistants });
-  };
-
   handleReset = () => {
     this.props.form.resetFields();
   };
@@ -96,11 +80,6 @@ class StudentSearchForm extends Component {
       labelCol: { span: 8 },
       wrapperCol: { span: 16 },
     };
-    const children = this.state.assistants.map(admin => (
-      <AutoComplete.Option key={`${admin.id}`}>
-        {admin.username}
-      </AutoComplete.Option>
-    ));
     return (
       <Form className="jiuqu-search-form" onSubmit={this.handleSearch}>
         <Row type="flex" style={{ marginBottom: 0 }}>
@@ -182,16 +161,7 @@ class StudentSearchForm extends Component {
                     required: false,
                   },
                 ],
-              })(
-                <AutoComplete
-                  size="default"
-                  placeholder="助教名称"
-                  dataSource={this.state.assistants}
-                  onSearch={this.handleSearchAssistant}
-                >
-                  {children}
-                </AutoComplete>,
-              )}
+              })(<AdminSearchInput />)}
             </FormItem>
           </Col>
           <Col span={6}>
