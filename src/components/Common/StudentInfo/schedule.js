@@ -7,6 +7,7 @@ import {
   Popconfirm,
   Tooltip,
   Modal,
+  Message,
 } from 'antd';
 import _ from 'lodash';
 
@@ -220,7 +221,7 @@ class Schedule extends Component {
           ]}
         >
           <RoomInfo
-            onCopySchedule={() => {}}
+            onCopySchedule={() => { Message.error('不能复制排课。'); }}
             roomInfo={roomInfo}
             lessonName={roomModalLessonName}
             onHide={this.handleHideRoomDialog}
