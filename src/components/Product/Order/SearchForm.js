@@ -10,6 +10,7 @@ import {
 } from 'antd';
 
 import ORDER_STATUS from '../../../common/orderStatus';
+import StudentSearchInput from '../../Common/StudentSearchInput';
 
 const FormItem = Form.Item;
 
@@ -94,15 +95,15 @@ class BillSearchForm extends Component {
             </FormItem>
           </Col>
           <Col span={6}>
-            <FormItem label="所属用户ID" {...formItemLayout}>
+            <FormItem label="所属用户" {...formItemLayout}>
               {
-                getFieldDecorator('uid', {
+                getFieldDecorator('studentId', {
                   rules: [
                     {
                       required: false,
                     },
                   ],
-                })(<Input size="default" placeholder="所属用户ID" />)
+                })(<StudentSearchInput />)
               }
             </FormItem>
           </Col>

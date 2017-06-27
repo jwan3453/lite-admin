@@ -11,6 +11,7 @@ import {
 
 import funnels from '../../../common/refundFunnels';
 import status from '../../../common/refundStatus';
+import StudentSearchInput from '../../Common/StudentSearchInput';
 
 const FormItem = Form.Item;
 
@@ -71,14 +72,16 @@ class RefundSearchForm extends Component {
       <Form className="jiuqu-search-form" onSubmit={this.handleSearch}>
         <Row type="flex" style={{ marginBottom: 0 }}>
           <Col span={6}>
-            <FormItem label="用户ID" {...formItemLayout}>
-              {getFieldDecorator('uid', {
-                rules: [
-                  {
-                    required: false,
-                  },
-                ],
-              })(<Input size="default" placeholder="用户ID" />)}
+            <FormItem label="用户" {...formItemLayout}>
+              {
+                getFieldDecorator('studentId', {
+                  rules: [
+                    {
+                      required: false,
+                    },
+                  ],
+                })(<StudentSearchInput />)
+              }
             </FormItem>
           </Col>
           <Col span={6}>
