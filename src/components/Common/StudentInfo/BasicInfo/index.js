@@ -12,8 +12,6 @@ import {
 } from 'antd';
 import _ from 'lodash';
 import crmStatus from '../../../../common/crmStatus';
-
-import GiftForm from './GiftForm';
 import BasicProfileForm from './ProfileForm';
 
 import { fetchStudent, fetchMobile } from '../../../../app/actions/student';
@@ -180,12 +178,6 @@ class StudentBasicInfo extends Component {
         >
           <BasicProfileForm />
         </Modal>
-        <Modal
-          title="赠送课程"
-          visible={this.state.giftDialogVisible}
-          onOk={this.handleSendGift}
-          onCancel={() => this.setState({ giftDialogVisible: false })}
-        ><GiftForm /></Modal>
       </div>
     );
   }
