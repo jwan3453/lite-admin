@@ -8,6 +8,7 @@ import {
 } from 'antd';
 
 import levels from '../../../../common/levels';
+import AdminSearchInput from '../../../Common/AdminSearchInput';
 
 const RadioGroup = Radio.Group;
 const FormItem = Form.Item;
@@ -116,12 +117,7 @@ class BasicProfileForm extends Component {
                   required: false,
                 },
               ],
-            })(
-              <Select>
-                <Select.Option key={1} value={1}>lgchen</Select.Option>
-                <Select.Option key={2} value={2}>linus</Select.Option>
-              </Select>,
-            )
+            })(<AdminSearchInput />)
           }
         </FormItem>
         <FormItem
