@@ -10,7 +10,7 @@ import TeacherListModal from '../TeacherListModal';
 export default class Teachers extends React.Component {
   static propTypes = {
     onChange: React.PropTypes.func.isRequired,
-    value: React.PropTypes.number,
+    value: React.PropTypes.number.isRequired,
     disabled: React.PropTypes.bool,
   };
 
@@ -19,7 +19,6 @@ export default class Teachers extends React.Component {
     teachers: {},
     onChange: () => {},
     multiSelect: false,
-    value: null,
     disabled: false,
   };
 

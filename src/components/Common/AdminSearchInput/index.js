@@ -9,7 +9,7 @@ import AdminListModal from '../AdminListModal';
 
 export default class Admins extends React.Component {
   static propTypes = {
-    value: React.PropTypes.number,
+    value: React.PropTypes.number.isRequired,
     onChange: React.PropTypes.func.isRequired,
     disabled: React.PropTypes.bool,
   };
@@ -18,7 +18,6 @@ export default class Admins extends React.Component {
     filters: {},
     onChange: () => {},
     multiSelect: false,
-    value: null,
     disabled: false,
   };
 

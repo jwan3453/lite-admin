@@ -11,14 +11,13 @@ export default class StudentInput extends React.Component {
   static propTypes = {
     onChange: React.PropTypes.func.isRequired,
     multiSelect: React.PropTypes.bool,
-    value: React.PropTypes.number,
+    value: React.PropTypes.number.isRequired,
     disabled: React.PropTypes.bool,
   };
 
   static defaultProps = {
     onChange: () => {},
     multiSelect: false,
-    value: null,
     disabled: false,
   };
 
