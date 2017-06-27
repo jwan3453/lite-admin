@@ -5,6 +5,7 @@ import {
   Modal,
   Tag,
   Tooltip,
+  Message,
 } from 'antd';
 
 import moment from 'moment';
@@ -15,6 +16,9 @@ import ReplyForm from './ReplyForm';
 import TicketForm from '../../Common/TicketForm';
 import StudentInfo from '../../Common/StudentInfo';
 import RoomInfo from '../../Common/RoomInfo';
+
+import { fetchStudentFeedback, updateStudentFeedback } from '../../../app/actions/studentFeedback';
+import { createTicket } from '../../../app/actions/ticket';
 
 import {
   STATUS_MAP as PROGRESS_STATUS_MAP,
@@ -30,13 +34,14 @@ import {
 
 class Feedback extends React.Component {
   static propTypes = {
+    dispatch: React.PropTypes.func.isRequired,
     loading: React.PropTypes.bool.isRequired,
-    feedbacks: React.PropTypes.array,
+    feedbackResult: React.PropTypes.object,
   };
 
   static defaultProps = {
     loading: false,
-    feedbacks: [],
+    feedbackResult: {},
   };
 
   state = {
@@ -47,6 +52,11 @@ class Feedback extends React.Component {
       id: -1,
     },
   };
+
+  componentWillMount() {
+    const { dispatch } = this.props;
+    dispatch(fetchStudentFeedback());
+  }
 
   showStudentInfo = (currentStudent) => {
     this.setState({
@@ -107,26 +117,88 @@ class Feedback extends React.Component {
   reply = () => {
     const me = this;
     const { currentFeedback } = me.state;
+    const { dispatch } = this.props;
 
     me.replyForm.validateFields((err, values) => {
       if (!err) {
-        //  todo submit replay message
-        console.log('replay messages', values, currentFeedback);
-        me.hideReplyDialog();
+        const data = {};
+        if (values.reply) {
+          data.result = values.reply;
+        }
+
+        if (values.wechatNotice) {
+          data.isSendWxMessage = values.wechatNotice;
+        }
+
+        dispatch(updateStudentFeedback(currentFeedback.id, data)).then((result) => {
+          if (result.code) {
+            Message.error(result.message);
+          } else {
+            Message.success('回复成功');
+            me.hideReplyDialog();
+
+            dispatch(fetchStudentFeedback());
+          }
+        });
       }
     });
   };
 
-  createTicket = () => {
-    //  todo
-    const ticket = this.ticketForm.getFieldsValue();
-    console.log('createTicket', ticket);
+  handleCreateTicket = (ticket) => {
+    const { dispatch } = this.props;
+    const {
+      currentFeedback,
+    } = this.state;
+    dispatch(createTicket({ ...ticket }, currentFeedback.studentId)).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+      } else {
+        dispatch(updateStudentFeedback(currentFeedback.id, { ticketId: result.response.id }))
+          .then((updateResult) => {
+            if (updateResult.code) {
+              Message.error(updateResult.message);
+            } else {
+              this.hideTicketDialog();
+              Message.success('创建工单成功');
+            }
+          });
+      }
+    });
+  };
+
+  handleSearch = (data) => {
+    const { dispatch } = this.props;
+    dispatch(fetchStudentFeedback(data));
+  };
+
+  handleSetUseful = (ticket) => {
+    const { dispatch } = this.props;
+    dispatch(updateStudentFeedback(ticket.id, { isUseful: true })).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+      } else {
+        Message.success('设置成功');
+        dispatch(fetchStudentFeedback());
+      }
+    });
+  };
+
+  handleChangeFollowStatus = (feedback, statusKey) => {
+    const { dispatch } = this.props;
+    dispatch(updateStudentFeedback(feedback.id, { followStatus: statusKey })).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+      } else {
+        Message.success('跟进状态修改成功');
+        dispatch(fetchStudentFeedback());
+      }
+    });
   };
 
   render() {
     const {
       loading,
-      feedbacks,
+      feedbackResult,
     } = this.props;
 
     const {
@@ -135,17 +207,27 @@ class Feedback extends React.Component {
       currentClassRoom,
     } = this.state;
 
+    const pageSize = feedbackResult.pageSize || 10;
+    const dataSource = feedbackResult.result || [];
+    const pagination = {
+      total: feedbackResult.total || 0,
+      pageSize,
+      current: feedbackResult.page || 1,
+      showSizeChanger: true,
+      showTotal: total => `总共${total}条`,
+    };
+
     const columns = [
       {
         title: '用户',
-        dataIndex: 'student',
-        render: student => (
+        dataIndex: 'studentId',
+        render: studentId => (
           <Tooltip title="查看用户信息" placement="top">
             <a
               role="button"
               tabIndex="0"
-              onClick={() => { this.showStudentInfo(student); }}
-            >{`[${student.id}] ${student.nickname}`}</a>
+              onClick={() => { this.showStudentInfo(studentId); }}
+            >{`[${studentId}]`}</a>
           </Tooltip>
         ),
       },
@@ -156,30 +238,30 @@ class Feedback extends React.Component {
       },
       {
         title: '老师',
-        dataIndex: 'teacher',
-        render: teacher => `[${teacher.id}] ${teacher.nickname}`,
+        dataIndex: 'teacherId',
+        render: teacherId => `[${teacherId}]`,
       },
       {
         title: '教室',
-        dataIndex: 'classRoom',
-        render: classRoom => (
+        dataIndex: 'roomId',
+        render: roomId => (
           <Tooltip title="课堂详情" placement="top">
             <a
               role="button"
               tabIndex="0"
-              onClick={() => { this.showClassRoomInfo(classRoom); }}
-            >{classRoom.id}</a>
+              onClick={() => { this.showClassRoomInfo(roomId); }}
+            >{roomId}</a>
           </Tooltip>
         ),
       },
       {
         title: '各项评分',
         dataIndex: 'rating',
-        render: rating => (
+        render: (rating, feedback) => (
           <div>
-            <p>综合评分：{rating.average}分</p>
-            <p>教师评分：{rating.teacher}分</p>
-            <p>系统评分：{rating.system}分</p>
+            <p>综合评分：{feedback.rating}分</p>
+            <p>教师评分：{feedback.teacherRating}分</p>
+            <p>系统评分：{feedback.systemRating}分</p>
           </div>
         ),
       },
@@ -190,10 +272,10 @@ class Feedback extends React.Component {
       {
         title: '处理/跟进/有效状态',
         dataIndex: 'status',
-        render: (status, record) => {
-          const useful = USEFUL_STATUS_MAP[record.isUseful];
-          const progress = PROGRESS_STATUS_MAP[status.progress];
-          const follow = FOLLOW_STATUS_MAP[status.follow];
+        render: (status, feedback) => {
+          const useful = USEFUL_STATUS_MAP[feedback.isUseful];
+          const progress = PROGRESS_STATUS_MAP[feedback.status];
+          const follow = FOLLOW_STATUS_MAP[feedback.followStatus];
 
           return (
             <div>
@@ -206,8 +288,8 @@ class Feedback extends React.Component {
       },
       {
         title: '处理人',
-        dataIndex: 'assignee',
-        render: assignee => `[${assignee.id}] ${assignee.nickname}`,
+        dataIndex: 'adminId',
+        render: adminId => `[${adminId}]`,
       },
       {
         title: '处理结果',
@@ -220,6 +302,9 @@ class Feedback extends React.Component {
           <ActionBar
             showReplyDialog={() => { this.showReplyDialog(feedback); }}
             showTicketDialog={() => { this.showTicketDialog(feedback); }}
+            setUserful={() => { this.handleSetUseful(feedback); }}
+            onFollowStatusChanged={
+              (newStatus) => { this.handleChangeFollowStatus(feedback, newStatus); }}
           />
         ),
       },
@@ -227,12 +312,15 @@ class Feedback extends React.Component {
 
     return (
       <div>
-        <SearchForm />
+        <SearchForm
+          search={this.handleSearch}
+        />
         <Table
           rowKey="id"
           loading={loading}
           columns={columns}
-          dataSource={feedbacks}
+          dataSource={dataSource}
+          pagination={pagination}
           style={{ marginTop: 16 }}
         />
         <Modal
@@ -240,11 +328,12 @@ class Feedback extends React.Component {
           title="回复用户反馈"
           maskClosable={false}
           visible={this.state.replyDialogVisible}
-          onOk={this.reply}
+          footer={null}
           onCancel={this.hideReplyDialog}
         >
           <ReplyForm
             ref={(node) => { this.replyForm = node; }}
+            onSubmit={this.reply}
           />
         </Modal>
         <Modal
@@ -258,17 +347,18 @@ class Feedback extends React.Component {
           title="新建工单"
           maskClosable={false}
           visible={this.state.ticketDialogVisible}
-          onOk={this.createTicket}
           onCancel={this.hideTicketDialog}
+          footer={null}
         >
           <TicketForm
             studentInputDisabled
             ticket={
               TicketForm.getEmptyTicket({
-                studentId: !currentFeedback ? null : currentFeedback.student.id,
+                studentId: !currentFeedback ? null : currentFeedback.studentId,
               })
             }
             ref={(node) => { this.ticketForm = node; }}
+            onSubmit={this.handleCreateTicket}
           />
         </Modal>
         <Modal
@@ -311,42 +401,13 @@ class Feedback extends React.Component {
   }
 }
 
-function mapStateToProps() {
+function mapStateToProps(state) {
+  const { studentFeedback } = state;
   return {
-    loading: false,
-    feedbacks: [
-      {
-        id: 1,
-        student: {
-          id: 1,
-          nickname: 'Mark',
-        },
-        beginAt: 1498096330482,
-        teacher: {
-          id: 0,
-          nickname: 'peter',
-        },
-        classRoom: {
-          id: 0,
-        },
-        rating: {
-          average: 5,
-          teacher: 5,
-          system: 5,
-        },
-        review: '反馈内容',
-        status: {
-          progress: 10,
-          follow: 0,
-        },
-        isUseful: 1,
-        assignee: {
-          id: 0,
-          nickname: 'ylc',
-        },
-        result: '',
-      },
-    ],
+    loading: studentFeedback.loading,
+    feedbackResult: studentFeedback.result,
+    filters: studentFeedback.filters,
+    adminUsers: [],
   };
 }
 

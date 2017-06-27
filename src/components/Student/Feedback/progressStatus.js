@@ -1,5 +1,5 @@
-export const CREATED = 10;
-export const DONE = 20;
+export const CREATED = 0;
+export const DONE = 1;
 
 const STATUS = [
   {

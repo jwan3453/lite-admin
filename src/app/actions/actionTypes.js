@@ -246,3 +246,13 @@ export const Crm = {
   CREATE_CRM_SUCCESS: 'create_crm_success',
   CREATE_CRM_FAIL: 'create_crm_fail',
 };
+
+export const StudentFeedback = {
+  FETCH_STUDENT_FEEDBACK: 'student_feedback_fetch',
+  FETCH_STUDENT_FEEDBACK_SUCCESS: 'student_feedback_fetch_success',
+  FETCH_STUDENT_FEEDBACK_FAIL: 'student_feedback_fetch_fail',
+
+  UPDATE_STUDENT_FEEDBACK: 'update_student_feedback_status',
+  UPDATE_STUDENT_FEEDBACK_SUCCESS: 'update_student_feedback_status_success',
+  UPDATE_STUDENT_FEEDBACK_FAIL: 'update_student_feedback_status_fail',
+};

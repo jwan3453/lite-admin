@@ -23,6 +23,7 @@ const FormItem = Form.Item;
 class Search extends React.Component {
   static propTypes = {
     form: React.PropTypes.object.isRequired,
+    search: React.PropTypes.func.isRequired,
   };
 
   state = {
@@ -48,15 +49,67 @@ class Search extends React.Component {
     });
   };
 
+  isNullOrUndefined = value => _.isNull(value) || _.isUndefined(value);
+
 
   search = (eventArgs) => {
-    //  todo
     eventArgs.preventDefault();
-    console.log('search', this.props.form.getFieldsValue());
+    const fieldsValues = this.props.form.getFieldsValue();
+    const filters = {};
+    if (fieldsValues.beginAt) {
+      if (fieldsValues.beginAt[0]) {
+        filters.startDate = fieldsValues.beginAt[0].format('Y-MM-DD');
+      }
+
+      if (fieldsValues.beginAt[1]) {
+        filters.endDate = fieldsValues.beginAt[1].format('Y-MM-DD');
+      }
+    }
+
+    if (!this.isNullOrUndefined(fieldsValues.student)) {
+      filters.studentId = parseInt(fieldsValues.student, 10);
+    }
+
+    if (!this.isNullOrUndefined(fieldsValues.assignee)) {
+      filters.adminId = parseInt(fieldsValues.assignee, 10);
+    }
+
+    if (!this.isNullOrUndefined(fieldsValues.teacher)) {
+      filters.teacherId = parseInt(fieldsValues.teacher, 10);
+    }
+
+    if (!this.isNullOrUndefined(fieldsValues.teacherRating)) {
+      filters.teacherRating = fieldsValues.teacherRating;
+    }
+
+    if (!this.isNullOrUndefined(fieldsValues.systemRating)) {
+      filters.systemRating = fieldsValues.systemRating;
+    }
+
+    if (!this.isNullOrUndefined(fieldsValues.averageRating)) {
+      filters.rating = fieldsValues.averageRating;
+    }
+
+    if (!this.isNullOrUndefined(fieldsValues.follow)) {
+      const followStatus = parseInt(fieldsValues.follow, 10);
+      if (followStatus >= 0) {
+        filters.followStatus = followStatus;
+      }
+    }
+
+    if (!this.isNullOrUndefined(fieldsValues.progress)) {
+      const progress = parseInt(fieldsValues.progress, 10);
+      if (progress >= 0) {
+        filters.status = progress;
+      }
+    }
+
+    this.props.search(filters);
   };
 
   reset = () => {
     this.props.form.resetFields();
+    this.props.form.setFieldsValue({ teacher: '' });
   };
 
   pickUpAssignee = () => {
@@ -179,7 +232,7 @@ class Search extends React.Component {
                 {...formItemLayout}
               >
                 {
-                  getFieldDecorator('average_rating', {
+                  getFieldDecorator('averageRating', {
                     rules: [
                       {
                         required: false,
@@ -195,7 +248,7 @@ class Search extends React.Component {
                 {...formItemLayout}
               >
                 {
-                  getFieldDecorator('system_rating', {
+                  getFieldDecorator('systemRating', {
                     rules: [
                       {
                         required: false,
@@ -211,7 +264,7 @@ class Search extends React.Component {
                 {...formItemLayout}
               >
                 {
-                  getFieldDecorator('teacher_rating', {
+                  getFieldDecorator('teacherRating', {
                     rules: [
                       {
                         required: false,

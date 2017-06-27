@@ -4,6 +4,7 @@ import {
   Input,
   Checkbox,
   Icon,
+  Button,
 } from 'antd';
 
 const FormItem = Form.Item;
@@ -11,13 +12,31 @@ const FormItem = Form.Item;
 class Reply extends React.Component {
   static propTypes = {
     form: React.PropTypes.object.isRequired,
+    onSubmit: React.PropTypes.func.isRequired,
+  };
+
+  handleSubmit = () => {
+    this.props.onSubmit();
   };
 
   render() {
     const { getFieldDecorator } = this.props.form;
 
+    const tailFormItemLayout = {
+      wrapperCol: {
+        xs: {
+          span: 24,
+          offset: 0,
+        },
+        sm: {
+          span: 14,
+          offset: 6,
+        },
+      },
+    };
+
     return (
-      <Form layout="vertical">
+      <Form layout="vertical" onSubmit={this.handleSubmit}>
         <FormItem
           hasFeedback
           help="必填字段"
@@ -63,6 +82,9 @@ class Reply extends React.Component {
               marginRight: 8,
             }}
           />保存后处理状态自动变成：已处理
+        </FormItem>
+        <FormItem {...tailFormItemLayout}>
+          <Button type="primary" htmlType="submit" size="large">提交</Button>
         </FormItem>
       </Form>
     );

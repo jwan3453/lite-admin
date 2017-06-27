@@ -49,7 +49,6 @@ class SearchForm extends React.Component {
           filters.studentId = parseInt(values.studentId, 10);
         }
 
-        console.log('loging...', values.assignee);
         if (values.assignee) {
           filters.adminId = parseInt(values.assignee, 10);
         }

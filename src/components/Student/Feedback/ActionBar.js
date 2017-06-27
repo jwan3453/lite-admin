@@ -3,17 +3,33 @@ import {
   Button,
   Tooltip,
   Popconfirm,
+  Dropdown,
+  Menu,
 } from 'antd';
+
+import
+  STATUS from './followStatus';
 
 export default class ActionBar extends React.Component {
   static propTypes = {
     showReplyDialog: React.PropTypes.func,
     showTicketDialog: React.PropTypes.func,
+    setUserful: React.PropTypes.func.isRequired,
+    onFollowStatusChanged: React.PropTypes.func.isRequired,
   };
 
   static defaultProps = {
     showReplyDialog: () => {},
     showTicketDialog: () => {},
+  };
+
+  setUseful = () => {
+    this.props.setUserful();
+  };
+
+  handleChangeFollowStatus = (e) => {
+    const newStatusKey = parseInt(e.key, 10);
+    this.props.onFollowStatusChanged(newStatusKey);
   };
 
   render() {
@@ -25,6 +41,15 @@ export default class ActionBar extends React.Component {
       showReplyDialog,
       showTicketDialog,
     } = this.props;
+
+    const followStatusMenu = (
+      <Menu onClick={this.handleChangeFollowStatus}>
+        {
+          STATUS.map(({ value, text }) =>
+            <Menu.Item key={value}>{text}</Menu.Item>)
+        }
+      </Menu>
+    );
 
     return (
       <div>
@@ -45,6 +70,9 @@ export default class ActionBar extends React.Component {
         <Popconfirm
           title="此操作会影响老师奖金计算，确定继续？"
           placement="top"
+          onConfirm={() => {
+            this.setUseful();
+          }}
         >
           <Tooltip title="设置有效" placement="top">
             <Button
@@ -54,9 +82,11 @@ export default class ActionBar extends React.Component {
           </Tooltip>
         </Popconfirm>
         <Tooltip title="设置跟进" placement="top">
-          <Button
-            icon="eye"
-          />
+          <Dropdown overlay={followStatusMenu}>
+            <Button
+              icon="eye"
+            />
+          </Dropdown>
         </Tooltip>
       </div>
     );

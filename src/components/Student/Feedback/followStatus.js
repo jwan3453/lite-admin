@@ -1,6 +1,6 @@
 export const CREATED = 0;
-export const FOLLOWING = 10;
-export const DONE = 20;
+export const FOLLOWING = 1;
+export const DONE = 2;
 
 const STATUS = [
   {
