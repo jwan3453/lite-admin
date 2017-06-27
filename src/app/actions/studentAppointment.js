@@ -1,7 +1,7 @@
 import { StudentAppointment } from './actionTypes';
 import { CALL_JQ_API } from '../middlewares/jqApi';
 
-export function fetchStudentAppointments(studentId = 0) {
+export function fetchStudentAppointments(studentId = 0, filters) {
   const body = {};
   if (studentId > 0) {
     body.studentId = studentId;
@@ -15,7 +15,7 @@ export function fetchStudentAppointments(studentId = 0) {
       ],
       uri: '/admin/schedules/studentAppointments',
       method: 'GET',
-      body,
+      body: { ...body, ...filters },
     },
   };
 }

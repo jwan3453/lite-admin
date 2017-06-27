@@ -3,7 +3,10 @@ import { StudentAppointment } from '../actions/actionTypes';
 
 export function studentAppointment(state = {
   loading: false,
-  studentAppointments: {},
+  studentAppointments: {
+    filters: {},
+    result: {},
+  },
 }, action = {}) {
   switch (action.type) {
     case StudentAppointment.FETCH:
@@ -14,7 +17,11 @@ export function studentAppointment(state = {
       });
     case StudentAppointment.FETCH_SUCCESS:
       return assign({}, state, {
-        copiedSchedule: action.schedule,
+        studentAppointments: {
+          filters: action.filters,
+          result: action.response,
+        },
+        loading: false,
       });
     case StudentAppointment.FETCH_FAIL:
     case StudentAppointment.UPDATE_SUCCESS:

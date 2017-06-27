@@ -8,16 +8,30 @@ import {
   Tooltip,
   Modal,
 } from 'antd';
+import _ from 'lodash';
 
 import RoomInfo from '../RoomInfo/';
+import { fetchStudentAppointments } from '../../../app/actions/studentAppointment';
+import { studentAppointmentsStatus } from '../../../common/studentAppointment';
+import { fetchCourses } from '../../../app/actions/course';
+import { fetchRoom } from '../../../app/actions/room';
 
 class Schedule extends Component {
   static propTypes = {
-    schedules: React.PropTypes.object.isRequired,
+    dispatch: React.PropTypes.func.isRequired,
+    studentAppointments: React.PropTypes.object.isRequired,
     loading: React.PropTypes.bool.isRequired,
+    filters: React.PropTypes.object,
+    studentId: React.PropTypes.number.isRequired,
+    courseLoaded: React.PropTypes.bool.isRequired,
+    courses: React.PropTypes.array,
+    roomInfo: React.PropTypes.object,
   };
   static defaultProps = {
-    schedules: {},
+    studentAppointments: {},
+    courses: [],
+    filters: {},
+    roomInfo: {},
   };
 
   state = {
@@ -26,8 +40,51 @@ class Schedule extends Component {
     roomInfoDialogVisible: false,
   };
 
-  handleSend = () => {
-    //  todo 补发课后评价消息
+  componentWillMount() {
+    const { dispatch, loading, courseLoaded, studentId } = this.props;
+    if (!courseLoaded) dispatch(fetchCourses());
+
+    if (!loading) {
+      dispatch(fetchStudentAppointments(studentId));
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { dispatch, studentId } = this.props;
+    if (nextProps.studentId > 0 && nextProps.studentId !== studentId) {
+      dispatch(fetchStudentAppointments(nextProps.studentId));
+    }
+  }
+
+  getLessonShortName = (courseId, lessonId) => {
+    const { courses } = this.props;
+    const course = _.find(courses, { id: courseId }) || {};
+    let lesson = {};
+    if (_.isArray(course.chapters)) {
+      course.chapters.map((chapter) => {
+        if (_.isEmpty(lesson) && _.isArray(chapter.lessons)) {
+          lesson = _.find(chapter.lessons, { id: lessonId });
+        }
+        return null;
+      });
+    }
+    let name = courseId;
+    if (course.name) {
+      name = course.name;
+      const match = /^.*(L\d).*$/.exec(course.name);
+      if (match[1]) {
+        name = match[1];
+      }
+    }
+    return `${name}-${lesson.name || lessonId}`;
+  };
+
+  getRoomModalLessonName = () => {
+    const { roomInfo } = this.props;
+    if (!_.isEmpty(roomInfo.schedule)) {
+      return this.getLessonShortName(roomInfo.schedule.courseId, roomInfo.schedule.lessonId);
+    }
+    return '';
   };
 
   handleHideRoomDialog = () => {
@@ -37,25 +94,34 @@ class Schedule extends Component {
     });
   };
 
-  handleRoomClick = (room, lesson) => {
+  handleSend = () => {
+    //  todo 补发课后评价消息
+  };
+
+  handleRoomClick = (room, record) => {
+    const { dispatch } = this.props;
     //  todo 分配教室
+    const lessonShortName =
+      this.getLessonShortName(record.schedule.courseId, record.schedule.lessonId);
+    dispatch(fetchRoom(room.id));
     this.setState({
-      roomInfoDialogTitle: `房间：${room.id} ${lesson.course.name} ${lesson.name}`,
+      roomInfoDialogTitle: `房间：${room.id} ${lessonShortName}`,
       roomInfoDialogVisible: true,
     });
   };
 
   render() {
-    const { schedules, loading } = this.props;
-    const dataSource = schedules.result || [];
-    const pageSize = schedules.pageSize || 10;
+    const { studentAppointments, loading, filters, roomInfo } = this.props;
+    const dataSource = studentAppointments.result || [];
+    const pageSize = filters.pageSize || 10;
     const pagination = {
-      total: schedules.total || 0,
+      total: filters.total || 0,
       pageSize,
-      current: schedules.page || 1,
+      current: filters.page || 1,
       showSizeChanger: true,
       showTotal: total => `总共${total}条`,
     };
+    const roomModalLessonName = this.getRoomModalLessonName();
 
     const columns = [
       {
@@ -66,20 +132,19 @@ class Schedule extends Component {
       {
         title: '课程名称',
         key: 'lesson',
-        dataIndex: 'lesson',
-        render: lesson => `${lesson.course.name} ${lesson.name}`,
+        dataIndex: 'schedule',
+        render: schedule => this.getLessonShortName(schedule.courseId, schedule.lessonId),
       },
       {
         title: '上课老师',
         key: 'teacher',
-        dataIndex: 'teacher',
-        render: teacher => teacher.nickname || '--',
+        dataIndex: 'room.teacherId',
       },
       {
         title: '上课时间',
         key: 'beginAt',
-        dataIndex: 'beginAt',
-        render: begin => (begin ? moment(new Date(begin)).format('YYYY-MM-DD hh:mm:ss') : '--'),
+        dataIndex: 'schedule.beginAt',
+        render: begin => (begin ? moment.unix(begin).format('YYYY-MM-DD hh:mm:ss') : '--'),
       },
       {
         title: '分配教室',
@@ -89,27 +154,29 @@ class Schedule extends Component {
           <a
             role="button"
             tabIndex={0}
-            onClick={() => this.handleRoomClick(room, record.lesson)}
+            onClick={() => this.handleRoomClick(room, record)}
           >{room.id}</a>
         ),
       },
       {
         title: '班型',
         key: 'roomType',
-        dataIndex: 'room',
-        render: room => room.type,
+        dataIndex: 'schedule.roomTypeName',
       },
       {
         title: '内部课程',
         key: 'internal',
-        dataIndex: 'internal',
+        dataIndex: 'schedule.isInternal',
         render: internal => (internal ? <span style={{ color: '#5cb85c' }}>是</span> : '否'),
       },
       {
         title: '状态',
         key: 'status',
         dataIndex: 'status',
-        render: () => '上课完成',
+        render: (statusId) => {
+          const status = _.find(studentAppointmentsStatus, { value: Number(statusId) }) || {};
+          return status.text || statusId;
+        },
       },
       {
         title: '操作',
@@ -154,9 +221,9 @@ class Schedule extends Component {
         >
           <RoomInfo
             onCopySchedule={() => {}}
-            roomInfo={{}}
-            lessonName=""
-            onHide={() => {}}
+            roomInfo={roomInfo}
+            lessonName={roomModalLessonName}
+            onHide={this.handleHideRoomDialog}
           />
         </Modal>
       </div>
@@ -164,35 +231,16 @@ class Schedule extends Component {
   }
 }
 
-function mapStateToProps() {
+function mapStateToProps(state) {
+  const { studentAppointment, course, room } = state;
+  const { loading, studentAppointments } = studentAppointment;
   return {
-    loading: false,
-    schedules: {
-      result: [
-        {
-          id: 99,
-          room: {
-            id: 71,
-            type: '4人班',
-          },
-          lesson: {
-            id: 0,
-            name: '1-7',
-            course: {
-              id: 0,
-              name: 'G1',
-            },
-          },
-          teacher: {
-            id: 0,
-            nickname: 'Megan',
-          },
-          beginAt: 1496397430283,
-          internal: true,
-          status: 1,
-        },
-      ],
-    },
+    loading,
+    courseLoaded: course.loaded,
+    courses: course.courses,
+    studentAppointments: studentAppointments.result,
+    filters: studentAppointments.filters,
+    roomInfo: room.roomInfo,
   };
 }
 

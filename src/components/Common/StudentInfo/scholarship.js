@@ -31,7 +31,6 @@ class Scholarship extends React.Component {
   componentWillMount() {
     const { dispatch, loading, studentId } = this.props;
     if (!loading) {
-      console.log(studentId);
       dispatch(fetchScholarshipSummary(studentId));
       dispatch(fetchScholarshipHistoryList(studentId));
     }
