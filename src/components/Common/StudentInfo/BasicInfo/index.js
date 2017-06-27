@@ -11,12 +11,12 @@ import {
   Message,
 } from 'antd';
 import _ from 'lodash';
-import crmStatus from '../../../common/crmStatus';
+import crmStatus from '../../../../common/crmStatus';
 
-import GiftForm from './giftForm';
-import BasicProfileForm from './basicProfileForm';
+import GiftForm from './GiftForm';
+import BasicProfileForm from './ProfileForm';
 
-import { fetchStudent, fetchMobile } from '../../../app/actions/student';
+import { fetchStudent, fetchMobile } from '../../../../app/actions/student';
 
 class StudentBasicInfo extends Component {
   static propTypes = {

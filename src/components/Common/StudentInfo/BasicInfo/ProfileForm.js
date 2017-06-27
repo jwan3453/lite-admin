@@ -7,7 +7,7 @@ import {
   Select,
 } from 'antd';
 
-import levels from '../../../common/levels';
+import levels from '../../../../common/levels';
 
 const RadioGroup = Radio.Group;
 const FormItem = Form.Item;

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Tabs } from 'antd';
 
-import StudentBasicInfo from './basicInfo';
+import StudentBasicInfo from './BasicInfo';
 import Schedule from './schedule';
 import EntrySurvey from './entrySurvey';
 import LessonStatus from './lessonStatus';
