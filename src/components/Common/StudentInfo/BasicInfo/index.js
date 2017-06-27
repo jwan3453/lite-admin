@@ -69,10 +69,13 @@ class StudentBasicInfo extends Component {
 
   render() {
     const { studentInfo, loading, adminUsers } = this.props;
+    const currentCrmStatus = _.find(crmStatus, item =>
+        item.value === studentInfo.crmStatus) || {};
+    const assistant = _.find(adminUsers,
+      admin => Number(admin.id) === Number(studentInfo.crmAssistantId)) || {};
 
     const labelProps = {
-      span: 3,
-      offset: 0,
+      span: 8,
       style: {
         color: '#999',
         textAlign: 'right',
@@ -80,67 +83,93 @@ class StudentBasicInfo extends Component {
     };
 
     const contentProps = {
-      span: 5,
+      span: 16,
     };
-
-    const currentCrmStatus = _.find(crmStatus, item =>
-        item.value === studentInfo.crmStatus) || {};
-    const assistant = _.find(adminUsers,
-      admin => Number(admin.id) === Number(studentInfo.crmAssistantId)) || {};
 
     return (
       <div>
         <Spin spinning={loading}>
           <Row style={{ lineHeight: '30px', padding: '0 16px' }}>
-            <Col {...labelProps}>用户编号：</Col>
-            <Col {...contentProps}>{studentInfo.id}
-              <Popconfirm
-                title="操作不可逆，确定继续？"
-                onConfirm={this.handlePasswordResetConfirm}
-              >
-                <Tooltip title="重置密码">
-                  <Button
-                    icon="lock"
-                    size="small"
-                    style={{ marginLeft: 5 }}
-                  />
-                </Tooltip>
-              </Popconfirm>
-              <Tooltip title="修改信息">
-                <Button
-                  icon="edit"
-                  size="small"
-                  style={{ marginLeft: 5 }}
-                  onClick={() => this.setState({ profileDialogVisible: true })}
-                />
-              </Tooltip>
+            <Col span={8}>
+              <Row>
+                <Col {...labelProps}>用户编号：</Col>
+                <Col {...contentProps}>{studentInfo.id}
+                  <Popconfirm
+                    title="操作不可逆，确定继续？"
+                    onConfirm={this.handlePasswordResetConfirm}
+                  >
+                    <Tooltip title="重置密码">
+                      <Button
+                        icon="lock"
+                        size="small"
+                        style={{ marginLeft: 5 }}
+                      />
+                    </Tooltip>
+                  </Popconfirm>
+                  <Tooltip title="修改信息">
+                    <Button
+                      icon="edit"
+                      size="small"
+                      style={{ marginLeft: 5 }}
+                      onClick={() => this.setState({ profileDialogVisible: true })}
+                    />
+                  </Tooltip>
+                </Col>
+              </Row>
+              <Row>
+                <Col {...labelProps}>手机号码：</Col>
+                <Col>
+                  {
+                    studentInfo.mobileSuffix
+                    && <Button
+                      size="small"
+                      icon="mobile"
+                      onClick={this.handleFetchMobile}
+                    >{studentInfo.mobileSuffix}</Button>
+                  }
+                </Col>
+              </Row>
+              <Row>
+                <Col {...labelProps}>所在地区：</Col>
+                <Col>{studentInfo.places || '--'}</Col>
+              </Row>
+              <Row>
+                <Col {...labelProps}>来源渠道：</Col>
+                <Col>{studentInfo.source}</Col>
+              </Row>
             </Col>
-            <Col {...labelProps}>昵称：</Col>
-            <Col {...contentProps}>{studentInfo.nickname || '--'}</Col>
-            <Col {...labelProps}>性别：</Col>
-            <Col {...contentProps}>{['', '男', '女'][studentInfo.gender]}</Col>
-            <Col {...labelProps}>手机号码：</Col>
-            <Col {...contentProps}>
-              {studentInfo.mobileSuffix && <Button
-                size="small"
-                icon="mobile"
-                onClick={this.handleFetchMobile}
-              >{studentInfo.mobileSuffix}</Button>}
+            <Col span={8}>
+              <Row>
+                <Col {...labelProps}>昵称：</Col>
+                <Col>{studentInfo.nickname || '--'}</Col>
+              </Row>
+              <Row>
+                <Col {...labelProps}>所属组：</Col>
+                <Col>{studentInfo.group || '--'}</Col>
+              </Row>
+              <Row>
+                <Col {...labelProps}>所属助教：</Col>
+                <Col>{assistant.nickname}</Col>
+              </Row>
+              <Row>
+                <Col {...labelProps}>课程级别：</Col>
+                <Col>{studentInfo.level || '未分级'}</Col>
+              </Row>
             </Col>
-            <Col {...labelProps}>所属组：</Col>
-            <Col {...contentProps}>{studentInfo.group || '--'}</Col>
-            <Col {...labelProps}>年龄：</Col>
-            <Col {...contentProps}>{studentInfo.age}</Col>
-            <Col {...labelProps}>所在地区：</Col>
-            <Col {...contentProps}>{studentInfo.places || '--'}</Col>
-            <Col {...labelProps}>所属助教：</Col>
-            <Col {...contentProps}>{assistant.nickname}</Col>
-            <Col {...labelProps}>CRM状态：</Col>
-            <Col {...contentProps}>{currentCrmStatus.name}</Col>
-            <Col {...labelProps}>来源渠道：</Col>
-            <Col {...contentProps}>{studentInfo.source}</Col>
-            <Col {...labelProps}>课程级别：</Col>
-            <Col {...contentProps}>{studentInfo.level || '未分级'}</Col>
+            <Col span={8}>
+              <Row>
+                <Col {...labelProps}>性别：</Col>
+                <Col>{['', '男', '女'][studentInfo.gender]}</Col>
+              </Row>
+              <Row>
+                <Col {...labelProps}>年龄：</Col>
+                <Col>{studentInfo.age}</Col>
+              </Row>
+              <Row>
+                <Col {...labelProps}>CRM状态：</Col>
+                <Col>{currentCrmStatus.name}</Col>
+              </Row>
+            </Col>
           </Row>
         </Spin>
         <Modal
