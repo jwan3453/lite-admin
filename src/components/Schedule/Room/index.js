@@ -1,7 +1,23 @@
-import React, { Component } from 'react';
+import React from 'react';
+import { connect } from 'react-redux';
+import {
+  Table,
+} from 'antd';
 
-export default class Room extends Component {
+import SearchForm from './SearchForm';
+
+class Rooms extends React.Component {
   render() {
-    return <div>Room</div>;
+    return (
+      <div>
+        <SearchForm />
+        <Table />
+      </div>
+    );
   }
 }
+
+function mapStateToProps() {}
+
+export default connect(mapStateToProps)(Rooms);
+

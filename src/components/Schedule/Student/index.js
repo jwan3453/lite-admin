@@ -1,7 +1,23 @@
-import React, { Component } from 'react';
+import React from 'react';
+import { connect } from 'react-redux';
+import {
+  Table,
+} from 'antd';
 
-export default class StudentSchedules extends Component {
+import SearchForm from './SearchForm';
+
+class StudentSchedules extends React.Component {
   render() {
-    return <div>Student Schedules</div>;
+    return (
+      <div>
+        <SearchForm />
+        <Table />
+      </div>
+    );
   }
 }
+
+function mapStateToProps() {}
+
+export default connect(mapStateToProps)(StudentSchedules);
+
