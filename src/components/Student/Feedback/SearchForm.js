@@ -94,7 +94,6 @@ class Search extends React.Component {
 
   reset = () => {
     this.props.form.resetFields();
-    this.props.form.setFieldsValue({ teacher: '' });
   };
 
   render() {
