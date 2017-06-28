@@ -23,13 +23,12 @@ class SearchForm extends React.Component {
 
   handleSearch = (eventArgs) => {
     eventArgs.preventDefault();
-    const {
-      onSearch,
-    } = this.props;
-
-    //  todo get filters and search
-
-    onSearch();
+    this.props.form.validateFields((err, values) => {
+      const filters = {};
+      filters.codeType = parseInt(values.type, 10);
+      filters.mobile = parseInt(values.mobile, 10);
+      this.props.onSearch(filters);
+    });
   };
 
   reset = () => {
@@ -74,7 +73,7 @@ class SearchForm extends React.Component {
                         item => (
                           <Select.Option
                             key={item.value}
-                            value={item.value}
+                            value={String(item.value)}
                           >{item.text}</Select.Option>
                         ),
                       )
@@ -86,17 +85,17 @@ class SearchForm extends React.Component {
           </Col>
           <Col span={8}>
             <FormItem
-              label="手机尾号"
+              label="手机号"
               {...formItemLayout}
             >
               {
-                getFieldDecorator('phone', {
+                getFieldDecorator('mobile', {
                   rules: [
                     {
-                      required: false,
+                      required: true,
                     },
                   ],
-                })(<Input size="default" placeholder="请输入4位手机尾号" />)
+                })(<Input size="default" placeholder="请输入用户手机号" />)
               }
             </FormItem>
           </Col>

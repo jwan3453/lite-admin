@@ -269,3 +269,9 @@ export const StudentFeedback = {
   UPDATE_STUDENT_FEEDBACK_SUCCESS: 'update_student_feedback_status_success',
   UPDATE_STUDENT_FEEDBACK_FAIL: 'update_student_feedback_status_fail',
 };
+
+export const VerificationCode = {
+  FETCH_VERIFICATION_CODE: 'verification_code_fetch',
+  FETCH_VERIFICATION_CODE_SUCCESS: 'verification_code_fetch_success',
+  FETCH_VERIFICATION_CODE_FAIL: 'verification_code_fetch_fail',
+};

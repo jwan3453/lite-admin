@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import {
   Table,
-  Button,
   Tooltip,
   Modal,
   Spin,
@@ -17,18 +16,23 @@ import {
   TYPE_MAP as VERIFICATION_TYPE_MAP,
 } from './verificationTypes';
 
+import {
+  fetchVerificationCode,
+} from '../../../app/actions/verificationCode';
+
 const DATE_FORMAT = 'YYYY-MM-DD hh:mm:ss';
 
 class VerificationCodes extends React.Component {
   static propTypes = {
+    dispatch: React.PropTypes.func.isRequired,
     loading: React.PropTypes.bool.isRequired,
     filters: React.PropTypes.object.isRequired,
-    codes: React.PropTypes.object.isRequired,
+    verificationCodeData: React.PropTypes.object.isRequired,
   };
 
   static defaultProps = {
     filters: {},
-    codes: {},
+    verificationCodeData: {},
     loading: false,
   };
 
@@ -37,41 +41,40 @@ class VerificationCodes extends React.Component {
     studentInfoModalVisible: false,
   };
 
-  componentWillMount() {
-    //  todo fetch verification codes
-    const { filters } = this.props;
-    console.log(filters);
-  }
-
-  handleSearch = (filters) => {
-    //  todo
-    console.log(filters);
-  };
-
-  handleChange = () => {};
-
-  handleFetchMobile = () => {
-    //  todo fetch mobile phone number
+  handleSearch = (filters = {}) => {
+    const { dispatch } = this.props;
+    dispatch(fetchVerificationCode(filters));
   };
 
   showStudentInfo = (studentId) => {
-    console.log(studentId);
     this.setState({
       studentId,
       studentInfoModalVisible: true,
     });
   };
 
+  handlePaginationChange = (pagination) => {
+    const { dispatch, filters } = this.props;
+    dispatch(
+      fetchVerificationCode(
+        Object.assign(filters, {
+          page: pagination.current,
+          pageSize: pagination.pageSize,
+        }),
+      ),
+    );
+  };
+
   render() {
     const {
       loading,
-      codes,
+      verificationCodeData,
     } = this.props;
 
     const columns = [
       {
         title: '用户',
-        dataIndex: 'studentId',
+        dataIndex: 'userId',
         render: studentId => (
           <Tooltip title="用户信息" placement="top">
             <a
@@ -81,19 +84,6 @@ class VerificationCodes extends React.Component {
             >{studentId}</a>
           </Tooltip>
         ),
-      },
-      {
-        title: '手机尾号',
-        dataIndex: 'mobileSuffix',
-        render(mobileSuffix) {
-          return (
-            <Button
-              size="small"
-              icon="mobile"
-              onClick={() => { this.handleFetchMobile(); }}
-            >{mobileSuffix}</Button>
-          );
-        },
       },
       {
         title: '验证类型',
@@ -106,26 +96,26 @@ class VerificationCodes extends React.Component {
       },
       {
         title: '验证时间',
-        dataIndex: 'ctime',
-        render: ctime => moment(ctime).format(DATE_FORMAT),
+        dataIndex: 'createdAt',
+        render: ctime => moment.unix(ctime).format(DATE_FORMAT),
       },
       {
         title: '过期时间',
-        dataIndex: 'expired',
-        render: expired => moment(expired).format(DATE_FORMAT),
+        dataIndex: 'expiresAt',
+        render: expired => moment.unix(expired).format(DATE_FORMAT),
       },
     ];
 
-    const pageSize = codes.pageSize || 10;
+    const pageSize = verificationCodeData.pageSize || 10;
     const pagination = {
-      total: codes.total || 0,
+      total: verificationCodeData.total || 0,
       pageSize,
-      current: codes.page || 1,
+      current: verificationCodeData.page || 1,
       showSizeChanger: true,
       showTotal: total => `总共${total}条`,
     };
 
-    const dataSource = codes.result || [];
+    const dataSource = verificationCodeData.result || [];
 
     const {
       studentId,
@@ -143,6 +133,7 @@ class VerificationCodes extends React.Component {
           columns={columns}
           pagination={pagination}
           dataSource={dataSource}
+          onChange={this.handlePaginationChange}
           style={{ marginTop: 16 }}
         />
         <Modal
@@ -163,34 +154,12 @@ class VerificationCodes extends React.Component {
   }
 }
 
-function mapStateToProps() {
+function mapStateToProps(state) {
+  const { verificationCode } = state;
   return {
-    loading: false,
-    filters: {},
-    codes: {
-      page: 1,
-      total: 10,
-      result: [
-        {
-          id: 1,
-          studentId: 200,
-          mobileSuffix: '1122',
-          type: 0,
-          code: 2033,
-          ctime: 1498552174917,
-          expired: 1498552174917,
-        },
-        {
-          id: 2,
-          studentId: 199,
-          mobileSuffix: '8132',
-          type: 1,
-          code: 2033,
-          ctime: 1498552174917,
-          expired: 1498552174917,
-        },
-      ],
-    },
+    loading: verificationCode.loading,
+    verificationCodeData: verificationCode.result,
+    filters: verificationCode.filters,
   };
 }
 
