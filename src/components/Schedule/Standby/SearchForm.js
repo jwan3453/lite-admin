@@ -4,16 +4,24 @@ import {
   Row,
   Col,
   Button,
-  Input,
+  Select,
+  DatePicker,
 } from 'antd';
+
+import _ from 'lodash';
+
+import TeacherSearchInput from '../../Common/TeacherSearchInput';
+import STANDBY_STATUS from './teacherStandbyStatus';
+import SCHEDULE_TIMES from '../../../common/scheduleTimes';
 
 const FormItem = Form.Item;
 
 class SearchForm extends React.Component {
   static propTypes = {
     form: React.PropTypes.object.isRequired,
-    onSearch: React.PropTypes.func.isRequired,
     pageSize: React.PropTypes.number.isRequired,
+    onSearch: React.PropTypes.func.isRequired,
+    onCreate: React.PropTypes.func.isRequired,
   };
 
   state = {
@@ -44,7 +52,13 @@ class SearchForm extends React.Component {
   };
 
   render() {
-    const { getFieldDecorator } = this.props.form;
+    const {
+      form,
+      onCreate,
+    } = this.props;
+
+    const { getFieldDecorator } = form;
+
     const formItemLayout = {
       labelCol: { span: 8 },
       wrapperCol: { span: 16 },
@@ -68,7 +82,7 @@ class SearchForm extends React.Component {
                       required: false,
                     },
                   ],
-                })(<Input />)
+                })(<TeacherSearchInput />)
               }
             </FormItem>
           </Col>
@@ -79,12 +93,31 @@ class SearchForm extends React.Component {
             >
               {
                 getFieldDecorator('beginAt', {
+                  initialValue: '-1',
                   rules: [
                     {
                       required: false,
                     },
                   ],
-                })(<Input />)
+                })(
+                  <Select>
+                    <Select.Option
+                      key="-1"
+                      value="-1"
+                    >全部</Select.Option>
+                    {
+                      _.map(
+                        SCHEDULE_TIMES,
+                        item => (
+                          <Select.Option
+                            key={item}
+                            value={item}
+                          >{item}</Select.Option>
+                        ),
+                      )
+                    }
+                  </Select>,
+                )
               }
             </FormItem>
           </Col>
@@ -100,7 +133,7 @@ class SearchForm extends React.Component {
                       required: false,
                     },
                   ],
-                })(<Input />)
+                })(<DatePicker.RangePicker />)
               }
             </FormItem>
           </Col>
@@ -111,12 +144,31 @@ class SearchForm extends React.Component {
             >
               {
                 getFieldDecorator('status', {
+                  initialValue: '-1',
                   rules: [
                     {
                       required: false,
                     },
                   ],
-                })(<Input />)
+                })(
+                  <Select>
+                    <Select.Option
+                      key="-1"
+                      value="-1"
+                    >全部</Select.Option>
+                    {
+                      _.map(
+                        STANDBY_STATUS,
+                        item => (
+                          <Select.Option
+                            key={item.value}
+                            value={item.value}
+                          >{item.text}</Select.Option>
+                        ),
+                      )
+                    }
+                  </Select>,
+                  )
               }
             </FormItem>
           </Col>
@@ -137,12 +189,13 @@ class SearchForm extends React.Component {
               size="default"
               style={{ marginLeft: 8 }}
               onClick={this.handleReset}
-            >清空
+            >清空条件
             </Button>
             <Button
               size="default"
               style={{ marginLeft: 8 }}
               type="primary"
+              onClick={onCreate}
             >新建待命
             </Button>
           </Col>
