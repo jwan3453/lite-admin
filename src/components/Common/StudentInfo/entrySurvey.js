@@ -43,6 +43,7 @@ class EntrySurvey extends React.Component {
   componentWillReceiveProps(nextProps) {
     const { dispatch, studentId } = this.props;
     if (nextProps.studentId > 0 && nextProps.studentId !== studentId) {
+      this.setState({ modifyLevelLock: true });
       dispatch(fetchStudent(nextProps.studentId));
       dispatch(fetchEntrySurveyQuestion(nextProps.studentId));
     }
