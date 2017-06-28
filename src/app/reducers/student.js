@@ -20,6 +20,7 @@ export function student(
       studentId: 0,
       result: null,
     },
+    surveyAnswers: {},
   },
   action = {},
 ) {
@@ -88,10 +89,23 @@ export function student(
           result: action.response,
         },
       });
+    case Student.UPDATE_LEVEL:
+    case Student.FETCH_ENTRY_SURVEY_QUESTION:
+      return assign({}, state, {
+        loading: true,
+      });
+    case Student.FETCH_ENTRY_SURVEY_QUESTION_SUCCESS:
+      return assign({}, state, {
+        loading: false,
+        surveyAnswers: action.response,
+      });
     case Student.MANAGE_FAIL:
     case Student.SEARCH_FAIL:
     case Student.FETCH_FAIL:
     case Student.FETCH_MOBILE_FAIL:
+    case Student.UPDATE_LEVEL_SUCCESS:
+    case Student.UPDATE_LEVEL_FAIL:
+    case Student.FETCH_ENTRY_SURVEY_QUESTION_FAIL:
       return assign({}, state, {
         loading: false,
       });

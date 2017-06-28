@@ -1,113 +1,126 @@
+import _ from 'lodash';
 import React from 'react';
+import { connect } from 'react-redux';
 import {
   Spin,
-  Form,
   Select,
-  Modal,
+  Card,
+  Message,
+  Button,
 } from 'antd';
-
-const FormItem = Form.Item;
-const SelectOption = Select.Option;
+import { updateLevel, fetchStudent, fetchEntrySurveyQuestion } from '../../../app/actions/student';
+import levels from '../../../common/levels';
+import questions from '../../../common/entrySurveyQuestion';
 
 class EntrySurvey extends React.Component {
   static propTypes = {
+    dispatch: React.PropTypes.func.isRequired,
     loading: React.PropTypes.bool,
-    form: React.PropTypes.object.isRequired,
+    studentLoaded: React.PropTypes.bool.isRequired,
+    studentId: React.PropTypes.number.isRequired,
+    studentLevel: React.PropTypes.number,
+    answers: React.PropTypes.object,
   };
 
   static defaultProps = {
     loading: false,
+    studentLevel: 0,
+    answers: {},
   };
 
+  state = {
+    modifyLevelLock: true,
+  }
+
+  componentWillMount() {
+    const { dispatch, studentLoaded, studentId } = this.props;
+    if (!studentLoaded) {
+      dispatch(fetchStudent(studentId));
+      dispatch(fetchEntrySurveyQuestion(studentId));
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { dispatch, studentId } = this.props;
+    if (nextProps.studentId > 0 && nextProps.studentId !== studentId) {
+      dispatch(fetchStudent(nextProps.studentId));
+      dispatch(fetchEntrySurveyQuestion(nextProps.studentId));
+    }
+  }
+
+  handleLevelChange = (value) => {
+    const { dispatch, studentId } = this.props;
+    dispatch(updateLevel(studentId, { level: value })).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+      } else {
+        Message.success('更改级别成功');
+        dispatch(fetchStudent(studentId));
+        this.setState({ modifyLevelLock: true });
+      }
+    });
+  };
+
+  handleModifyLockClick = () => {
+    this.setState({ modifyLevelLock: false });
+  }
+
   render() {
-    const {
-      loading,
-    } = this.props;
-
-    const formItemLayout = {
-      labelCol: { span: 7 },
-      wrapperCol: { span: 12 },
-    };
-
-    const { getFieldDecorator } = this.props.form;
-
-    const questions = [
-      [
-        '孩子在学校学了几年英语？',
-        '1年',
-      ],
-      [
-        '孩子在学校学了几年英语？',
-        '1年',
-      ],
-      [
-        '孩子在学校学了几年英语？',
-        '1年',
-      ],
-      [
-        '孩子在学校学了几年英语？',
-        '1年',
-      ],
-    ];
-
+    const { loading, answers } = this.props;
     return (
-      <Spin
-        spinning={loading}
-      >
-        <Form>
-          <FormItem
-            label="课程级别"
-            {...formItemLayout}
+      <Spin spinning={loading}>
+        <div>
+          课程级别:
+          <Select
+            size="small"
+            onChange={this.handleLevelChange}
+            style={{ marginLeft: 10, marginRight: 10, marginBottom: 16, width: 200 }}
+            value={`${this.props.studentLevel}`}
+            disabled={this.state.modifyLevelLock}
           >
             {
-              getFieldDecorator('level', {
-                rulesL: [
-                  {
-                    required: false,
-                  },
-                ],
-              })(
-                <Select>
-                  <SelectOption key="1" value="1">G1</SelectOption>
-                  <SelectOption key="5" value="5">G2</SelectOption>
-                </Select>,
-              )
+              levels.map(item => (
+                <Select.Option key={item.value} value={String(item.value)}>
+                  {item.name}
+                </Select.Option>
+            ))
             }
-          </FormItem>
-          <FormItem
-            label="分级问卷"
-            {...formItemLayout}
-          >
-            {
-              questions.length > 0
-              ? questions.map(item => (
-                <div key={Math.random()}>
-                  <div>Q：{item[0]}</div>
-                  <div>A：{item[1]}</div>
-                </div>
-              ))
-              : (<div>暂时没有问卷调查数据哦！</div>)
+          </Select>
+          修改
+            <Button
+              icon="lock"
+              style={{ marginLeft: 10 }}
+              onClick={this.handleModifyLockClick}
+            />
+        </div>
+        <div>
+          {
+              _.isEmpty(answers) ?
+                <Card style={{ width: 350 }}>
+                  <p>暂时没有问卷数据</p>
+                </Card>
+                :
+                <Card style={{ width: 350 }}>
+                  <p>问题1： {questions.questions1}？</p>
+                  <p>答案1： {answers.answer1} </p>
+                  <p>问题2： {questions.questions2}？</p>
+                  <p>答案2： {answers.answer2} </p>
+                  <p>问题3： {questions.questions3}？</p>
+                  <p>答案3： {answers.answer3} </p>
+                </Card>
             }
-          </FormItem>
-        </Form>
+        </div>
       </Spin>
     );
   }
 }
 
-export default Form.create({
-  onFieldsChange: (props, fields) => {
-    if (fields.level) {
-      Modal.confirm({
-        title: '确认修改级别',
-        content: '确认修改级别？',
-        okText: '确认',
-        cancelText: '取消',
-        onOk() {
-          console.log('this is on ok');
-        },
-      });
-    }
-  },
-})(EntrySurvey);
-
+function mapStateToProps(state) {
+  const { student } = state;
+  return {
+    studentLevel: student.studentInfo.result.level,
+    studentLoaded: student.loading,
+    answers: student.surveyAnswers,
+  };
+}
+export default connect(mapStateToProps)(EntrySurvey);

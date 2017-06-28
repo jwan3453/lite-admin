@@ -48,6 +48,15 @@ export const Student = {
   FETCH_MOBILE: 'student_fetch_mobile',
   FETCH_MOBILE_SUCCESS: 'student_fetch_mobile_success',
   FETCH_MOBILE_FAIL: 'student_fetch_mobile_fail',
+
+  UPDATE_LEVEL: 'student_update_level',
+  UPDATE_LEVEL_SUCCESS: 'student_update_level_success',
+  UPDATE_LEVEL_FAIL: 'student_update_level_fail',
+
+  FETCH_ENTRY_SURVEY_QUESTION: 'fetch_entry_survey_question',
+  FETCH_ENTRY_SURVEY_QUESTION_SUCCESS: 'fetch_entry_survey_question_success',
+  FETCH_ENTRY_SURVEY_QUESTION_FAIL: 'fetch_entry_survey_question_fail',
+
 };
 
 export const StudentProduct = {

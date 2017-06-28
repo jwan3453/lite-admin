@@ -47,3 +47,31 @@ export function fetchMobile(studentId) {
     },
   };
 }
+
+export function updateLevel(studentId, data) {
+  return {
+    studentId,
+    [CALL_JQ_API]: {
+      types: [Student.UPDATE_LEVEL, Student.UPDATE_LEVEL_SUCCESS, Student.UPDATE_LEVEL_FAIL],
+      uri: `/admin/students/${studentId}/updateLevel`,
+      method: 'POST',
+      body: data,
+      nonce: true,
+    },
+  };
+}
+
+export function fetchEntrySurveyQuestion(studentId) {
+  return {
+    studentId,
+    [CALL_JQ_API]: {
+      types: [
+        Student.FETCH_ENTRY_SURVEY_QUESTION,
+        Student.FETCH_ENTRY_SURVEY_QUESTION_SUCCESS,
+        Student.FETCH_ENTRY_SURVEY_QUESTION_FAIL,
+      ],
+      uri: `/admin/students/${studentId}/survey/entry`,
+      method: 'GET',
+    },
+  };
+}
