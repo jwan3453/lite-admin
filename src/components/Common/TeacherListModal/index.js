@@ -19,8 +19,6 @@ class Teachers extends React.Component {
   };
 
   static defaultProps = {
-    filters: {},
-    teachers: {},
     onSelectChange: () => {},
     multiSelect: false,
   };

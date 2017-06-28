@@ -6,6 +6,7 @@ import {
   Tag,
   Tooltip,
   Message,
+  Spin,
 } from 'antd';
 
 import moment from 'moment';
@@ -19,6 +20,7 @@ import RoomInfo from '../../Common/RoomInfo';
 
 import { fetchStudentFeedback, updateStudentFeedback } from '../../../app/actions/studentFeedback';
 import { createTicket } from '../../../app/actions/ticket';
+import { fetchRoom } from '../../../app/actions/room';
 
 import {
   STATUS_MAP as PROGRESS_STATUS_MAP,
@@ -37,11 +39,13 @@ class Feedback extends React.Component {
     dispatch: React.PropTypes.func.isRequired,
     loading: React.PropTypes.bool.isRequired,
     feedbackResult: React.PropTypes.object,
+    currentClassRoom: React.PropTypes.object,
   };
 
   static defaultProps = {
     loading: false,
     feedbackResult: {},
+    currentClassRoom: {},
   };
 
   state = {
@@ -58,10 +62,11 @@ class Feedback extends React.Component {
     dispatch(fetchStudentFeedback());
   }
 
-  showStudentInfo = (currentStudent) => {
+
+  showStudentInfo = (studentId) => {
     this.setState({
       studentDialogVisible: true,
-      currentStudent,
+      currentStudent: { id: studentId },
     });
   };
 
@@ -72,11 +77,14 @@ class Feedback extends React.Component {
     });
   };
 
-  showClassRoomInfo = (currentClassRoom) => {
-    this.setState({
-      classRoomDialogVisible: true,
-      currentClassRoom,
-    });
+  showClassRoomInfo = (roomId) => {
+    const { dispatch } = this.props;
+    if (roomId) {
+      dispatch(fetchRoom(roomId));
+      this.setState({
+        classRoomDialogVisible: true,
+      });
+    }
   };
 
   hideClassRoomInfo = () => {
@@ -199,12 +207,12 @@ class Feedback extends React.Component {
     const {
       loading,
       feedbackResult,
+      currentClassRoom,
     } = this.props;
 
     const {
       currentFeedback,
       currentStudent,
-      currentClassRoom,
     } = this.state;
 
     const pageSize = feedbackResult.pageSize || 10;
@@ -393,7 +401,11 @@ class Feedback extends React.Component {
           onOk={this.hideClassRoomInfo}
           onCancel={this.hideClassRoomInfo}
         >
-          <RoomInfo roomInfo={currentClassRoom} />
+          <Spin spinning={this.props.loading}>
+            <RoomInfo
+              roomInfo={currentClassRoom}
+            />
+          </Spin>
         </Modal>
 
       </div>
@@ -402,12 +414,14 @@ class Feedback extends React.Component {
 }
 
 function mapStateToProps(state) {
-  const { studentFeedback } = state;
+  const { studentFeedback, room } = state;
+  const { roomInfo } = room;
   return {
-    loading: studentFeedback.loading,
+    loading: studentFeedback.loading || room.loading,
     feedbackResult: studentFeedback.result,
     filters: studentFeedback.filters,
     adminUsers: [],
+    currentClassRoom: roomInfo,
   };
 }
 

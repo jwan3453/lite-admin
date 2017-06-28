@@ -35,22 +35,7 @@ class Search extends React.Component {
     assistantSelectorVisible: false,
   };
 
-  onSelectedAssistantChange = (selectedRowKeys, selectedRows) => {
-    const selected = selectedRows[0];
-    this.setState({
-      selectedAssistant: selected,
-    });
-  };
-
-  onSelectedAssigneeChange = (selectedRowKeys, selectedRows) => {
-    const selected = selectedRows[0];
-    this.setState({
-      selectedAssignee: selected,
-    });
-  };
-
   isNullOrUndefined = value => _.isNull(value) || _.isUndefined(value);
-
 
   search = (eventArgs) => {
     eventArgs.preventDefault();
@@ -110,44 +95,6 @@ class Search extends React.Component {
   reset = () => {
     this.props.form.resetFields();
     this.props.form.setFieldsValue({ teacher: '' });
-  };
-
-  pickUpAssignee = () => {
-    const { form } = this.props;
-    form.setFieldsValue({
-      assignee: this.state.selectedUser.id,
-    });
-  };
-
-  pickUpAssistant = () => {
-    const { form } = this.props;
-    form.setFieldsValue({
-      assistant: this.state.selectedUser.id,
-    });
-  };
-
-  showAssistantSelector = () => {
-    this.setState({
-      assistantSelectorVisible: true,
-    });
-  };
-
-  hideAssistantSelector = () => {
-    this.setState({
-      assistantSelectorVisible: false,
-    });
-  };
-
-  showAssigneeSelector = () => {
-    this.setState({
-      assigneeSelectorVisible: true,
-    });
-  };
-
-  hideAssigneeSelector = () => {
-    this.setState({
-      assigneeSelectorVisible: false,
-    });
   };
 
   render() {
