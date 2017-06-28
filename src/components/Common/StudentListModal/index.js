@@ -16,14 +16,18 @@ class StudentList extends Component {
     filters: React.PropTypes.object.isRequired,
     students: React.PropTypes.object.isRequired,
     onSelectedRowsChange: React.PropTypes.func.isRequired,
+    maskClosable: React.PropTypes.bool,
     multiSelect: React.PropTypes.bool,
+    selectedRowKeys: React.PropTypes.array,
   };
 
   static defaultProps = {
     filters: {},
     students: {},
     onSelectedRowsChange: () => {},
+    maskClosable: false,
     multiSelect: false,
+    selectedRowKeys: [],
   };
 
   componentWillMount() {
@@ -58,6 +62,7 @@ class StudentList extends Component {
     const {
       students,
       multiSelect,
+      selectedRowKeys,
       ...modalProps
     } = this.props;
 
@@ -97,6 +102,7 @@ class StudentList extends Component {
 
     const rowSelection = {
       type: !multiSelect ? 'radio' : 'checkbox',
+      selectedRowKeys: selectedRowKeys || [],
       onChange: this.handleSelectChange,
     };
 

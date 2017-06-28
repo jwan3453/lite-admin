@@ -11,16 +11,20 @@ import { searchTeacher } from '../../../app/actions/teacher';
 class Teachers extends React.Component {
   static propTypes = {
     dispatch: React.PropTypes.func.isRequired,
-    onSelectChange: React.PropTypes.func.isRequired,
+    onSelectedRowsChange: React.PropTypes.func.isRequired,
     loading: React.PropTypes.bool.isRequired,
     filters: React.PropTypes.object.isRequired,
     teachers: React.PropTypes.object.isRequired,
+    maskClosable: React.PropTypes.bool,
     multiSelect: React.PropTypes.bool,
+    selectedRowKeys: React.PropTypes.array,
   };
 
   static defaultProps = {
     onSelectChange: () => {},
+    maskClosable: false,
     multiSelect: false,
+    selectedRowKeys: [],
   };
 
   componentWillMount() {
@@ -38,6 +42,10 @@ class Teachers extends React.Component {
     ));
   };
 
+  handleSelectChange = (selectedRowKeys, selectedRows) => {
+    this.props.onSelectedRowsChange(selectedRowKeys, selectedRows);
+  };
+
   handleSearch = (text) => {
     const { dispatch } = this.props;
     dispatch(searchTeacher({
@@ -49,7 +57,7 @@ class Teachers extends React.Component {
     const {
       teachers,
       multiSelect,
-      onSelectChange,
+      selectedRowKeys,
       ...modalProps
     } = this.props;
 
@@ -72,7 +80,8 @@ class Teachers extends React.Component {
 
     const rowSelection = {
       type: !multiSelect ? 'radio' : 'checkbox',
-      onChange: onSelectChange,
+      selectedRowKeys: selectedRowKeys || [],
+      onChange: this.handleSelectChange,
     };
 
     const pagination = {

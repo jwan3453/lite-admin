@@ -33,7 +33,7 @@ export default class Teachers extends React.Component {
     if (this.props.value !== nextProps.value) {
       if (!nextProps.value) {
         this.setState({
-          adminId: nextProps.value,
+          teacherId: nextProps.value,
           inputValue: '',
         });
       }
@@ -69,12 +69,17 @@ export default class Teachers extends React.Component {
   };
 
   render() {
-    const { inputValue } = this.state;
+    const {
+      inputValue,
+      teacherId,
+      teacherSelectorVisible,
+    } = this.state;
     const { disabled } = this.props;
     const iconStyle = !disabled ? { cursor: 'pointer' } : null;
     const onIconClick = !disabled
       ? () => { this.showListModal(); }
       : () => {};
+    const selectedRowKeys = !teacherId ? [] : [teacherId];
 
     return (
       <div>
@@ -94,11 +99,11 @@ export default class Teachers extends React.Component {
         />
         <TeacherListModal
           title="选择老师"
-          visible={this.state.teacherSelectorVisible}
-          maskClosable={false}
+          visible={teacherSelectorVisible}
+          selectedRowKeys={selectedRowKeys}
           onOk={this.pickUpTeacher}
           onCancel={this.hideListModal}
-          onSelectChange={this.handleSelectChange}
+          onSelectedRowsChange={this.handleSelectChange}
         />
       </div>
     );

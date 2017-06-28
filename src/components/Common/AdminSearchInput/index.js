@@ -68,12 +68,17 @@ export default class Admins extends React.Component {
   };
 
   render() {
-    const { inputValue } = this.state;
+    const {
+      adminId,
+      inputValue,
+      adminSelectorVisible,
+    } = this.state;
     const { disabled } = this.props;
     const iconStyle = !disabled ? { cursor: 'pointer' } : null;
     const onIconClick = !disabled
       ? () => { this.showListModal(); }
       : () => {};
+    const selectedRowKeys = !adminId ? [] : [adminId];
 
     return (
       <div>
@@ -94,11 +99,11 @@ export default class Admins extends React.Component {
         />
         <AdminListModal
           title="选择员工"
-          visible={this.state.adminSelectorVisible}
-          maskClosable={false}
+          visible={adminSelectorVisible}
+          selectedRowKeys={selectedRowKeys}
           onOk={this.pickUpAdmin}
           onCancel={this.hideListModal}
-          onSelectChange={this.handleSelectChange}
+          onSelectedRowsChange={this.handleSelectChange}
         />
       </div>
     );

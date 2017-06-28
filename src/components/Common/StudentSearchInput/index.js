@@ -32,7 +32,7 @@ export default class StudentInput extends React.Component {
     if (this.props.value !== nextProps.value) {
       if (!nextProps.value) {
         this.setState({
-          adminId: nextProps.value,
+          studentId: nextProps.value,
           inputValue: '',
         });
       }
@@ -69,11 +69,16 @@ export default class StudentInput extends React.Component {
 
   render() {
     const { multiSelect, disabled } = this.props;
-    const { inputValue } = this.state;
+    const {
+      inputValue,
+      studentId,
+      studentSelectorVisible,
+    } = this.state;
     const iconStyle = !disabled ? { cursor: 'pointer' } : null;
     const onIconClick = !disabled
       ? () => { this.showStudentListModal(); }
       : () => {};
+    const selectedRowKeys = !studentId ? [] : [studentId];
 
     return (
       <div>
@@ -95,8 +100,8 @@ export default class StudentInput extends React.Component {
           key="student-feedback-StudentListModal"
           title="选择学生"
           multiSelect={multiSelect}
-          visible={this.state.studentSelectorVisible}
-          maskClosable={false}
+          visible={studentSelectorVisible}
+          selectedRowKeys={selectedRowKeys}
           onOk={this.pickUpStudent}
           onCancel={this.hideStudentListModal}
           onSelectedRowsChange={this.handleSelectChange}

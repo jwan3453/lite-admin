@@ -63,9 +63,7 @@ class StudentAppointments extends Component {
           Message.error(result.message);
         } else {
           Message.success('添加成功');
-          this.setState({
-            findStudentModalVisible: false,
-          });
+          this.hideStudentListModal();
           this.handleRefresh();
         }
       });
@@ -116,6 +114,11 @@ class StudentAppointments extends Component {
   };
   handleSendClassroomReview = () => {};
   handleSendException = () => {};
+  hideStudentListModal = () => {
+    this.setState({
+      findStudentModalVisible: false,
+    });
+  };
   render() {
     const columns = [
       {
@@ -283,20 +286,14 @@ class StudentAppointments extends Component {
           rowKey="id"
           size="small"
         />
-        <Modal
+        <StudentListModal
           title="添加学生"
           visible={this.state.findStudentModalVisible}
+          selectedRowKeys={this.state.selectedStudents}
           onOk={this.handleAddStudent}
-          onCancel={() => this.setState({ findStudentModalVisible: false })}
-        >
-          <StudentListModal
-            title="添加学生"
-            visible={this.state.findStudentModalVisible}
-            onOk={this.handleAddStudent}
-            onCancel={() => this.setState({ findStudentModalVisible: false })}
-            onSelectedRowsChange={this.handleSelectedStudentsChange}
-          />
-        </Modal>
+          onCancel={this.hideStudentListModal}
+          onSelectedRowsChange={this.handleSelectedStudentsChange}
+        />
         <Modal
           title="更换房间"
           visible={this.state.changeRoomVisible}

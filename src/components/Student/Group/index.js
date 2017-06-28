@@ -86,7 +86,10 @@ class Schedules extends React.Component {
     });
   };
 
-  addStudentsToGroup = () => {};
+  addStudentsToGroup = () => {
+    //  todo dispatch add student to group action
+    this.hideStudentListModal();
+  };
 
   createGroup = () => {
     //  todo
@@ -108,6 +111,7 @@ class Schedules extends React.Component {
 
   hideStudentListModal = () => {
     this.setState({
+      selectedStudents: [],
       studentSelectorVisible: false,
     });
   };
@@ -137,6 +141,8 @@ class Schedules extends React.Component {
 
     const {
       currentGroup,
+      selectedStudents,
+      studentSelectorVisible,
     } = this.state;
 
     const pagination = {
@@ -257,7 +263,8 @@ class Schedules extends React.Component {
         <StudentListModal
           multiSelect
           title="添加学生"
-          visible={this.state.studentSelectorVisible}
+          visible={studentSelectorVisible}
+          selectedRowKeys={selectedStudents}
           onOk={() => { this.addStudentsToGroup(); }}
           onCancel={this.hideStudentListModal}
           onSelectedRowsChange={this.handleSelectedStudentsChange}

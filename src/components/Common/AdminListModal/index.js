@@ -10,15 +10,19 @@ class AdminListModal extends Component {
     loading: React.PropTypes.bool.isRequired,
     filters: React.PropTypes.object.isRequired,
     employees: React.PropTypes.object.isRequired,
-    onSelectChange: React.PropTypes.func.isRequired,
+    onSelectedRowsChange: React.PropTypes.func.isRequired,
+    maskClosable: React.PropTypes.bool,
     multiSelect: React.PropTypes.bool,
+    selectedRowKeys: React.PropTypes.array,
   };
 
   static defaultProps = {
     filters: {},
     employees: {},
-    onSelectChange: () => {},
+    onSelectedRowsChange: () => {},
+    maskClosable: false,
     multiSelect: false,
+    selectedRowKeys: [],
   };
 
   componentWillMount() {
@@ -39,7 +43,7 @@ class AdminListModal extends Component {
   };
 
   handleSelectChange = (selectedRowKeys, selectedRows) => {
-    this.props.onSelectChange(selectedRowKeys, selectedRows);
+    this.props.onSelectedRowsChange(selectedRowKeys, selectedRows);
   };
 
   handleSearch = (value) => {
@@ -55,6 +59,7 @@ class AdminListModal extends Component {
     const {
       employees,
       multiSelect,
+      selectedRowKeys,
       ...modalProps
     } = this.props;
 
@@ -82,6 +87,7 @@ class AdminListModal extends Component {
 
     const rowSelection = {
       type: !multiSelect ? 'radio' : 'checkbox',
+      selectedRowKeys: selectedRowKeys || [],
       onChange: this.handleSelectChange,
     };
 

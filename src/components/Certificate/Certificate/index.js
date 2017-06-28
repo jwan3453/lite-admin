@@ -48,6 +48,13 @@ class Certifications extends React.Component {
     certDialogVisible: false,
     teachersDialogVisible: false,
     currentCert: getEmptyCert(),
+    selectedTeachers: [],
+  };
+
+  onSelectedTeachersChange = (selectedTeachers) => {
+    this.setState({
+      selectedTeachers,
+    });
   };
 
   showCertDialog = (cert = getEmptyCert()) => {
@@ -72,6 +79,7 @@ class Certifications extends React.Component {
 
   hideTeachersDialog = () => {
     this.setState({
+      selectedTeachers: [],
       teachersDialogVisible: false,
     });
   };
@@ -93,6 +101,7 @@ class Certifications extends React.Component {
 
   invite = () => {
     //  todo invite a teacher to do this certification
+    this.hideTeachersDialog();
   };
 
   render() {
@@ -168,6 +177,7 @@ class Certifications extends React.Component {
       currentCert,
       certDialogVisible,
       teachersDialogVisible,
+      selectedTeachers,
     } = this.state;
 
     return (
@@ -203,10 +213,8 @@ class Certifications extends React.Component {
           key="Certifications-Certifications-Modal"
           title="选择老师"
           visible={teachersDialogVisible}
-          onSelectChange={(selectedRowKeys, selectedRows) => {
-            //  todo save seleced teacher
-            console.log(selectedRowKeys, selectedRows);
-          }}
+          selectedRowKeys={selectedTeachers}
+          onSelectedRowsChange={this.onSelectedTeachersChange}
           onOk={this.invite}
           onCancel={this.hideTeachersDialog}
         />
