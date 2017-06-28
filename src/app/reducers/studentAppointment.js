@@ -12,6 +12,7 @@ export function studentAppointment(state = {
     case StudentAppointment.FETCH:
     case StudentAppointment.UPDATE:
     case StudentAppointment.CHANGE_ROOM:
+    case StudentAppointment.SEND_FEEDBACK_REMINDER:
       return assign({}, state, {
         loading: true,
       });
@@ -28,6 +29,8 @@ export function studentAppointment(state = {
     case StudentAppointment.UPDATE_FAIL:
     case StudentAppointment.CHANGE_ROOM_SUCCESS:
     case StudentAppointment.CHANGE_ROOM_FAIL:
+    case StudentAppointment.SEND_FEEDBACK_REMINDER_SUCCESS:
+    case StudentAppointment.SEND_FEEDBACK_REMINDER_FAIL:
       return assign({}, state, {
         loading: false,
       });

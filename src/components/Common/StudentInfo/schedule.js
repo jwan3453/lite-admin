@@ -12,7 +12,7 @@ import {
 import _ from 'lodash';
 
 import RoomInfo from '../RoomInfo/';
-import { fetchStudentAppointments } from '../../../app/actions/studentAppointment';
+import { fetchStudentAppointments, sendFeedbackReminder } from '../../../app/actions/studentAppointment';
 import { studentAppointmentsStatus } from '../../../common/studentAppointment';
 import { fetchCourses } from '../../../app/actions/course';
 import { fetchRoom } from '../../../app/actions/room';
@@ -95,13 +95,19 @@ class Schedule extends Component {
     });
   };
 
-  handleSend = () => {
-    //  todo 补发课后评价消息
+  handleSend = (id) => {
+    const { dispatch } = this.props;
+    dispatch(sendFeedbackReminder(id)).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+      } else {
+        Message.success('重新发送提醒成功');
+      }
+    });
   };
 
   handleRoomClick = (room, record) => {
     const { dispatch } = this.props;
-    //  todo 分配教室
     const lessonShortName =
       this.getLessonShortName(record.schedule.courseId, record.schedule.lessonId);
     dispatch(fetchRoom(room.id));
@@ -185,7 +191,7 @@ class Schedule extends Component {
         render: record => (
           <Popconfirm
             title="操作不可逆，确认继续？"
-            onConfirm={() => this.handleSend(record)}
+            onConfirm={() => this.handleSend(record.id)}
           >
             <Tooltip
               title="补发课后评价消息"

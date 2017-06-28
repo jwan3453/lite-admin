@@ -55,3 +55,16 @@ export function changeRoom(studentAppointmentId, toRoomId) {
     },
   };
 }
+
+export function sendFeedbackReminder(appointmentId) {
+  return {
+    appointmentId,
+    [CALL_JQ_API]: {
+      types: [StudentAppointment.SEND_FEEDBACK_REMINDER,
+        StudentAppointment.SEND_FEEDBACK_REMINDER_SUCCESS,
+        StudentAppointment.SEND_FEEDBACK_REMINDER_FAIL],
+      uri: `/admin/schedules/studentAppointments/${appointmentId}/feedbackReminder`,
+      method: 'POST',
+    },
+  };
+}

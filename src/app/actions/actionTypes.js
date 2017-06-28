@@ -150,6 +150,10 @@ export const StudentAppointment = {
   CHANGE_ROOM: 'student_appointment_change_room',
   CHANGE_ROOM_SUCCESS: 'student_appointment_change_room_success',
   CHANGE_ROOM_FAIL: 'student_appointment_change_room_fail',
+
+  SEND_FEEDBACK_REMINDER: 'send_feedback_reminder',
+  SEND_FEEDBACK_REMINDER_SUCCESS: 'send_feedback_reminder_success',
+  SEND_FEEDBACK_REMINDER_FAIL: 'send_feedback_reminder_fail',
 };
 
 export const Courses = {
