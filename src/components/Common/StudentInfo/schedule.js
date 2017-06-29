@@ -13,7 +13,7 @@ import _ from 'lodash';
 
 import RoomInfo from '../RoomInfo/';
 import { fetchStudentAppointments, sendFeedbackReminder } from '../../../app/actions/studentAppointment';
-import { studentAppointmentsStatus } from '../../../common/studentAppointment';
+import { STATUS_MAP as STUDENT_APPOINTMENT_STATUS_MAP } from '../../../common/studentAppointment';
 import { fetchCourses } from '../../../app/actions/course';
 import { fetchRoom } from '../../../app/actions/room';
 
@@ -180,10 +180,7 @@ class Schedule extends Component {
         title: '状态',
         key: 'status',
         dataIndex: 'status',
-        render: (statusId) => {
-          const status = _.find(studentAppointmentsStatus, { value: Number(statusId) }) || {};
-          return status.text || statusId;
-        },
+        render: statusId => STUDENT_APPOINTMENT_STATUS_MAP[statusId].text,
       },
       {
         title: '操作',
