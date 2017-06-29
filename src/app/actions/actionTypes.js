@@ -19,6 +19,10 @@ export const Admin = {
   UPDATE_PASSWORD_SUCCESS: 'admin_update_password_success',
   UPDATE_PASSWORD_FAIL: 'admin_update_password_fail',
 
+  UPDATE_ROLE: 'admin_update_role',
+  UPDATE_ROLE_SUCCESS: 'admin_update_role_success',
+  UPDATE_ROLE_FAIL: 'admin_update_role_fail',
+
   UPDATE_NONCE: 'admin_update_nonce',
   UPDATE_NONCE_SUCCESS: 'admin_update_nonce_success',
   UPDATE_NONCE_FAIL: 'admin_update_nonce_fail',

@@ -15,11 +15,13 @@ import {
   createAdmin,
   manageAdmins,
   updateAdminPassword,
+  updateAdminRole,
   updateAdminNonce,
   enableAdmin,
 } from '../../../app/actions/admin';
 import CreateUserForm from './CreateUserForm';
 import UpdatePasswordForm from './UpdatePasswordForm';
+import UpdateRoleForm from './UpdateRoleForm';
 
 const roles = [
   { id: 10, name: '超级管理员' },
@@ -66,7 +68,8 @@ class UserList extends Component {
   state = {
     visible: false,
     updatingPassword: false,
-    currentUser: null,
+    updatingRole: false,
+    currentUser: {},
   };
 
   componentDidMount() {
@@ -107,6 +110,21 @@ class UserList extends Component {
       }
 
       dispatch(manageAdmins());
+    });
+  };
+
+  /**
+   * 变更角色
+   * @param { string } 角色id
+   */
+  handleUpdateRole = (data) => {
+    const { dispatch } = this.props;
+    dispatch(updateAdminRole(this.state.currentUser.id, data)).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+      } else {
+        Message.success('修改角色成功');
+      }
     });
   };
 
@@ -193,6 +211,13 @@ class UserList extends Component {
                   this.setState({ updatingPassword: true, currentUser: row })}
               />
             </Tooltip>
+            <Tooltip title="修改角色">
+              <Button
+                {...btnProps}
+                icon="user"
+                onClick={() => this.setState({ updatingRole: true, currentUser: row })}
+              />
+            </Tooltip>
             <Popconfirm
               title="确认更新随机码"
               onConfirm={() => this.handleUpdateNonceSecret(row.id)}
@@ -256,6 +281,15 @@ class UserList extends Component {
           onCancel={() => this.setState({ updatingPassword: false })}
         >
           <UpdatePasswordForm onSubmit={this.handleUpdatePassword} />
+        </Modal>
+        <Modal
+          maskClosable={false}
+          visible={this.state.updatingRole}
+          title="修改角色"
+          footer={null}
+          onCancel={() => this.setState({ updatingRole: false })}
+        >
+          <UpdateRoleForm onSubmit={this.handleUpdateRole} user={this.state.currentUser} />
         </Modal>
       </div>
     );

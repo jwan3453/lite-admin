@@ -49,6 +49,21 @@ export function updateAdminPassword(userId, data) {
   };
 }
 
+export function updateAdminRole(userId, data) {
+  return {
+    [CALL_JQ_API]: {
+      types: [
+        Admin.UPDATE_ROLE,
+        Admin.UPDATE_ROLE_SUCCESS,
+        Admin.UPDATE_ROLE_FAIL,
+      ],
+      uri: `/admin/users/${userId}/updateRole`,
+      method: 'POST',
+      body: data,
+    },
+  };
+}
+
 export function updateAdminNonce(userId) {
   return {
     [CALL_JQ_API]: {
