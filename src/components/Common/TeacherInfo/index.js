@@ -10,6 +10,10 @@ import Payment from './Payment/index';
 import BankAccounts from './BankAccounts/index';
 
 class TeacherInfo extends Component {
+  static propTypes = {
+    studentId: React.PropTypes.number.isRequired,
+  };
+
   render() {
     return (
       <Tabs
