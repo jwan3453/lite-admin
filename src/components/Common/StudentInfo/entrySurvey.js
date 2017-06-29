@@ -9,6 +9,7 @@ import {
   Button,
 } from 'antd';
 import { updateLevel, fetchStudent, fetchEntrySurveyQuestion } from '../../../app/actions/student';
+import { fetchUserCourseActive } from '../../../app/actions/course';
 import levels from '../../../common/levels';
 import questions from '../../../common/entrySurveyQuestion';
 
@@ -57,9 +58,10 @@ class EntrySurvey extends React.Component {
       } else {
         Message.success('更改级别成功');
         dispatch(fetchStudent(studentId));
-        this.setState({ modifyLevelLock: true });
+        dispatch(fetchUserCourseActive(studentId));
       }
     });
+    this.setState({ modifyLevelLock: true });
   };
 
   handleModifyLockClick = () => {
