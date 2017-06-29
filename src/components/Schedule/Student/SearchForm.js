@@ -12,7 +12,6 @@ import {
 import _ from 'lodash';
 
 import StudentSearchInput from '../../Common/StudentSearchInput';
-import TeacherSearchInput from '../../Common/TeacherSearchInput';
 import CourseCascader from '../../Common/CourseCascader';
 
 import STUDENT_APPOINTMENT_STATUS from '../../../common/studentAppointment';
@@ -24,6 +23,7 @@ class SearchForm extends React.Component {
     form: React.PropTypes.object.isRequired,
     courses: React.PropTypes.array,
     onSearch: React.PropTypes.func.isRequired,
+    pageSize: React.PropTypes.number.isRequired,
   };
 
   static defaultProps = {
@@ -34,10 +34,32 @@ class SearchForm extends React.Component {
     this.props.form.resetFields();
   };
 
-  handleSearch = () => {
-    //  todo
-    const filters = {};
-    this.props.onSearch(filters);
+  handleSearch = (e) => {
+    e.preventDefault();
+    this.props.form.validateFields((err, values) => {
+      const filters = {};
+      if (values.studentId) {
+        filters.studentId = values.studentId;
+      }
+      if (values.isInternal >= 0) {
+        filters.isInternal = values.isInternal;
+      }
+      if (values.courseId) {
+        filters.courseId = values.courseId;
+      }
+      if (values.lessonId) {
+        filters.lessonId = values.lessonId;
+      }
+      if (values.dateRange && values.dateRange.length === 2) {
+        filters.beginAt = values.dateRange[0].format('Y-MM-DD');
+        filters.endAt = values.dateRange[1].format('Y-MM-DD');
+      }
+      if (values.status >= 0) {
+        filters.status = values.status;
+      }
+      filters.pageSize = this.props.pageSize;
+      this.props.onSearch(filters);
+    });
   };
 
   render() {
@@ -72,22 +94,6 @@ class SearchForm extends React.Component {
                     },
                   ],
                 })(<StudentSearchInput />)
-              }
-            </FormItem>
-          </Col>
-          <Col span={6}>
-            <FormItem
-              label="老师"
-              {...formItemLayout}
-            >
-              {
-                getFieldDecorator('teacherId', {
-                  rules: [
-                    {
-                      required: false,
-                    },
-                  ],
-                })(<TeacherSearchInput />)
               }
             </FormItem>
           </Col>

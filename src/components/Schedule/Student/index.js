@@ -23,7 +23,6 @@ import {
 
 import { fetchStudentAppointments, sendFeedbackReminder } from '../../../app/actions/studentAppointment';
 import { fetchCourses } from '../../../app/actions/course';
-import { fetchMobile } from '../../../app/actions/student';
 import { fetchRoom } from '../../../app/actions/room';
 
 const DATE_FORMAT = 'YYYY-MM-DD hh:mm:ss';
@@ -31,22 +30,19 @@ const DATE_FORMAT = 'YYYY-MM-DD hh:mm:ss';
 class StudentAppointments extends React.Component {
   static propTypes = {
     filters: React.PropTypes.object,
+    studentAppointments: React.PropTypes.object,
     courses: React.PropTypes.array,
-    roomTypes: React.PropTypes.array,
     roomInfo: React.PropTypes.object,
     loading: React.PropTypes.bool.isRequired,
     coursesLoaded: React.PropTypes.bool.isRequired,
     dispatch: React.PropTypes.func.isRequired,
-    students: React.PropTypes.object.isRequired,
-    mobile: React.PropTypes.object.isRequired,
   };
 
   static defaultProps = {
     courses: [],
-    roomTypes: [],
     roomInfo: {},
     filters: {},
-    students: {},
+    studentAppointments: {},
   };
 
   state = {
@@ -62,14 +58,13 @@ class StudentAppointments extends React.Component {
     const {
       loading,
       dispatch,
-      filters,
       coursesLoaded,
     } = this.props;
 
     if (!coursesLoaded) dispatch(fetchCourses());
 
     if (!loading) {
-      dispatch(fetchStudentAppointments(0, filters));
+      dispatch(fetchStudentAppointments());
     }
   }
 
@@ -115,19 +110,19 @@ class StudentAppointments extends React.Component {
     });
   };
 
-  handleFetchMobile = (studentId) => {
-    const { dispatch } = this.props;
-    dispatch(fetchMobile(studentId)).then((result) => {
-      if (result.code) {
-        Message.error(result.message);
-      } else {
-        const { mobile } = this.props;
-        Modal.info({
-          content: `用户${mobile.studentId}手机号为: ${mobile.result}`,
-        });
-      }
-    });
-  };
+  // handleFetchMobile = (studentId) => {
+  //   const { dispatch } = this.props;
+  //   dispatch(fetchMobile(studentId)).then((result) => {
+  //     if (result.code) {
+  //       Message.error(result.message);
+  //     } else {
+  //       const { mobile } = this.props;
+  //       Modal.info({
+  //         content: `用户${mobile.studentId}手机号为: ${mobile.result}`,
+  //       });
+  //     }
+  //   });
+  // };
 
   search = (filters) => {
     const { dispatch } = this.props;
@@ -181,13 +176,24 @@ class StudentAppointments extends React.Component {
     });
   };
 
+  handleChange = (pagination) => {
+    const { dispatch, filters } = this.props;
+    dispatch(
+      fetchStudentAppointments(0,
+        Object.assign(filters, {
+          page: pagination.current,
+          pageSize: pagination.pageSize,
+        }),
+      ),
+    );
+  }
+
   render() {
     const {
       loading,
       courses,
-      roomTypes,
       roomInfo,
-      students,
+      studentAppointments,
     } = this.props;
 
     const {
@@ -199,10 +205,17 @@ class StudentAppointments extends React.Component {
       roomInfoDialogVisible,
     } = this.state;
 
-    const ROOM_TYPE_MAP = {};
-    roomTypes.forEach((item) => { ROOM_TYPE_MAP[item.value] = item; });
     const roomModalLessonName = this.getRoomModalLessonName();
+    const dataSource = studentAppointments.result || [];
 
+    const pageSize = studentAppointments.pageSize || 10;
+    const pagination = {
+      total: studentAppointments.total || 0,
+      pageSize,
+      current: studentAppointments.page || 1,
+      showSizeChanger: true,
+      showTotal: total => `总共${total}条`,
+    };
     const columns = [
       {
         title: '学生',
@@ -215,21 +228,21 @@ class StudentAppointments extends React.Component {
           >{`[${sid}]`}</a>
         ),
       },
+      // {
+      //   title: '手机尾号',
+      //   dataIndex: 'mobileSuffix',
+      //   render: student => (
+      //     student.mobileSuffix
+      //     ? <Button
+      //       size="small"
+      //       icon="mobile"
+      //       onClick={() => this.handleFetchMobile(student.id)}
+      //     >{student.mobileSuffix}</Button>
+      //     : <span />
+      //   ),
+      // },
       {
-        title: '手机尾号',
-        dataIndex: 'mobileSuffix',
-        render: student => (
-          student.mobileSuffix
-          ? <Button
-            size="small"
-            icon="mobile"
-            onClick={() => this.handleFetchMobile(student.id)}
-          >{student.mobileSuffix}</Button>
-          : <span />
-        ),
-      },
-      {
-        title: '课程',
+        title: '课程名称',
         dataIndex: 'schedule',
         render: schedule => this.getLessonShortName(schedule.courseId, schedule.lessonId),
       },
@@ -285,28 +298,19 @@ class StudentAppointments extends React.Component {
       },
     ];
 
-    const pageSize = students.pageSize || 10;
-    const pagination = {
-      total: students.total || 0,
-      pageSize,
-      current: students.page || 1,
-      showSizeChanger: true,
-      showTotal: total => `总共${total}条`,
-    };
-
-    const dataSource = students.result || [];
-
     return (
       <div>
         <SearchForm
           courses={courses}
           onSearch={this.search}
+          pageSize={pageSize}
         />
         <Table
           rowKey="id"
           pagination={pagination}
           columns={columns}
           dataSource={dataSource}
+          onChange={this.handleChange}
           style={{ marginTop: 16 }}
         />
         <Modal
@@ -356,25 +360,15 @@ class StudentAppointments extends React.Component {
 }
 
 function mapStateToProps(state) {
-  const { student, course, room } = state;
-  const { courses, loaded: coursesLoaded } = course;
-  const { roomTypes, roomInfo } = room;
-  const { loading, mobile } = student;
-
+  const { studentAppointment, course, room } = state;
+  const { loading, studentAppointments } = studentAppointment;
   return {
     loading,
-    courses,
-    coursesLoaded,
-    roomTypes,
-    roomInfo,
-    students: {
-      page: 1,
-      pageSize: 10,
-      total: 100,
-      result: [
-      ],
-    },
-    mobile,
+    courseLoaded: course.loaded,
+    courses: course.courses,
+    studentAppointments: studentAppointments.result,
+    filters: studentAppointments.filters,
+    roomInfo: room.roomInfo,
   };
 }
 
