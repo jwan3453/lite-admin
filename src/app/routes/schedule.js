@@ -1,5 +1,4 @@
 import ScheduleCalendar from '../../components/Schedule/Calendar';
-import Room from '../../components/Schedule/Room';
 import StudentSchedule from '../../components/Schedule/Student';
 import TeacherSchedule from '../../components/Schedule/Teacher';
 import TeacherStandby from '../../components/Schedule/Standby';
@@ -27,13 +26,6 @@ export default [
         navigatorIcon: 'schedule',
         path: 'standby',
         component: TeacherStandby,
-      },
-      {
-        breadcrumbName: '房间列表',
-        navigatorName: '房间列表',
-        navigatorIcon: 'database',
-        path: 'room',
-        component: Room,
       },
       {
         breadcrumbName: '学生预约',
