@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Table } from 'antd';
 
+import moment from 'moment';
+
 class OperationLogs extends Component {
   static propTypes = {
     operationLogs: React.PropTypes.array.isRequired,
@@ -12,22 +14,13 @@ class OperationLogs extends Component {
   render() {
     const columns = [
       {
-        title: '记录ID',
-        key: 'id',
-        dataIndex: 'id',
+        title: '记录时间',
+        key: 'ctime',
+        dataIndex: 'createdAt',
+        render: createdAt => moment.unix(createdAt).format('Y-MM-DD HH:mm:ss'),
       },
       {
-        title: 'operatorType',
-        key: 'operatorType',
-        dataIndex: 'operatorType',
-      },
-      {
-        title: 'operatorId',
-        key: 'operatorId',
-        dataIndex: 'operatorId',
-      },
-      {
-        title: 'description',
+        title: '记录描述',
         key: 'description',
         dataIndex: 'description',
       },
