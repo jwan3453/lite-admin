@@ -124,6 +124,8 @@ class UserList extends Component {
         Message.error(result.message);
       } else {
         Message.success('修改角色成功');
+        dispatch(manageAdmins());
+        this.setState({ updatingRole: false });
       }
     });
   };
