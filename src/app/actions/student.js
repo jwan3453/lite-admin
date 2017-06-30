@@ -75,3 +75,19 @@ export function fetchEntrySurveyQuestion(studentId) {
     },
   };
 }
+
+export function fetchSimpleList(studentIds) {
+  return {
+    [CALL_JQ_API]: {
+      types: [
+        Student.FETCH_SIMPLE_LIST,
+        Student.FETCH_SIMPLE_LIST_SUCCESS,
+        Student.FETCH_SIMPLE_LIST_FAIL,
+      ],
+      uri: '/admin/students/simpleList',
+      method: 'GET',
+      body: { ids: studentIds },
+    },
+  };
+}
+

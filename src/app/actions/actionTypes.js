@@ -61,6 +61,10 @@ export const Student = {
   FETCH_ENTRY_SURVEY_QUESTION_SUCCESS: 'fetch_entry_survey_question_success',
   FETCH_ENTRY_SURVEY_QUESTION_FAIL: 'fetch_entry_survey_question_fail',
 
+  FETCH_SIMPLE_LIST: 'fetch_simple_list',
+  FETCH_SIMPLE_LIST_SUCCESS: 'fetch_simple_list_success',
+  FETCH_SIMPLE_LIST_FAIL: 'fetch_simple_list_fail',
+
 };
 
 export const StudentProduct = {

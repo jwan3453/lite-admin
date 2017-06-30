@@ -117,14 +117,26 @@ class Schedule extends Component {
     });
   };
 
+  handleChange = (pagination) => {
+    const { dispatch, filters, studentId } = this.props;
+    dispatch(
+      fetchStudentAppointments(studentId,
+        Object.assign(filters, {
+          page: pagination.current,
+          pageSize: pagination.pageSize,
+        }),
+      ),
+    );
+  }
+
   render() {
-    const { studentAppointments, loading, filters, roomInfo } = this.props;
+    const { studentAppointments, loading, roomInfo } = this.props;
     const dataSource = studentAppointments.result || [];
-    const pageSize = filters.pageSize || 10;
+    const pageSize = studentAppointments.pageSize || 10;
     const pagination = {
-      total: filters.total || 0,
+      total: studentAppointments.total || 0,
       pageSize,
-      current: filters.page || 1,
+      current: studentAppointments.page || 1,
       showSizeChanger: true,
       showTotal: total => `总共${total}条`,
     };
@@ -209,6 +221,7 @@ class Schedule extends Component {
           columns={columns}
           dataSource={dataSource}
           pagination={pagination}
+          onChange={this.handleChange}
           style={{ marginTop: 16 }}
         />
         <Modal

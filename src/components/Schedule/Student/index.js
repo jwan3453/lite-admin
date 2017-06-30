@@ -9,7 +9,6 @@ import {
 } from 'antd';
 import moment from 'moment';
 import _ from 'lodash';
-
 import SearchForm from './SearchForm';
 import ActionBar from './ActionBar';
 import StudentInfo from '../../Common/StudentInfo';
@@ -24,6 +23,7 @@ import {
 import { fetchStudentAppointments, sendFeedbackReminder } from '../../../app/actions/studentAppointment';
 import { fetchCourses } from '../../../app/actions/course';
 import { fetchRoom } from '../../../app/actions/room';
+import { fetchSimpleList, fetchMobile } from '../../../app/actions/student';
 
 const DATE_FORMAT = 'YYYY-MM-DD hh:mm:ss';
 
@@ -34,8 +34,10 @@ class StudentAppointments extends React.Component {
     courses: React.PropTypes.array,
     roomInfo: React.PropTypes.object,
     loading: React.PropTypes.bool.isRequired,
-    coursesLoaded: React.PropTypes.bool.isRequired,
+    coursesLoaded: React.PropTypes.bool,
     dispatch: React.PropTypes.func.isRequired,
+    simpleList: React.PropTypes.array,
+    mobile: React.PropTypes.object,
   };
 
   static defaultProps = {
@@ -43,6 +45,9 @@ class StudentAppointments extends React.Component {
     roomInfo: {},
     filters: {},
     studentAppointments: {},
+    coursesLoaded: false,
+    simpleList: [],
+    mobile: {},
   };
 
   state = {
@@ -52,9 +57,10 @@ class StudentAppointments extends React.Component {
     teacherInfoModalVisible: false,
     roomInfoDialogTitle: '',
     roomInfoDialogVisible: false,
+    dataSource: [],
   };
 
-  componentDidMount() {
+  componentWillMount() {
     const {
       loading,
       dispatch,
@@ -62,11 +68,18 @@ class StudentAppointments extends React.Component {
     } = this.props;
 
     if (!coursesLoaded) dispatch(fetchCourses());
-
     if (!loading) {
-      dispatch(fetchStudentAppointments());
+      dispatch(fetchStudentAppointments()).then(this.getStudentSimpleList);
     }
   }
+
+  getStudentSimpleList = () => {
+    const studentIds = _.map(this.props.studentAppointments.result, 'studentId');
+    const ids = _.join(studentIds, ',');
+    this.props.dispatch(fetchSimpleList(ids)).then(() => {
+      this.combineDataSource();
+    });
+  };
 
   getLessonShortName = (courseId, lessonId) => {
     const { courses } = this.props;
@@ -99,6 +112,18 @@ class StudentAppointments extends React.Component {
     return '';
   };
 
+  combineDataSource = () => {
+    const { simpleList, studentAppointments } = this.props;
+    if (_.isEmpty(studentAppointments)) {
+      return;
+    }
+    const combinedData = studentAppointments.result.map((appointment) => {
+      const userSimpleInfo = _.find(simpleList, { id: appointment.studentId });
+      return _.assign({}, appointment, { mobileSuffix: userSimpleInfo.mobileSuffix });
+    });
+    this.setState({ dataSource: combinedData });
+  }
+
   handleSend = (id) => {
     const { dispatch } = this.props;
     dispatch(sendFeedbackReminder(id)).then((result) => {
@@ -110,23 +135,9 @@ class StudentAppointments extends React.Component {
     });
   };
 
-  // handleFetchMobile = (studentId) => {
-  //   const { dispatch } = this.props;
-  //   dispatch(fetchMobile(studentId)).then((result) => {
-  //     if (result.code) {
-  //       Message.error(result.message);
-  //     } else {
-  //       const { mobile } = this.props;
-  //       Modal.info({
-  //         content: `用户${mobile.studentId}手机号为: ${mobile.result}`,
-  //       });
-  //     }
-  //   });
-  // };
-
   search = (filters) => {
     const { dispatch } = this.props;
-    dispatch(fetchStudentAppointments(0, filters));
+    dispatch(fetchStudentAppointments(0, filters)).then(this.getStudentSimpleList);
   };
 
   showStudentInfo = (studentId) => {
@@ -176,6 +187,20 @@ class StudentAppointments extends React.Component {
     });
   };
 
+  handleFetchMobile = (studentId) => {
+    const { dispatch } = this.props;
+    dispatch(fetchMobile(studentId)).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+      } else {
+        const { mobile } = this.props;
+        Modal.info({
+          content: `用户${mobile.studentId}手机号为: ${mobile.result}`,
+        });
+      }
+    });
+  };
+
   handleChange = (pagination) => {
     const { dispatch, filters } = this.props;
     dispatch(
@@ -185,8 +210,8 @@ class StudentAppointments extends React.Component {
           pageSize: pagination.pageSize,
         }),
       ),
-    );
-  }
+    ).then(this.getStudentSimpleList);
+  };
 
   render() {
     const {
@@ -206,7 +231,7 @@ class StudentAppointments extends React.Component {
     } = this.state;
 
     const roomModalLessonName = this.getRoomModalLessonName();
-    const dataSource = studentAppointments.result || [];
+    const dataSource = this.state.dataSource || [];
 
     const pageSize = studentAppointments.pageSize || 10;
     const pagination = {
@@ -228,19 +253,19 @@ class StudentAppointments extends React.Component {
           >{`[${sid}]`}</a>
         ),
       },
-      // {
-      //   title: '手机尾号',
-      //   dataIndex: 'mobileSuffix',
-      //   render: student => (
-      //     student.mobileSuffix
-      //     ? <Button
-      //       size="small"
-      //       icon="mobile"
-      //       onClick={() => this.handleFetchMobile(student.id)}
-      //     >{student.mobileSuffix}</Button>
-      //     : <span />
-      //   ),
-      // },
+      {
+        title: '手机尾号',
+        dataIndex: 'mobileSuffix',
+        render: (mobileSuffix, record) => (
+          record.mobileSuffix
+          ? <Button
+            size="small"
+            icon="mobile"
+            onClick={() => this.handleFetchMobile(record.studentId)}
+          >{record.mobileSuffix}</Button>
+          : <span />
+        ),
+      },
       {
         title: '课程名称',
         dataIndex: 'schedule',
@@ -344,6 +369,7 @@ class StudentAppointments extends React.Component {
               type="primary"
               size="large"
               onClick={this.hideRoomInfo}
+              key="hide"
             >隐藏</Button>,
           ]}
         >
@@ -360,7 +386,7 @@ class StudentAppointments extends React.Component {
 }
 
 function mapStateToProps(state) {
-  const { studentAppointment, course, room } = state;
+  const { studentAppointment, course, room, student } = state;
   const { loading, studentAppointments } = studentAppointment;
   return {
     loading,
@@ -369,6 +395,8 @@ function mapStateToProps(state) {
     studentAppointments: studentAppointments.result,
     filters: studentAppointments.filters,
     roomInfo: room.roomInfo,
+    simpleList: student.simpleList,
+    mobile: student.mobile,
   };
 }
 

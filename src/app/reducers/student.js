@@ -21,6 +21,7 @@ export function student(
       result: null,
     },
     surveyAnswers: {},
+    simpleList: [],
   },
   action = {},
 ) {
@@ -89,6 +90,7 @@ export function student(
           result: action.response,
         },
       });
+    case Student.FETCH_SIMPLE_LIST:
     case Student.UPDATE_LEVEL:
     case Student.FETCH_ENTRY_SURVEY_QUESTION:
       return assign({}, state, {
@@ -99,6 +101,11 @@ export function student(
         loading: false,
         surveyAnswers: action.response,
       });
+    case Student.FETCH_SIMPLE_LIST_SUCCESS:
+      return assign({}, state, {
+        loading: false,
+        simpleList: action.response,
+      });
     case Student.MANAGE_FAIL:
     case Student.SEARCH_FAIL:
     case Student.FETCH_FAIL:
@@ -106,6 +113,10 @@ export function student(
     case Student.UPDATE_LEVEL_SUCCESS:
     case Student.UPDATE_LEVEL_FAIL:
     case Student.FETCH_ENTRY_SURVEY_QUESTION_FAIL:
+      return assign({}, state, {
+        loading: false,
+      });
+    case Student.FETCH_SIMPLE_LIST_FAIL:
       return assign({}, state, {
         loading: false,
       });

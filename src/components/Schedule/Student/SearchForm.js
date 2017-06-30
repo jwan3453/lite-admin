@@ -44,18 +44,19 @@ class SearchForm extends React.Component {
       if (values.isInternal >= 0) {
         filters.isInternal = values.isInternal;
       }
-      if (values.courseId) {
-        filters.courseId = values.courseId;
-      }
-      if (values.lessonId) {
-        filters.lessonId = values.lessonId;
+      if (values.courseCascader && values.courseCascader.length === 3) {
+        filters.courseId = values.courseCascader[0];
+        filters.lessonId = values.courseCascader[2];
       }
       if (values.dateRange && values.dateRange.length === 2) {
-        filters.beginAt = values.dateRange[0].format('Y-MM-DD');
-        filters.endAt = values.dateRange[1].format('Y-MM-DD');
+        filters.startDate = values.dateRange[0].format('Y-MM-DD');
+        filters.endDate = values.dateRange[1].format('Y-MM-DD');
       }
-      if (values.status >= 0) {
-        filters.status = values.status;
+      if (values.status) {
+        const status = parseInt(values.status, 10);
+        if (status >= 0) {
+          filters.status = values.status;
+        }
       }
       filters.pageSize = this.props.pageSize;
       this.props.onSearch(filters);
@@ -148,7 +149,7 @@ class SearchForm extends React.Component {
             >
               {
                 getFieldDecorator('status', {
-                  initialValue: -1,
+                  initialValue: '-1',
                   rules: [
                     {
                       required: false,
@@ -157,16 +158,16 @@ class SearchForm extends React.Component {
                 })(
                   <Select>
                     <Select.Option
-                      key={-1}
-                      value={-1}
+                      key={'-1'}
+                      value={'-1'}
                     >全部</Select.Option>
                     {
                       _.map(
                         STUDENT_APPOINTMENT_STATUS,
                         item => (
                           <Select.Option
-                            key={item.value}
-                            value={item.value}
+                            key={`${item.value}`}
+                            value={`${item.value}`}
                           >{item.text}</Select.Option>
                         ),
                       )
