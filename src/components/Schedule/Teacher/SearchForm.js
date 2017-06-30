@@ -17,9 +17,9 @@ import SCHEDULE_TIMES from '../../../common/scheduleTimes';
 import {
   teacherAppointmentsStatus as TEACHER_APPOINTMENT_STATUS,
 } from '../../../common/teacherAppointment';
-import TEACHER_BILLING_CYCLES from '../../../common/teacherBillingCycle';
 
 const FormItem = Form.Item;
+const DATE_FORMAT = 'YYYY-MM-DD';
 
 class SearchForm extends React.Component {
   static propTypes = {
@@ -33,10 +33,38 @@ class SearchForm extends React.Component {
     this.props.form.resetFields();
   };
 
-  handleSearch = () => {
-    //  todo
-    const filters = {};
-    this.props.onSearch(filters);
+  handleSearch = (e) => {
+    e.preventDefault();
+    this.props.form.validateFields((error, values) => {
+      const filters = {};
+
+      if (values.teacherId) {
+        filters.teacherId = values.teacherId;
+      }
+
+      if (values.beginAt !== '-1') {
+        filters.beginAt = `${values.beginAt}:00`;
+      }
+
+      if (values.dateRange) {
+        filters.startDate = values.dateRange[0].format(DATE_FORMAT);
+        filters.endDate = values.dateRange[1].format(DATE_FORMAT);
+      }
+
+      if (values.status !== '-1') {
+        filters.status = parseInt(values.status, 10);
+      }
+
+      if (values.type) {
+        filters.type = values.type;
+      }
+
+      if (values.isInternal !== -1) {
+        filters.isInternal = values.isInternal;
+      }
+
+      this.props.onSearch(filters);
+    });
   };
 
   render() {
@@ -98,7 +126,7 @@ class SearchForm extends React.Component {
                         item => (
                           <Select.Option
                             key={item}
-                            value={item}
+                            value={`${item}`}
                           >{item}</Select.Option>
                         ),
                       )
@@ -164,8 +192,6 @@ class SearchForm extends React.Component {
               }
             </FormItem>
           </Col>
-        </Row>
-        <Row>
           <Col span={6}>
             <FormItem
               label="内部课时"
@@ -189,40 +215,8 @@ class SearchForm extends React.Component {
               }
             </FormItem>
           </Col>
-          <Col span={6}>
-            <FormItem
-              label="老师提现周期"
-              {...formItemLayout}
-            >
-              {
-                getFieldDecorator('billingCycle', {
-                  initialValue: -1,
-                  rules: [
-                    {
-                      required: false,
-                    },
-                  ],
-                })(
-                  <Radio.Group>
-                    <Radio.Button value={-1}>全部</Radio.Button>
-                    {
-                      _.map(
-                        TEACHER_BILLING_CYCLES,
-                        item => (
-                          <Radio.Button
-                            key={item.value}
-                            value={item.value}
-                          >{item.name}</Radio.Button>
-                        ),
-                      )
-                    }
-                  </Radio.Group>,
-                )
-              }
-            </FormItem>
-          </Col>
           <Col
-            span={12}
+            span={18}
             style={{ textAlign: 'right' }}
           >
             <Button

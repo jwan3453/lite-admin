@@ -1,12 +1,9 @@
 import { TeacherAppointment } from './actionTypes';
 import { CALL_JQ_API } from '../middlewares/jqApi';
 
-export function fetchTeacherAppointments(teacherId = 0) {
-  const body = {};
-  if (teacherId > 0) {
-    body.teacherId = teacherId;
-  }
+export function fetchTeacherAppointments(filters) {
   return {
+    filters,
     [CALL_JQ_API]: {
       types: [
         TeacherAppointment.FETCH,
@@ -15,7 +12,7 @@ export function fetchTeacherAppointments(teacherId = 0) {
       ],
       uri: '/admin/schedules/teacherAppointments',
       method: 'GET',
-      body,
+      body: filters,
     },
   };
 }

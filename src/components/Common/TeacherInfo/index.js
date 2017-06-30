@@ -11,7 +11,7 @@ import BankAccounts from './BankAccounts/index';
 
 class TeacherInfo extends Component {
   static propTypes = {
-    studentId: React.PropTypes.number.isRequired,
+    teacherId: React.PropTypes.number.isRequired,
   };
 
   render() {

@@ -19,19 +19,17 @@ import {
   TEACHER_APPOINTMENT_STATUS_MAP,
 } from '../../../common/teacherAppointment';
 
-import {
-  CYCLE_MAP as TEACHER_BILLING_CYCLE_MAP,
-} from '../../../common/teacherBillingCycle';
-
 import { fetchCourses } from '../../../app/actions/course';
+import { fetchTeacherAppointments } from '../../../app/actions/teacherAppointment';
 
-const DATE_FORMAT = 'YYYY-MM-DD hh:mm:ss';
+const DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
 class TeacherAppointments extends React.Component {
   static propTypes = {
     courses: React.PropTypes.array,
     coursesLoaded: React.PropTypes.bool.isRequired,
-    teachers: React.PropTypes.object.isRequired,
+    filters: React.PropTypes.object.isRequired,
+    teacherAppointmentData: React.PropTypes.object.isRequired,
     loading: React.PropTypes.bool.isRequired,
     dispatch: React.PropTypes.func.isRequired,
   };
@@ -39,7 +37,8 @@ class TeacherAppointments extends React.Component {
   static defaultProps = {
     courses: [],
     filters: {},
-    teachers: {},
+    loading: false,
+    teacherAppointmentData: {},
   };
 
   state = {
@@ -82,8 +81,8 @@ class TeacherAppointments extends React.Component {
   };
 
   search = (filters) => {
-    //  todo
-    console.log(filters);
+    const { dispatch } = this.props;
+    dispatch(fetchTeacherAppointments(filters));
   };
 
   updateAppointmentStatus = () => {
@@ -104,10 +103,9 @@ class TeacherAppointments extends React.Component {
   };
 
   showTeacherInfo = (teacherId) => {
-    //  todo
-    console.log(teacherId);
     this.setState({
       teacherInfoDialogVisible: true,
+      teacherId,
     });
   };
 
@@ -117,12 +115,23 @@ class TeacherAppointments extends React.Component {
     });
   };
 
+  handlePaginationChange = (pagination) => {
+    const { dispatch, filters, loading } = this.props;
+    if (loading) return;
+    Object.assign(filters, {
+      page: pagination.current,
+      pageSize: pagination.pageSize,
+    });
+    dispatch(fetchTeacherAppointments(filters));
+  };
+
   render() {
-    const { loading, teachers } = this.props;
+    const { loading, teacherAppointmentData } = this.props;
     const {
       appointmentStatus,
       appointmentStatusDialogVisible,
       teacherInfoDialogVisible,
+      teacherId,
     } = this.state;
 
     const columns = [
@@ -136,13 +145,8 @@ class TeacherAppointments extends React.Component {
             onClick={
               () => { this.showTeacherInfo(record.teacherId); }
             }
-          >{`[${record.teacherId}] - ${record.teacherName}`}</a>
+          >{`[${record.teacherId}]`}</a>
         ),
-      },
-      {
-        title: '提现周期',
-        dataIndex: 'billingCycle',
-        render: cycle => TEACHER_BILLING_CYCLE_MAP[cycle].name,
       },
       {
         title: '排课ID',
@@ -150,7 +154,7 @@ class TeacherAppointments extends React.Component {
       },
       {
         title: '分配教室',
-        dataIndex: 'schedule.roomId',
+        dataIndex: 'room.id',
       },
       {
         title: '课程',
@@ -186,16 +190,16 @@ class TeacherAppointments extends React.Component {
       },
     ];
 
-    const pageSize = teachers.pageSize || 10;
+    const pageSize = teacherAppointmentData.pageSize || 10;
     const pagination = {
-      total: teachers.total || 0,
+      total: teacherAppointmentData.total || 0,
       pageSize,
-      current: teachers.page || 1,
+      current: teacherAppointmentData.page || 1,
       showSizeChanger: true,
       showTotal: total => `总共${total}条`,
     };
 
-    const dataSource = teachers.result || [];
+    const dataSource = teacherAppointmentData.result || [];
 
     return (
       <div>
@@ -209,6 +213,7 @@ class TeacherAppointments extends React.Component {
           columns={columns}
           dataSource={dataSource}
           style={{ marginTop: 16 }}
+          onChange={this.handlePaginationChange}
         />
         <Modal
           title="修改老师上课状态"
@@ -226,7 +231,7 @@ class TeacherAppointments extends React.Component {
           width={700}
         >
           <Spin spinning={loading}>
-            <TeacherInfo />
+            <TeacherInfo teacherId={teacherId} />
           </Spin>
         </Modal>
       </div>
@@ -235,36 +240,20 @@ class TeacherAppointments extends React.Component {
 }
 
 function mapStateToProps(state) {
-  const { course } = state;
+  const { course, teacherAppointment, courseLoading } = state;
   const { courses, loaded: coursesLoaded } = course;
+  const {
+    filters,
+    result: teacherAppointmentData,
+    loading: appointmentLoading,
+  } = teacherAppointment;
 
   return {
-    loading: false,
-    filters: {},
+    loading: courseLoading || appointmentLoading,
+    filters,
     courses,
     coursesLoaded,
-    teachers: {
-      page: 1,
-      pageSize: 10,
-      total: 100,
-      result: [
-        {
-          id: 0,
-          teacherId: 0,
-          teacherName: 'peter',
-          billingCycle: 1,
-          schedule: {
-            id: 890,
-            roomId: 737,
-            courseId: 0,
-            lessonId: 0,
-            beginAt: 1498734824219,
-            isInternal: true,
-          },
-          status: 0,
-        },
-      ],
-    },
+    teacherAppointmentData,
   };
 }
 
