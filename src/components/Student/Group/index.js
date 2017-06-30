@@ -1,19 +1,29 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { Table, Row, Col, Tooltip, Modal } from 'antd';
+import {
+  Table,
+  Row,
+  Col,
+  Tooltip,
+  Modal,
+  Button,
+  Message,
+} from 'antd';
+import _ from 'lodash';
+import moment from 'moment';
+
+import TagBar from './TagBar';
+import ActionBar from './ActionBar';
+import TagList from './TagList';
 
 import StudentInfo from '../../Common/StudentInfo';
 import StudentListModal from '../../Common/StudentListModal';
 
+import { fetchMobile } from '../../../app/actions/student';
+
 class Schedules extends React.Component {
   static propTypes = {
-    tags: PropTypes.shape({
-      loading: PropTypes.bool,
-      page: PropTypes.number,
-      pageSize: PropTypes.number,
-      total: PropTypes.number,
-      result: PropTypes.array,
-    }).isRequired,
+    mobile: React.PropTypes.object,
     students: PropTypes.shape({
       loading: PropTypes.bool,
       page: PropTypes.number,
@@ -22,41 +32,21 @@ class Schedules extends React.Component {
       tags: PropTypes.array,
       result: PropTypes.array,
     }).isRequired,
+    dispatch: React.PropTypes.func.isRequired,
+  };
+
+  static defaultProps = {
+    mobile: {},
   };
 
   state = {
     currentStudentId: 0,
+    selectedTags: [],
   };
-  tagSelection = {
-    onChange: (selectedRowKeys, selectedRows) => {
-      console.log(
-        `selectedRowKeys: ${selectedRowKeys}`,
-        'selectedRows: ',
-        selectedRows,
-      );
-    },
-    getCheckboxProps: record => ({
-      disabled: record.name === 'Disabled User', // Column configuration not to be checked
-    }),
-  };
-
-  tagColumns = [
-    {
-      title: '标签',
-      key: 'name',
-      dataIndex: 'name',
-    },
-    {
-      title: '人数',
-      key: 'studentCount',
-      dataIndex: 'studentCount',
-    },
-  ];
 
   stduentColumns = [
     {
       title: 'ID',
-      key: 'id',
       dataIndex: 'id',
       render: (id, student) => (
         <Tooltip title="查看用户信息" placement="top">
@@ -71,11 +61,91 @@ class Schedules extends React.Component {
       ),
     },
     {
+      title: '手机尾号',
+      key: 'mobileSuffix',
+      width: 80,
+      render: student => (
+        student.mobileSuffix
+        ? <Button
+          size="small"
+          icon="mobile"
+          onClick={() => this.handleFetchMobile(student.id)}
+        >
+          {student.mobileSuffix}
+        </Button>
+        : <span />
+      ),
+    },
+    {
       title: '昵称',
-      key: 'nickname',
       dataIndex: 'nickname',
     },
+    {
+      title: '性别',
+      dataIndex: 'gender',
+      width: 60,
+      render: gender => ['', '男', '女'][gender],
+    },
+    {
+      title: '年龄',
+      dataIndex: 'age',
+      width: 60,
+    },
+    {
+      title: '城市',
+      dataIndex: 'city',
+      width: 80,
+    },
+    {
+      title: '助教',
+      dataIndex: 'crmAssistantId',
+      key: 'crmAssistantId',
+    },
+    {
+      title: '课程级别',
+      dataIndex: 'level',
+      key: 'level',
+    },
+    {
+      title: '注册渠道',
+      dataIndex: 'source',
+      key: 'source',
+    },
+    {
+      title: '注册时间',
+      dataIndex: 'registerAt',
+      key: 'registerAt',
+      render: registerAt => moment.unix(registerAt).format('Y-MM-DD HH:mm'),
+    },
   ];
+
+  handleFetchMobile = (studentId) => {
+    const { dispatch } = this.props;
+    dispatch(fetchMobile(studentId)).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+      } else {
+        const { mobile } = this.props;
+        Modal.info({
+          content: `用户${mobile.studentId}手机号为: ${mobile.result}`,
+        });
+      }
+    });
+  };
+
+  removeSelectedTag = (tagIndex) => {
+    const { selectedTags } = this.state;
+
+    selectedTags.splice(tagIndex, 1);
+
+    this.setState({
+      selectedTags,
+    });
+  };
+
+  filterStudentsByTags = () => {
+    //  todo
+  };
 
   showStudentInfo = (studentId) => {
     if (studentId <= 0) return;
@@ -91,18 +161,11 @@ class Schedules extends React.Component {
       currentStudentId: null,
     });
   };
-  render() {
-    const { tags, students } = this.props;
 
-    const tagPagination = {
-      total: tags.total || 0,
-      pageSize: tags.pageSize,
-      current: tags.page || 1,
-      showSizeChanger: true,
-      size: 'small',
-      simple: true,
-      showTotal: all => `总共${all}条`,
-    };
+  render() {
+    const { students } = this.props;
+
+    const { selectedTags } = this.state;
 
     const studentPagination = {
       total: students.total || 0,
@@ -115,18 +178,26 @@ class Schedules extends React.Component {
     return (
       <Row gutter={30}>
         <Col span={6}>
-          <Table
-            size="small"
-            rowKey="id"
-            rowSelection={this.tagSelection}
-            loading={tags.loading}
-            columns={this.tagColumns}
-            dataSource={tags.result}
-            pagination={tagPagination}
-            style={{ marginTop: 16 }}
+          <TagList
+            selectedRowKeys={_.map(selectedTags, 'id')}
+            onSelectedRowsChange={
+              (selectedRowKeys, selectedRows) => {
+                this.setState({
+                  selectedTags: selectedRows,
+                });
+              }
+            }
           />
         </Col>
         <Col span={18}>
+          <TagBar
+            tags={selectedTags}
+            onRemoveTag={this.removeSelectedTag}
+          />
+          <ActionBar
+            visible={selectedTags.length > 0}
+            onFilter={this.filterStudentsByTags}
+          />
           <Table
             size="small"
             rowKey="id"
@@ -134,7 +205,6 @@ class Schedules extends React.Component {
             loading={students.loading}
             columns={this.stduentColumns}
             dataSource={students.result}
-            style={{ marginTop: 16 }}
           />
           <StudentListModal
             multiSelect
@@ -147,7 +217,6 @@ class Schedules extends React.Component {
             onSelectedRowsChange={this.handleSelectedStudentsChange}
           />
         </Col>
-
         <Modal
           width={700}
           title="学生信息"
@@ -165,29 +234,6 @@ class Schedules extends React.Component {
 
 function mapStateToProps() {
   return {
-    tags: {
-      loading: false,
-      total: 200,
-      page: 1,
-      pageSize: 10,
-      result: [
-        {
-          id: 1,
-          name: 'tag1',
-          studentCount: 10,
-        },
-        {
-          id: 2,
-          name: 'tag2',
-          studentCount: 100,
-        },
-        {
-          id: 3,
-          name: 'tag3',
-          studentCount: 1000,
-        },
-      ],
-    },
     students: {
       loading: false,
       tags: [],
@@ -198,6 +244,10 @@ function mapStateToProps() {
         {
           id: 1,
           nickname: 'user1',
+          mobileSuffix: '7251',
+          gender: 1,
+          age: 3,
+          city: 'mega city',
           tags: ['tag1', 'tag2'],
         },
       ],
@@ -206,3 +256,4 @@ function mapStateToProps() {
 }
 
 export default connect(mapStateToProps)(Schedules);
+
