@@ -7,7 +7,7 @@ import {
 
 import AdminListModal from '../AdminListModal';
 
-export default class Admins extends React.Component {
+export default class AdminSearchInput extends React.Component {
   static propTypes = {
     value: React.PropTypes.number.isRequired,
     onChange: React.PropTypes.func.isRequired,

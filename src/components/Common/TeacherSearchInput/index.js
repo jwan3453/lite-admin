@@ -7,7 +7,7 @@ import {
 
 import TeacherListModal from '../TeacherListModal';
 
-export default class Teachers extends React.Component {
+export default class TeacherSearchInput extends React.Component {
   static propTypes = {
     onChange: React.PropTypes.func.isRequired,
     value: React.PropTypes.number.isRequired,

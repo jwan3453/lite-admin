@@ -7,7 +7,7 @@ import {
 
 import StudentListModal from '../StudentListModal';
 
-export default class StudentInput extends React.Component {
+export default class StudentSearchInput extends React.Component {
   static propTypes = {
     onChange: React.PropTypes.func.isRequired,
     multiSelect: React.PropTypes.bool,
