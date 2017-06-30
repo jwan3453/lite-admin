@@ -1,304 +1,208 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import {
-  Table,
-  Modal,
-  Button,
-  Tooltip,
-  Tag,
-  Popconfirm,
-  notification,
-} from 'antd';
+import { Table, Row, Col, Tooltip, Modal } from 'antd';
 
-import SearchForm from './SearchForm';
-import GroupInfoForm from './GroupInfoForm';
+import StudentInfo from '../../Common/StudentInfo';
 import StudentListModal from '../../Common/StudentListModal';
-
-import * as GROUP_STATUS from './status';
-import GroupMessageResult from './MessageResult';
-
-import {
-  LEVEL_MAP,
-} from '../../../common/levels';
-
-const getEmptyGroup = () => ({
-  id: -1,
-  name: '',
-  status: null,
-  level: '',
-  count: 0,
-});
 
 class Schedules extends React.Component {
   static propTypes = {
-    loading: React.PropTypes.bool.isRequired,
-    page: React.PropTypes.number,
-    pageSize: React.PropTypes.number,
-    total: React.PropTypes.number,
-    groups: React.PropTypes.array,
-  };
-
-  static defaultProps = {
-    groups: [],
-    page: 1,
-    pageSize: 10,
-    total: 0,
+    tags: PropTypes.shape({
+      loading: PropTypes.bool,
+      page: PropTypes.number,
+      pageSize: PropTypes.number,
+      total: PropTypes.number,
+      result: PropTypes.array,
+    }).isRequired,
+    students: PropTypes.shape({
+      loading: PropTypes.bool,
+      page: PropTypes.number,
+      pageSize: PropTypes.number,
+      total: PropTypes.number,
+      tags: PropTypes.array,
+      result: PropTypes.array,
+    }).isRequired,
   };
 
   state = {
-    dialogVisible: false,
-    studentSelectorVisible: false,
-    selectedStudents: [],
-    currentGroup: getEmptyGroup(),
+    currentStudentId: 0,
+  };
+  tagSelection = {
+    onChange: (selectedRowKeys, selectedRows) => {
+      console.log(
+        `selectedRowKeys: ${selectedRowKeys}`,
+        'selectedRows: ',
+        selectedRows,
+      );
+    },
+    getCheckboxProps: record => ({
+      disabled: record.name === 'Disabled User', // Column configuration not to be checked
+    }),
   };
 
-  search = () => {
-    //  todo
-  };
+  tagColumns = [
+    {
+      title: '标签',
+      key: 'name',
+      dataIndex: 'name',
+    },
+    {
+      title: '人数',
+      key: 'studentCount',
+      dataIndex: 'studentCount',
+    },
+  ];
 
-  handleSelectedStudentsChange = (selectedStudents) => {
-    this.setState({ selectedStudents });
-  };
+  stduentColumns = [
+    {
+      title: 'ID',
+      key: 'id',
+      dataIndex: 'id',
+      render: (id, student) => (
+        <Tooltip title="查看用户信息" placement="top">
+          <a
+            role="button"
+            tabIndex="0"
+            onClick={() => {
+              this.showStudentInfo(id);
+            }}
+          >{`[${id}] ${student.nickname}`}</a>
+        </Tooltip>
+      ),
+    },
+    {
+      title: '昵称',
+      key: 'nickname',
+      dataIndex: 'nickname',
+    },
+  ];
 
-  sendScheduleMessage = () => {
-    //  todo send class schedule to this group
-    const key = `open${Date.now()}`;
-
-    const btnClick = () => notification.close(key);
-
-    const btn = (
-      <Button
-        type="primary"
-        size="small"
-        onClick={btnClick}
-      >确定</Button>
-    );
-
-    const description = (
-      <GroupMessageResult />
-    );
-
-    notification.open({
-      description,
-      btn,
-      key,
-      duration: 0,
-    });
-  };
-
-  addStudentsToGroup = () => {
-    //  todo dispatch add student to group action
-    this.hideStudentListModal();
-  };
-
-  createGroup = () => {
-    //  todo
-  };
-
-  updateGroup = () => {
-    //  todo
-  };
-
-  removeGroup = () => {
-    //  todo
-  };
-
-  showStudentListModal = () => {
+  showStudentInfo = (studentId) => {
+    if (studentId <= 0) return;
     this.setState({
-      studentSelectorVisible: true,
+      studentDialogVisible: true,
+      currentStudentId: studentId,
     });
   };
 
-  hideStudentListModal = () => {
+  hideStudentInfo = () => {
     this.setState({
-      selectedStudents: [],
-      studentSelectorVisible: false,
+      studentDialogVisible: false,
+      currentStudentId: null,
     });
   };
-
-  showDialog = (group = getEmptyGroup()) => {
-    this.setState({
-      dialogVisible: true,
-      currentGroup: group,
-    });
-  };
-
-  hideDialog = () => {
-    this.setState({
-      dialogVisible: false,
-      currentGroup: getEmptyGroup(),
-    });
-  };
-
   render() {
-    const {
-      loading,
-      groups,
-      page,
-      pageSize,
-      total,
-    } = this.props;
+    const { tags, students } = this.props;
 
-    const {
-      currentGroup,
-      selectedStudents,
-      studentSelectorVisible,
-    } = this.state;
+    const tagPagination = {
+      total: tags.total || 0,
+      pageSize: tags.pageSize,
+      current: tags.page || 1,
+      showSizeChanger: true,
+      size: 'small',
+      simple: true,
+      showTotal: all => `总共${all}条`,
+    };
 
-    const pagination = {
-      total: total || 0,
-      pageSize,
-      current: page || 1,
+    const studentPagination = {
+      total: students.total || 0,
+      pageSize: students.pageSize,
+      current: students.page || 1,
       showSizeChanger: true,
       showTotal: all => `总共${all}条`,
     };
 
-    const columns = [
-      {
-        title: '分组名称',
-        key: 'name',
-        dataIndex: 'name',
-      },
-      {
-        title: '课程级别',
-        key: 'level',
-        dataIndex: 'level',
-        render: level => LEVEL_MAP[level].name,
-      },
-      {
-        title: '学生数量',
-        key: 'count',
-        dataIndex: 'count',
-      },
-      {
-        title: '状态',
-        key: 'status',
-        dataIndex: 'status',
-        render: status => (
-          <Tag
-            color={
-              status === GROUP_STATUS.AVAILABLE
-              ? 'green'
-              : 'red'
-            }
-          >{GROUP_STATUS.STATUS_MAP[status].text}</Tag>
-        ),
-      },
-      {
-        title: '操作',
-        key: 'actions',
-        render: (text, record) => (
-          <div>
-            <Tooltip title="编辑">
-              <Button
-                icon="edit"
-                style={{
-                  marginRight: 8,
-                }}
-                onClick={() => { this.showDialog(record); }}
-              />
-            </Tooltip>
-            <Popconfirm
-              title="该操作不可逆，确认继续？"
-              onConfirm={() => { this.removeGroup(record); }}
-            >
-              <Tooltip title="删除">
-                <Button
-                  icon="delete"
-                  style={{
-                    marginRight: 8,
-                  }}
-                />
-              </Tooltip>
-            </Popconfirm>
-            <Tooltip title="添加学生">
-              <Button
-                icon="user-add"
-                style={{
-                  marginRight: 8,
-                }}
-                onClick={this.showStudentListModal}
-              />
-            </Tooltip>
-            <Popconfirm
-              title="该操作不可逆，确认继续？"
-              onConfirm={() => { this.sendScheduleMessage(record); }}
-            >
-              <Tooltip title="发送排课通知">
-                <Button icon="message" />
-              </Tooltip>
-            </Popconfirm>
-          </div>
-        ),
-      },
-    ];
-
     return (
-      <div>
-        <SearchForm
-          onSearch={this.search}
-          onCreateGroup={this.showDialog}
-        />
-        <Table
-          rowKey="id"
-          pagination={pagination}
-          loading={loading}
-          columns={columns}
-          dataSource={groups}
-          style={{ marginTop: 16 }}
-        />
+      <Row gutter={30}>
+        <Col span={6}>
+          <Table
+            size="small"
+            rowKey="id"
+            rowSelection={this.tagSelection}
+            loading={tags.loading}
+            columns={this.tagColumns}
+            dataSource={tags.result}
+            pagination={tagPagination}
+            style={{ marginTop: 16 }}
+          />
+        </Col>
+        <Col span={18}>
+          <Table
+            size="small"
+            rowKey="id"
+            pagination={studentPagination}
+            loading={students.loading}
+            columns={this.stduentColumns}
+            dataSource={students.result}
+            style={{ marginTop: 16 }}
+          />
+          <StudentListModal
+            multiSelect
+            title="添加学生"
+            visible={this.state.studentSelectorVisible}
+            onOk={() => {
+              this.addStudentsToGroup();
+            }}
+            onCancel={this.hideStudentListModal}
+            onSelectedRowsChange={this.handleSelectedStudentsChange}
+          />
+        </Col>
+
         <Modal
-          key={`modal-${new Date()}`}
-          title={
-            currentGroup.id !== -1 ? '编辑分组' : '新建分组'
-          }
-          visible={this.state.dialogVisible}
-          onOk={
-            currentGroup.id !== -1 ? this.updateGroup : this.createGroup
-          }
-          onCancel={this.hideDialog}
+          width={700}
+          title="学生信息"
+          maskClosable={false}
+          visible={this.state.studentDialogVisible}
+          onOk={this.hideStudentInfo}
+          onCancel={this.hideStudentInfo}
         >
-          <GroupInfoForm group={currentGroup} />
+          <StudentInfo studentId={this.state.currentStudentId} />
         </Modal>
-        <StudentListModal
-          multiSelect
-          title="添加学生"
-          visible={studentSelectorVisible}
-          selectedRowKeys={selectedStudents}
-          onOk={() => { this.addStudentsToGroup(); }}
-          onCancel={this.hideStudentListModal}
-          onSelectedRowsChange={this.handleSelectedStudentsChange}
-        />
-      </div>
+      </Row>
     );
   }
 }
 
 function mapStateToProps() {
   return {
-    page: 1,
-    pageSize: 10,
-    total: 100,
-    groups: [
-      {
-        id: 0,
-        name: 'TEST_GROUP_008',
-        status: 0,
-        level: 1,
-        count: 100,
-        comment: '',
-      },
-      {
-        id: 1,
-        name: 'TEST_GROUP_018',
-        status: 1,
-        level: 1,
-        count: 50,
-        comment: '',
-      },
-    ],
+    tags: {
+      loading: false,
+      total: 200,
+      page: 1,
+      pageSize: 10,
+      result: [
+        {
+          id: 1,
+          name: 'tag1',
+          studentCount: 10,
+        },
+        {
+          id: 2,
+          name: 'tag2',
+          studentCount: 100,
+        },
+        {
+          id: 3,
+          name: 'tag3',
+          studentCount: 1000,
+        },
+      ],
+    },
+    students: {
+      loading: false,
+      tags: [],
+      total: 10,
+      page: 1,
+      pageSize: 10,
+      result: [
+        {
+          id: 1,
+          nickname: 'user1',
+          tags: ['tag1', 'tag2'],
+        },
+      ],
+    },
   };
 }
 
 export default connect(mapStateToProps)(Schedules);
-
