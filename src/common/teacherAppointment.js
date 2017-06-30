@@ -30,3 +30,10 @@ export const updateTeacherReasons = [
   { value: TEACHER_APPOINTMENT_TEACHER_EXCEPTED, text: '老师异常' },
   { value: TEACHER_APPOINTMENT_TBD, text: '原因待定' },
 ];
+
+const TEACHER_APPOINTMENT_STATUS_MAP = {};
+
+teacherAppointmentsStatus.forEach((item) => { TEACHER_APPOINTMENT_STATUS_MAP[item.value] = item; });
+
+export { TEACHER_APPOINTMENT_STATUS_MAP };
+
