@@ -225,6 +225,7 @@ class Schedule extends Component {
           style={{ marginTop: 16 }}
         />
         <Modal
+          width={700}
           title={this.state.roomInfoDialogTitle}
           visible={this.state.roomInfoDialogVisible}
           onCancel={this.handleHideRoomDialog}
