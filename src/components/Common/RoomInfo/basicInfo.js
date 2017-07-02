@@ -12,7 +12,7 @@ import {
 } from '../../../common/teacherAppointment';
 import { validateIpv4, validateMultiIpv4 } from '../../../common/validator';
 
-import TeacherAutoComplete from '../../Common/TeacherAutoComplete';
+import TeacherSearchInput from '../../Common/TeacherSearchInput';
 
 import { addRoom, updateSchedule } from '../../../app/actions/schedule';
 import { fetchRooms, fetchRoom, updateRoom, deleteRoom, updateTeacher } from '../../../app/actions/room';
@@ -366,11 +366,8 @@ class RoomBasicInfo extends Component {
               {...formItemLayout}
               style={{ marginBottom: 0 }}
             >
-              <TeacherAutoComplete
-                size="default"
-                placeholder="老师账户名"
-                teachers={this.props.teachers}
-                onSelect={this.handleSelectTeacher}
+              <TeacherSearchInput
+                onChange={this.handleSelectTeacher}
               />
             </Form.Item>
           </Form>
