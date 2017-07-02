@@ -13,12 +13,14 @@ export default class StudentSearchInput extends React.Component {
     multiSelect: React.PropTypes.bool,
     value: React.PropTypes.number.isRequired,
     disabled: React.PropTypes.bool,
+    style: React.PropTypes.object,
   };
 
   static defaultProps = {
     onChange: () => {},
     multiSelect: false,
     disabled: false,
+    style: { width: '100%' },
   };
 
   state = {
@@ -68,7 +70,7 @@ export default class StudentSearchInput extends React.Component {
   };
 
   render() {
-    const { multiSelect, disabled } = this.props;
+    const { multiSelect, disabled, style } = this.props;
     const {
       inputValue,
       studentId,
@@ -95,6 +97,7 @@ export default class StudentSearchInput extends React.Component {
               />
             </Tooltip>
           }
+          style={style}
         />
         <StudentListModal
           key="student-feedback-StudentListModal"

@@ -12,6 +12,7 @@ export default class TeacherSearchInput extends React.Component {
     onChange: React.PropTypes.func.isRequired,
     value: React.PropTypes.number.isRequired,
     disabled: React.PropTypes.bool,
+    style: React.PropTypes.object,
   };
 
   static defaultProps = {
@@ -20,6 +21,7 @@ export default class TeacherSearchInput extends React.Component {
     onChange: () => {},
     multiSelect: false,
     disabled: false,
+    style: { width: '100%' },
   };
 
   state = {
@@ -74,7 +76,7 @@ export default class TeacherSearchInput extends React.Component {
       teacherId,
       teacherSelectorVisible,
     } = this.state;
-    const { disabled } = this.props;
+    const { disabled, style } = this.props;
     const iconStyle = !disabled ? { cursor: 'pointer' } : null;
     const onIconClick = !disabled
       ? () => { this.showListModal(); }
@@ -96,6 +98,7 @@ export default class TeacherSearchInput extends React.Component {
               />
             </Tooltip>
           }
+          style={style}
         />
         <TeacherListModal
           title="选择老师"
