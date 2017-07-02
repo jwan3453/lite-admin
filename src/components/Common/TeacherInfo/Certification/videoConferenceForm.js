@@ -6,7 +6,7 @@ import {
   DatePicker,
 } from 'antd';
 import moment from 'moment';
-import * as CERTIFICATION_STATUS from './status';
+import * as CERTIFICATION_STATUS from '../../../../common/teacherCertStatus';
 
 const FormItem = Form.Item;
 const TIME_FORMAT = 'YYYY-MM-DD';

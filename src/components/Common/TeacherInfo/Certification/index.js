@@ -11,7 +11,7 @@ import {
 } from 'antd';
 import moment from 'moment';
 import _ from 'lodash';
-import * as CERTIFICATION_STATUS from './status';
+import * as CERTIFICATION_STATUS from '../../../../common/teacherCertStatus';
 import * as CERTIFICATION_STEP_TYPES from '../../../../common/certificationStepTypes';
 import AssignCertificationForm from './assignCertificationForm';
 import VideoConferenceForm from './videoConferenceForm';
@@ -163,9 +163,7 @@ class Certification extends React.Component {
             ? CERTIFICATION_STATUS.EXPIRED
             : status;
 
-          const currentStatus = _.find(
-            CERTIFICATION_STATUS.STATUS
-            , item => item.value === statusValue);
+          const currentStatus = CERTIFICATION_STATUS.STATUS_MAP[statusValue];
 
           return (
             <Tag color={currentStatus.color}>{currentStatus.text}</Tag>
