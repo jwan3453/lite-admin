@@ -7,6 +7,7 @@ import {
   Steps,
   Spin,
   Modal,
+  Tooltip,
 } from 'antd';
 
 import _ from 'lodash';
@@ -14,7 +15,9 @@ import moment from 'moment';
 
 import SearchForm from './SearchForm';
 import TeacherInfo from '../../Common/TeacherInfo';
+import VideoConferenceForm from '../../Common/VideoConferenceForm';
 import * as CERT_STATUS from '../../../common/teacherCertStatus';
+import * as CERTIFICATION_STEP_TYPES from '../../../common/certificationStepTypes';
 
 const DATE_FORMAT = 'YYYY-MM-DD hh:mm:ss';
 
@@ -37,6 +40,7 @@ class TeacherCerts extends React.Component {
   state = {
     teacherId: -1,
     teacherInfoModalVisible: false,
+    conferenceDialogVisible: false,
   };
 
   search = (filters) => {
@@ -55,6 +59,18 @@ class TeacherCerts extends React.Component {
     this.setState({
       teacherId: -1,
       teacherInfoModalVisible: false,
+    });
+  };
+
+  showConferenceDialog = () => {
+    this.setState({
+      conferenceDialogVisible: true,
+    });
+  };
+
+  hideConferenceDialog = () => {
+    this.setState({
+      conferenceDialogVisible: false,
     });
   };
 
@@ -143,19 +159,39 @@ class TeacherCerts extends React.Component {
             <Popover
               title="认证进度"
               content={popoverContent}
-            >{`${finishedSteps.length}/${steps.length}`}</Popover>
+            ><a>{`${finishedSteps.length}/${steps.length}`}</a></Popover>
           );
         },
       },
       {
         title: '待处理培训',
         key: 'session',
-        render: (record) => {
-          const { steps } = record;
-          console.log('progress', steps);
-          return (
-            <div>this is session</div>
+        dataIndex: 'steps',
+        render: (steps) => {
+          const activatedSteps = _.filter(
+            steps
+            , item => CERT_STATUS.isAssigned(item.status)
+                      || CERT_STATUS.isInProgress(item.status));
+
+          const videoConferenceStep = _.head(
+            _.filter(
+              activatedSteps
+              , item => CERTIFICATION_STEP_TYPES.isSessionStep(item.type)
+              ,
+            ),
           );
+
+          return !videoConferenceStep
+            ? ''
+            : (
+              <Tooltip title="处理session">
+                <a
+                  role="button"
+                  tabIndex="0"
+                  onClick={this.showConferenceDialog}
+                >{videoConferenceStep.title}</a>
+              </Tooltip>
+              );
         },
       },
       {
@@ -205,6 +241,16 @@ class TeacherCerts extends React.Component {
             <TeacherInfo teacherId={teacherId} />
           </Spin>
         </Modal>
+        <Modal
+          title="待处理session"
+          visible={this.state.conferenceDialogVisible}
+          onOk={() => this.updateStepStatus()}
+          onCancel={this.hideConferenceDialog}
+        >
+          <VideoConferenceForm
+            ref={(node) => { this.videoConferenceForm = node; }}
+          />
+        </Modal>
       </div>
     );
   }
@@ -224,21 +270,26 @@ function mapStateToProps() {
               id: 1,
               title: 'step 1',
               status: 10,
+              type: 'ppt',
             },
             {
               id: 2,
               title: 'step 2',
               status: 30,
+              type: 'video',
             },
             {
               id: 3,
               title: 'step 3',
-              status: 20,
+              status: 10,
+              type: 'session',
+              score: 0,
             },
             {
               id: 4,
               title: 'step 4',
               status: 40,
+              type: 'practice',
             },
           ],
           status: 30,

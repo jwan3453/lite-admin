@@ -140,17 +140,17 @@ class Certification extends React.Component {
             ),
           );
 
-          const linkButton = (
-            <Tooltip title="处理session">
-              <a
-                role="button"
-                tabIndex="0"
-                onClick={this.showConferenceDialog}
-              >{videoConferenceStep.title}</a>
-            </Tooltip>
-          );
-
-          return !videoConferenceStep ? '' : linkButton;
+          return !videoConferenceStep
+            ? ''
+            : (
+              <Tooltip title="处理session">
+                <a
+                  role="button"
+                  tabIndex="0"
+                  onClick={this.showConferenceDialog}
+                >{videoConferenceStep.title}</a>
+              </Tooltip>
+              );
         },
       },
       {
