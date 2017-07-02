@@ -25,6 +25,7 @@ class Teachers extends React.Component {
     maskClosable: false,
     multiSelect: false,
     selectedRowKeys: [],
+    filters: {},
   };
 
   componentWillMount() {
