@@ -14,7 +14,7 @@ import _ from 'lodash';
 import * as CERTIFICATION_STATUS from '../../../../common/teacherCertStatus';
 import * as CERTIFICATION_STEP_TYPES from '../../../../common/certificationStepTypes';
 import AssignCertificationForm from './assignCertificationForm';
-import VideoConferenceForm from './videoConferenceForm';
+import VideoConferenceForm from '../../../Common/VideoConferenceForm';
 
 const TIME_FORMAT = 'YYYY-MM-DD hh:mm:ss';
 
