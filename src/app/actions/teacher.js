@@ -28,7 +28,7 @@ export function fetchResumes(filter = {}, page = 1, pageSize = 10) {
   return {
     [CALL_JQ_API]: {
       types: [Teacher.FETCH_RESUME, Teacher.FETCH_RESUME_SUCCESS, Teacher.FETCH_RESUME_FAIL],
-      uri: 'http://127.0.0.1/admin/teachers/resumes/manage',
+      uri: '/admin/teachers/resumes/manage',
       method: 'POST',
       body: {
         status,
@@ -45,7 +45,7 @@ export function changeStatus(recordId, status) {
   return {
     [CALL_JQ_API]: {
       types: [Teacher.CHANGE_STATUS, Teacher.CHANGE_STATUS_SUCCESS, Teacher.CHANGE_STATUS_FAILED],
-      uri: `http://127.0.0.1/admin/teachers/resumes/${recordId}`,
+      uri: `/admin/teachers/resumes/${recordId}`,
       method: 'POST',
       body: {
         recordId,
