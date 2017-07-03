@@ -1,3 +1,0 @@
-export const API_ROOT = 'http://localhost:9000/admin';
-export const AUTH_SERVER = 'https://gate.97kid.com/admin/user/login';
-export const REFRESH_SERVER = 'https://gate.97kid.com/admin/user/refresh';
