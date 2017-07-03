@@ -22,3 +22,35 @@ export function fetchTeachers() {
     },
   };
 }
+
+export function fetchResumes(filter = {}, page = 1, pageSize = 10) {
+  const { status, startTime, endTime } = filter;
+  return {
+    [CALL_JQ_API]: {
+      types: [Teacher.FETCH_RESUME, Teacher.FETCH_RESUME_SUCCESS, Teacher.FETCH_RESUME_FAIL],
+      uri: 'http://127.0.0.1/admin/teachers/resumes/manage',
+      method: 'POST',
+      body: {
+        status,
+        startTime,
+        endTime,
+        page,
+        pageSize,
+      },
+    },
+  };
+}
+
+export function changeStatus(recordId, status) {
+  return {
+    [CALL_JQ_API]: {
+      types: [Teacher.CHANGE_STATUS, Teacher.CHANGE_STATUS_SUCCESS, Teacher.CHANGE_STATUS_FAILED],
+      uri: `http://127.0.0.1/admin/teachers/resumes/${recordId}`,
+      method: 'POST',
+      body: {
+        recordId,
+        status,
+      },
+    },
+  };
+}

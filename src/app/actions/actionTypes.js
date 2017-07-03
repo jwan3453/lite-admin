@@ -85,6 +85,15 @@ export const Teacher = {
   FETCH: 'teacher_fetch',
   FETCH_SUCCESS: 'teacher_fetch_success',
   FETCH_FAIL: 'teacher_fetch_fail',
+
+  FETCH_RESUME: 'resume_fetch',
+  FETCH_RESUME_SUCCESS: 'resume_fetch_success',
+  FETCH_RESUME_FAIL: 'resume_fetch_fail',
+
+  CHANGE_STATUS: 'change_status',
+  CHANGE_STATUS_SUCCESS: 'change_status_success',
+  CHANGE_STATUS_FAIL: 'change_status_failed',
+
 };
 
 export const Rooms = {
