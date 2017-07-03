@@ -113,7 +113,7 @@ class Resume extends Component {
         render: (text, record, index) => {
           let linkUrl = '';
           if (text) {
-            linkUrl = (<a href={text} target="_blank" role="button" tabIndex={index} >下载</a>);
+            linkUrl = (<a href={text} role="button" tabIndex={index} >下载</a>);
           } else {
             linkUrl = (<span>无</span>);
           }
@@ -127,7 +127,7 @@ class Resume extends Component {
         render: (text, record, index) => {
           let linkUrl = '';
           if (text) {
-            linkUrl = (<a href={text} target="_blank" role="button" tabIndex={index} >下载</a>);
+            linkUrl = (<a href={text} role="button" tabIndex={index} >下载</a>);
           } else {
             linkUrl = (<span>无</span>);
           }
