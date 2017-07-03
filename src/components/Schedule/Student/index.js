@@ -364,6 +364,7 @@ class StudentAppointments extends React.Component {
           title={roomInfoDialogTitle}
           visible={roomInfoDialogVisible}
           onCancel={this.hideRoomInfo}
+          width={700}
           footer={[
             <Button
               type="primary"

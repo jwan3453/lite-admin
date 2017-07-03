@@ -19,6 +19,7 @@ import ScheduleRooms from './scheduleRooms';
 import { fetchScheduleRooms } from '../../../app/actions/schedule';
 import { fetchRooms, fetchRoom, addStudent, removeStudent } from '../../../app/actions/room';
 import { updateStudentAppointment, changeRoom } from '../../../app/actions/studentAppointment';
+import { fetchSimpleList } from '../../../app/actions/student';
 
 class StudentAppointments extends Component {
   static propTypes = {
@@ -28,26 +29,63 @@ class StudentAppointments extends Component {
     studentAppointments: React.PropTypes.array.isRequired,
     loading: React.PropTypes.bool.isRequired,
     filters: React.PropTypes.object.isRequired,
+    simpleList: React.PropTypes.array,
   };
+
+  static defaultProps = {
+    simpleList: [],
+  };
+
   state = {
     findStudentModalVisible: false,
     selectedStudents: [],
     changeStudentAppointmentId: 0,
     changeRoomVisible: false,
     exceptionVisble: false,
+    dataSource: [],
   };
   componentWillMount() {
     const { dispatch, scheduleId } = this.props;
     dispatch(fetchScheduleRooms(scheduleId));
+    this.getStudentSimpleList(this.props.studentAppointments);
   }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.studentAppointments !== nextProps.studentAppointments) {
+      this.getStudentSimpleList(nextProps.studentAppointments);
+    }
+  }
+
+  getStudentSimpleList = (studentAppointments) => {
+    const studentIds = _.map(studentAppointments, 'studentId');
+    const ids = _.join(studentIds, ',');
+    this.props.dispatch(fetchSimpleList(ids)).then(() => {
+      this.combineDataSource();
+    });
+  };
+
+  combineDataSource = () => {
+    const { simpleList, studentAppointments } = this.props;
+    if (_.isEmpty(studentAppointments)) {
+      return;
+    }
+    const combinedData = studentAppointments.map((appointment) => {
+      const userSimpleInfo = _.find(simpleList, { id: appointment.studentId });
+      return _.assign({}, appointment, { nickname: userSimpleInfo.nickname });
+    });
+    this.setState({ dataSource: combinedData });
+  }
+
   handleApplyAddStudent = () => {
     this.setState({
       findStudentModalVisible: true,
     });
   };
+
   handleSelectedStudentsChange = (selectedStudents) => {
     this.setState({ selectedStudents });
   };
+
   handleRefresh = () => {
     const { dispatch, roomId, filters } = this.props;
     dispatch(fetchRooms(filters));
@@ -130,6 +168,11 @@ class StudentAppointments extends Component {
         title: '学生ID',
         key: 'studentId',
         dataIndex: 'studentId',
+      },
+      {
+        title: '学生昵称',
+        key: 'nickname',
+        dataIndex: 'nickname',
       },
       {
         title: '邀请人',
@@ -282,7 +325,7 @@ class StudentAppointments extends Component {
         <Table
           loading={this.props.loading}
           columns={columns}
-          dataSource={this.props.studentAppointments}
+          dataSource={this.state.dataSource}
           rowKey="id"
           size="small"
         />
@@ -311,10 +354,11 @@ class StudentAppointments extends Component {
 }
 
 export default connect((state) => {
-  const { room } = state;
+  const { room, student } = state;
   const { loading, filters } = room;
   return {
     loading,
     filters,
+    simpleList: student.simpleList,
   };
 })(StudentAppointments);

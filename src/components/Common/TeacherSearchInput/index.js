@@ -17,7 +17,7 @@ export default class TeacherSearchInput extends React.Component {
 
   static defaultProps = {
     filters: {},
-    teachers: {},
+    teachers: [],
     onChange: () => {},
     multiSelect: false,
     disabled: false,
