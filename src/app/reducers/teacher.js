@@ -8,10 +8,7 @@ export function teacher(
       filters: {},
       result: {},
     },
-    teachers: {
-      filters: {},
-      result: {},
-    },
+    teachers: [],
     resumes: [],
     total: 0,
     page: 1,
@@ -29,10 +26,7 @@ export function teacher(
     case Teacher.FETCH_SUCCESS:
       return assign({}, state, {
         loading: false,
-        teachers: {
-          filters: action.filters,
-          result: action.response,
-        },
+        teachers: action.response,
       });
     case Teacher.SEARCH_SUCCESS:
       return assign({}, state, {

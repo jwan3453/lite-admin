@@ -77,7 +77,7 @@ class Teachers extends React.Component {
     //  todo
     //  actually here should be teachers.result,
     //  because we are going to include pagination info here
-    const dataSource = teachers || [];
+    const dataSource = teachers.result || [];
 
     const rowSelection = {
       type: !multiSelect ? 'radio' : 'checkbox',
