@@ -3,7 +3,13 @@ import { connect } from 'react-redux';
 import {
   Table,
   Input,
+  Button,
+  Tooltip,
+  Modal,
 } from 'antd';
+
+import AddTagForm from './AddTagForm';
+import StudentFinder from './StudentFinder';
 
 class TagList extends React.Component {
   static propTypes = {
@@ -24,8 +30,29 @@ class TagList extends React.Component {
     onSelectedRowsChange: () => {},
   };
 
+  state = {
+    groupMembersDialogVisible: false,
+  };
+
   searchTags = (e) => {
     console.log('searchTags', e);
+  };
+
+  showDialog = () => {
+    this.setState({
+      groupMembersDialogVisible: true,
+    });
+  };
+
+  hideDialog = () => {
+    this.setState({
+      groupMembersDialogVisible: false,
+    });
+  };
+
+  createTag = () => {
+    const tag = this.tagForm.getFieldsValue();
+    console.log('createTag', tag);
   };
 
   render() {
@@ -35,6 +62,8 @@ class TagList extends React.Component {
       onSelectedRowsChange,
     } = this.props;
 
+    const { groupMembersDialogVisible } = this.state;
+
     const tagColumns = [
       {
         title: '标签',
@@ -43,6 +72,20 @@ class TagList extends React.Component {
       {
         title: '人数',
         dataIndex: 'studentCount',
+      },
+      {
+        title: '操作',
+        key: 'actions',
+        render: () => (
+          <Tooltip title="添加学生" placement="top">
+            <Button
+              icon="user-add"
+              onClick={
+                () => { this.showDialog(); }
+              }
+            />
+          </Tooltip>
+        ),
       },
     ];
 
@@ -66,6 +109,11 @@ class TagList extends React.Component {
 
     return (
       <div>
+        <AddTagForm
+          onSubmit={this.createTag}
+          ref={(node) => { this.tagForm = node; }}
+          style={{ marginBottom: 16 }}
+        />
         <Input.Search
           placeholder="Tag 关键字"
           style={{ marginBottom: 16 }}
@@ -82,6 +130,15 @@ class TagList extends React.Component {
           dataSource={tags.result}
           pagination={tagPagination}
         />
+        <Modal
+          title="添加学生"
+          width={700}
+          maskClosable={false}
+          visible={groupMembersDialogVisible}
+          onCancel={this.hideDialog}
+        >
+          <StudentFinder />
+        </Modal>
       </div>
     );
   }
