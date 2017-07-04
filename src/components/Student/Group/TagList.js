@@ -55,6 +55,15 @@ class TagList extends React.Component {
     console.log('createTag', tag);
   };
 
+  tagStudents = () => {
+    console.log('tag students');
+    this.hideDialog();
+  };
+
+  handleSelectedStudentsChange = (selectedRowKeys, selectedRows) => {
+    console.log(selectedRowKeys, selectedRows);
+  };
+
   render() {
     const {
       tags,
@@ -135,9 +144,12 @@ class TagList extends React.Component {
           width={700}
           maskClosable={false}
           visible={groupMembersDialogVisible}
+          onOk={this.tagStudents}
           onCancel={this.hideDialog}
         >
-          <StudentFinder />
+          <StudentFinder
+            onSelectedRowsChange={this.handleSelectedStudentsChange}
+          />
         </Modal>
       </div>
     );

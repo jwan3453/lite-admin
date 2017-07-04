@@ -17,13 +17,13 @@ class StudentFinder extends React.PureComponent {
     loading: React.PropTypes.bool.isRequired,
     filters: React.PropTypes.object.isRequired,
     students: React.PropTypes.object.isRequired,
+    onSelectedRowsChange: React.PropTypes.func,
   };
 
   static defaultProps = {
     filters: {},
     students: {},
-    onSelect: () => {},
-    onSelectAll: () => {},
+    onSelectedRowsChange: () => {},
   };
 
   state = {
@@ -107,6 +107,11 @@ class StudentFinder extends React.PureComponent {
       selectedStudents,
       rightCurrentPage: Math.ceil(selectedStudents.length / 10),
     });
+
+    this.props.onSelectedRowsChange(
+      _.map(selectedStudents, 'id'),
+      selectedStudents,
+    );
   };
 
   cancel = () => {
@@ -127,6 +132,11 @@ class StudentFinder extends React.PureComponent {
       rightCurrentPage: Math.floor(selectedStudents.length / 10),
       selectedStudents: students,
     });
+
+    this.props.onSelectedRowsChange(
+      _.map(students, 'id'),
+      students,
+    );
   };
 
   render() {
