@@ -5,6 +5,8 @@ import RoomBasicInfo from './basicInfo';
 import StudentAppointments from './studentAppointments';
 import OperationLogs from './operationLogs';
 
+import nativeHandler from '../../../common/nativeHandler';
+
 export default class RoomInfo extends Component {
   static propTypes = {
     roomInfo: React.PropTypes.object.isRequired,
@@ -14,6 +16,10 @@ export default class RoomInfo extends Component {
   };
   static defaultProps = {
   };
+  handleEnterClassRoom = () => {
+    const { roomInfo } = this.props;
+    nativeHandler.enterClassRoom(roomInfo.id);
+  }
   render() {
     const { roomInfo, lessonName, onHide, onCopySchedule } = this.props;
     const studentAppointments = roomInfo.studentAppointments || [];
@@ -22,7 +28,7 @@ export default class RoomInfo extends Component {
       <Tabs
         size="small"
         tabBarExtraContent={
-          <Button size="small" icon="enter">进入房间</Button>
+          <Button size="small" icon="enter" onClick={this.handleEnterClassRoom}>进入房间</Button>
         }
       >
         <Tabs.TabPane tab="基础信息" key="basic">
