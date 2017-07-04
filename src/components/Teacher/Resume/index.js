@@ -197,25 +197,6 @@ class Resume extends Component {
         ),
       },
     ];
-    // const database = [];
-    // for (let i = 0; i < resumes.length; i += 1) {
-    //   const tmpReusme = {
-    //     id: resumes[i].id,
-    //     firstname: resumes[i].first_name,
-    //     lastname: resumes[i].last_name,
-    //     location: resumes[i].last_name,
-    //     email: resumes[i].emial,
-    //     notes: resumes[i].notes,
-    //     workPermit: resumes[i].nationality,
-    //     attachedResume: resumes[i].file_link,
-    //     attachedPhoto: resumes[i].image_link,
-    //     timeSlot: resumes[i].time_slots,
-    //     applyDate: resumes[i].apply_date,
-    //     status: resumes[i].status,
-    //   };
-    //   database.push(tmpReusme);
-    // }
-
     if (resumes != null) {
       resumes.map((data) => {
         const tmpReusme = {

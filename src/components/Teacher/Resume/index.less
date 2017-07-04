@@ -1,7 +1,7 @@
 
 
 .time-span{
-    width:650px;
+    width:550px;
     margin:10px 0 20px 90px;
     display: block;
 
@@ -26,111 +26,128 @@
     }
 }
 
-.time-slot{
-    width:650px;
-    vertical-align: middle;
-    display: inline-block;
-
-    .row{
-        width:100%;
-        overflow: hidden;
-
-        .column{
-          width: calc( 12.5% );
-          height:50px;
-          float:left;
-          border-bottom:1px solid #E9E9E9;
-          border-right:1px solid #E9E9E9;
-
-          .slot{
-            height:30px;
-            width:55px;
-            margin: 13px auto 12px auto;
-            border:1px solid #EEEEEE;
-            border-radius: 5px;
-          }
-
-        .dis-slot{
-            height:30px;
-            width:55px;
-            margin: 13px auto 12px auto;
-            border:1px solid #EEEEEE;
-            border-radius: 5px;
-            background-color: #F7F7F7;
+.time-table{
+  
+    th{
+        span{
+            text-align: right!important;
+            display: inline-block;
+            width:50px;
         }
-
-        .selected-slot{
-            height:30px;
-            width:55px;
-            margin: 13px auto 12px auto;
-            border:1px solid #EEEEEE;
-            border-radius: 5px;
-            background-color: #46BEFF;
-        }
-        
-        .slot:hover{
-            background-color: #46BEFF;
-            cursor:pointer;
-            -webkit-transition: all .5s ease-in-out;
-            transition: all .5s ease-in-out;
-        }
-
-      }    
-
     }
 
-}
+    td{
+        padding: 8px!important;
+    }
+
+    .slot{
+        height:30px;
+       
+        
+        border:1px solid #EEEEEE;
+        border-radius: 5px;
+    }
+
+    .dis-slot{
+        height:30px;
+        
+        
+        border:1px solid #EEEEEE;
+        border-radius: 5px;
+        background-color: #F7F7F7;
+    }
+
+    .selected-slot{
+        height:30px;
+       
+        
+        border:1px solid #EEEEEE;
+        border-radius: 5px;
+        background-color: #46BEFF;
+    }
+    .weekday{
+        text-align: center;
+    }
+  }
 
 .t-footer{
     width:100%;
     overflow: hidden;
-}
 
 
-.notation{
-    margin: 20px 40px 0 0;
-    float: right;
+    .tz-option {
+        width:300px;
+        float:left;
+        margin: 25px 0 0 0;
 
-}
-.color-mark{
-    display: inline-block;
-    vertical-align: middle;
-    margin-left: 50px;
-
-    span{
-    line-height: 30px;
-    display: inline-block;
-    vertical-align: middle;
-    font-size: 12px;
-    margin-left: 10px;
-
-
-    }
-
-    div{
-        height:24px;
-        width:24px;
-        border-radius: 5px;
-        display: inline-block;
-        vertical-align: middle;
-    }
-
-    .dis{
-        background-color: #F7F7F7;
-    }
-
-    .sed{
-        background-color: #46BEFF;
-    }
-
-}
-
-    .resume-options{
-        display: block;
-
-        button{
-            margin-left:10px!important;
+        span{
             display: inline-block;
             vertical-align: middle;
         }
+        .option{
+            display: inline-block;
+            vertical-align: middle;
+            height:14px;
+            width:14px;
+            border-radius:100%;
+            border: 1px solid  #46BEFF;
+            cursor: pointer;
+            margin: 0 5px 0 30px;
+        }
+        .option:hover{
+            background: #46BEFF;
+        }
+
+        .option-selected {
+            background: #46BEFF;
+        }
     }
+
+    .notation{
+    margin: 20px 40px 0 0;
+    float: right;
+
+    }
+    .color-mark{
+        display: inline-block;
+        vertical-align: middle;
+        margin-left: 50px;
+
+        span{
+        line-height: 30px;
+        display: inline-block;
+        vertical-align: middle;
+        font-size: 12px;
+        margin-left: 10px;
+        }
+
+        div{
+            height:24px;
+            width:24px;
+            border-radius: 5px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .dis{
+            background-color: #F7F7F7;
+        }
+
+        .sed{
+            background-color: #46BEFF;
+        }
+
+    }
+
+}
+
+.resume-options{
+    display: block;
+    width:160px!important;
+    button{
+        margin-right:10px!important;
+        display: inline-block;
+        vertical-align: middle;
+    
+   }
+}

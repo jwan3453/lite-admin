@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+import { Table } from 'antd';
+import moment from 'moment';
+import 'moment-timezone';
 
 export default class timeTable extends Component {
 
@@ -6,84 +9,158 @@ export default class timeTable extends Component {
     timeSlots: React.PropTypes.string.isRequired,
   };
 
+  state = {
+    pageSize: 10,
+    estOptionClass: 'option',
+    utcOptionClass: 'option option-selected',
+    dataColumn: null,
+    dataSource: null,
+  };
+
+  handleTimeZoneOptionCick = (timezone, dataColumn, dataSource) => {
+    if (timezone === 'EST') {
+      this.setState({
+        estOptionClass: 'option option-selected ',
+        utcOptionClass: 'option',
+        dataColumn,
+        dataSource,
+      });
+    } else if (timezone === 'UTC') {
+      this.setState({
+        estOptionClass: 'option',
+        utcOptionClass: 'option option-selected ',
+        dataColumn,
+        dataSource,
+      });
+    }
+  };
+
   render() {
-    const tableContentArray = [];
-    const timeSlots = this.props.timeSlots;
-    const timeSlotsArray = timeSlots.split(',');
-    let rowContent = '';
+    const StandardDate = '1970-01-01';
+    const weekdayColumnHeader = 'day';
+    const timeSlots = JSON.parse(this.props.timeSlots);
+    const timespansInEt = Object.keys(timeSlots[0]);
+    const timespansInUtc = [];
+    const columnsInEt = [];
+    const columnsInUtc = [];
+    const dataSource = timeSlots;
+    const dataSouceInUst = [];
+    for (let i = 0; i < timespansInEt.length; i += 1) {
+      const columnInEt = {
+        title: timespansInEt[i],
+        dataIndex: timespansInEt[i],
+        key: timespansInEt[i],
+        render: (text) => {
+          let columnHtml = '';
+          if (text === 'selected') {
+            columnHtml = (<div className="selected-slot" />);
+          } else if (text === 'unselected') {
+            columnHtml = (<div className="slot" />);
+          } else if (text === 'disable') {
+            columnHtml = (<div className="dis-slot" />);
+          } else {
+            columnHtml = (<div className="weekday">{text}</div>);
+          }
+          return columnHtml;
+        },
+      };
+      columnsInEt.push(columnInEt);
 
-    for (let i = 0; i < 7; i += 1) {
-      let tmpRowContent =
-        `<div class="row">
-          <div class="column">
-            <div class="slot" data-field="06:40" /></div>
-          </div>
-          <div class="column">
-            <div class="slot" data-field="07:20" /></div>
-          </div>
-          <div class="column">
-            <div class="slot" data-field="08:00" /></div>
-          </div>
-          <div class="column">
-            <div class="slot" data-field="08:40" /></div>
-          </div>
-          <div class="column">
-            ${(i !== 4 && i !== 5) ? '<div class="dis-slot" data-field="21:20" /></div>' : '<div class="slot" data-field="21:20" /></div>'}
-          </div>
-          <div class="column">
-            ${(i !== 4 && i !== 5) ? '<div class="dis-slot" data-field="22:00" /></div>' : '<div class="slot" data-field="22:00" /></div>'}
-          </div>
-          <div class="column">
-            ${(i !== 4 && i !== 5) ? '<div class="dis-slot" data-field="22:40" /></div>' : '<div class="slot" data-field="22:40" /></div>'}
-          </div>
-          <div class="column">
-            ${(i !== 4 && i !== 5) ? '<div class="dis-slot" data-field="23:20" /></div>' : '<div class="slot" data-field="23:20" /></div>'}
-          </div>
-        </div>`;
+      if (timespansInEt[i] !== weekdayColumnHeader) {
+        const localTime = moment.tz(`${StandardDate} ${timespansInEt[i]}`, 'America/New_York');
+        const AisaTime = localTime.clone().tz('Asia/Shanghai');
+        const newTime = moment(AisaTime).format('HH:mm');
+        timespansInUtc.push(newTime);
+      } else {
+        timespansInUtc.push(timespansInEt[i]);
+      }
+    }
 
-      for (let j = 0; j < timeSlotsArray.length; j += 1) {
-        if (parseInt(timeSlotsArray[j].split('-')[0], 10) === (i + 1)) {
-          const needReplace = `<div class="slot" data-field="${timeSlotsArray[j].split('-')[1]}" />`;
-          const newContent = `<div class="selected-slot" data-field="${timeSlotsArray[j].split('-')[1]}" />`;
-          tmpRowContent = tmpRowContent.replace(needReplace, newContent);
+    for (let tsa = 0; tsa < timespansInUtc.length; tsa += 1) {
+      for (let tsb = 0; tsb < timespansInUtc.length; tsb += 1) {
+        if (parseInt(timespansInUtc[tsb].replace(':', '').substring(0, 4), 10) > parseInt(timespansInUtc[tsa].replace(':', '').substring(0, 4), 10)) {
+          const tmp = timespansInUtc[tsa];
+          timespansInUtc[tsa] = timespansInUtc[tsb];
+          timespansInUtc[tsb] = tmp;
         }
       }
-
-      tableContentArray.push(tmpRowContent);
     }
-    console.log(tableContentArray);
 
+    for (let i = 0; i < timespansInUtc.length; i += 1) {
+      const columnInUTC = {
+        title: timespansInUtc[i],
+        dataIndex: timespansInUtc[i],
+        key: timespansInUtc[i],
+        render: (text) => {
+          let columnHtml = '';
+          if (text === 'selected') {
+            columnHtml = (<div className="selected-slot" />);
+          } else if (text === 'unselected') {
+            columnHtml = (<div className="slot" />);
+          } else if (text === 'disable') {
+            columnHtml = (<div className="dis-slot" />);
+          } else {
+            columnHtml = (<div className="weekday">{text}</div>);
+          }
+          return columnHtml;
+        },
+      };
+      columnsInUtc.push(columnInUTC);
+    }
+
+    for (let i = 0; i < timeSlots.length; i += 1) {
+      const tmpSourceData = {};
+      for (let j = 0; j < timespansInUtc.length; j += 1) {
+        tmpSourceData[timespansInUtc[j]] = '';
+      }
+      dataSouceInUst.push(Object(tmpSourceData));
+    }
+
+    for (let i = 0; i < dataSource.length; i += 1) {
+      for (let j = 0; j < timespansInEt.length; j += 1) {
+        if (timespansInEt[j] !== weekdayColumnHeader) {
+          const localTime = moment.tz(`${StandardDate} ${timespansInEt[j]}`, 'America/New_York');
+          const AisaTime = localTime.clone().tz('Asia/Shanghai');
+          const newTime = moment(AisaTime).format('HH:mm');
+          if (moment(AisaTime).diff(moment(StandardDate), 'days') > 0) {
+            if (i === (dataSource.length - 1)) {
+              dataSouceInUst[0][newTime] = dataSource[i][timespansInEt[j]];
+            } else {
+              dataSouceInUst[i + 1][newTime] = dataSource[i][timespansInEt[j]];
+            }
+          } else {
+            dataSouceInUst[i][newTime] = dataSource[i][timespansInEt[j]];
+          }
+        } else {
+          dataSouceInUst[i][weekdayColumnHeader] = dataSource[i][timespansInEt[j]];
+        }
+      }
+    }
     return (
       <div>
-        <div className="time-span" id="timespans">
-          <span>06:40</span>
-          <span>07:20</span>
-          <span>08:00</span>
-          <span>08:40</span>
-          <span>21:20</span>
-          <span>22:20</span>
-          <span>22:40</span>
-          <span>23:20</span>
-        </div>
-        <div className="week-days">
-          <span>Mon</span>
-          <span>Tue</span>
-          <span>Wed</span>
-          <span>Thu</span>
-          <span>Fri</span>
-          <span>Sat</span>
-          <span>Sun</span>
-        </div>
-
-        <div
-          className="time-slot"
-          dangerouslySetInnerHTML={{
-            __html: tableContentArray.map((data) => {
-              rowContent = data;
-              return (rowContent);
-            }).join('') }}
+        <Table
+          className="time-table"
+          columns={
+            this.state.dataColumn == null ? columnsInUtc : this.state.dataColumn}
+          rowKey="id"
+          pagination={false}
+          dataSource={
+            this.state.dataSource == null ? dataSouceInUst : this.state.dataSource
+          }
         />
         <div className="t-footer">
+          <div className="tz-option">
+            <option
+              className={this.state.estOptionClass}
+              onClick={() => this.handleTimeZoneOptionCick('EST', columnsInEt, dataSource)}
+            />
+            <span>EST</span>
+            <option
+              className={this.state.utcOptionClass}
+              onClick={() => this.handleTimeZoneOptionCick('UTC', columnsInUtc, dataSouceInUst)}
+            />
+            <span>UTC + 8</span>
+          </div>
           <div className="notation">
             <div className="color-mark">
               <div className="dis" />
@@ -101,4 +178,3 @@ export default class timeTable extends Component {
     );
   }
 }
-

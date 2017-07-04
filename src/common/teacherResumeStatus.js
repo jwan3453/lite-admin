@@ -17,12 +17,12 @@ const STATUS = [
   {
     value: PASSED,
     text: '通过',
-    color: '#f50',
+    color: '#108ee9',
   },
   {
     value: FAILED,
     text: '未通过',
-    color: '#108ee9',
+    color: '#f50',
   },
 ];
 
