@@ -8,23 +8,28 @@ import {
   STATUS_MAP as TEACHER_STATUS_MAP,
 } from '../../../common/teacherStatus';
 
+import { searchTeacher } from '../../../app/actions/teacher';
+
 export class TeacherList extends Component {
   static propTypes = {
+    dispatch: React.PropTypes.func.isRequired,
     teachers: React.PropTypes.object.isRequired,
+    filters: React.PropTypes.object,
     loading: React.PropTypes.bool.isRequired,
-    teacherInfo: React.PropTypes.object,
   };
   static defaultProps = {
     teachers: {},
-    teacherInfo: {},
+    filters: {},
   };
 
   state = {
     dialogVisible: false,
+    currentTeacherId: null,
   };
 
   handleSearch = (filters) => {
-    console.log(filters);
+    const { dispatch } = this.props;
+    dispatch(searchTeacher(filters));
   };
 
   handleEdit = (record) => {
@@ -39,12 +44,23 @@ export class TeacherList extends Component {
     if (teacherId) {
       this.setState({
         dialogVisible: true,
+        currentTeacherId: teacherId,
       });
     }
   };
 
+  handleChange = (pagination) => {
+    const { dispatch, filters, loading } = this.props;
+    if (loading) return;
+    Object.assign(filters, {
+      page: pagination.current,
+      pageSize: pagination.pageSize,
+    });
+    dispatch(searchTeacher(filters));
+  };
+
   render() {
-    const { teachers } = this.props;
+    const { teachers, loading } = this.props;
     const dataSource = teachers.result || [];
     const pageSize = teachers.pageSize || 10;
     const pagination = {
@@ -161,9 +177,9 @@ export class TeacherList extends Component {
           onCancel={() => this.setState({ dialogVisible: false })}
           width={700}
         >
-          <Spin spinning={this.props.loading}>
+          <Spin spinning={loading}>
             <TeacherInfo
-              teacherInfo={this.props.teacherInfo}
+              teacherId={this.state.currentTeacherId}
             />
           </Spin>
         </Modal>
@@ -172,55 +188,13 @@ export class TeacherList extends Component {
   }
 }
 
-function mapStateToProps() {
+function mapStateToProps(state) {
+  const { teacher, loading } = state;
+  const { search } = teacher;
   return {
-    loading: false,
-    teacherInfo: {
-      id: '2338',
-      nickname: 'hhh',
-      firstname: 'milo',
-      lastname: 'hou',
-      gender: 1,
-      level: 'G1',
-      status: 'status',
-      comment: 'no comments yet',
-      statusChangeTime: '2016/05/31',
-      salary: '100',
-      billingtype: 'asfasdf',
-      billingaccount: 'asdfasdf',
-    },
-    teachers: {
-      result: [
-        {
-          id: '2338',
-          nickname: 'hhh',
-          firstname: 'milo',
-          lastname: 'hou',
-          gender: 1,
-          level: 'G1',
-          status: 1,
-          comment: 'no comments yet',
-          statusChangeTime: '2016/05/31',
-          salary: '100',
-          billingtype: 'asfasdf',
-          billingaccount: 'asdfasdf',
-        },
-        {
-          id: '2448',
-          nickname: 'hhh',
-          firstname: 'milo',
-          lastname: 'hou',
-          gender: 2,
-          level: 'G1',
-          status: 2,
-          comment: 'no comments yet',
-          statusChangeTime: '2016/05/31',
-          salary: '100',
-          billingtype: 'asfasdf',
-          billingaccount: 'asdfasdf',
-        },
-      ],
-    },
+    loading,
+    teachers: search.result,
+    filters: search.filters,
   };
 }
 

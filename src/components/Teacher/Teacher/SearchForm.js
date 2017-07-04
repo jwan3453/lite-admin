@@ -14,49 +14,45 @@ import levels from '../../../common/levels';
 import BILLING_CYCLES from '../../../common/teacherBillingCycle';
 
 const FormItem = Form.Item;
+const DATE_FORMAT = 'YYYY-MM-DD';
 
 class TeacherSearchForm extends Component {
   static propTypes = {
     form: React.PropTypes.object.isRequired,
     onSearch: React.PropTypes.func.isRequired,
-    pageSize: React.PropTypes.number.isRequired,
   };
 
   static defaultProps = {};
-
-  state = {
-    pageSize: 10,
-  };
 
   handleSearch = (e) => {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       const filters = {};
       if (values.id) {
-        filters.id = values.id;
+        filters.userName = values.id;
       }
-      if (values.status) {
-        filters.status = values.status;
+      if (values.status && values.status !== '-1') {
+        filters.status = parseInt(values.status, 10);
       }
-      if (values.level) {
-        filters.level = values.level;
+      if (values.level && values.level !== '-1') {
+        filters.level = parseInt(values.level, 10);
       }
       if (values.statusChangeRange) {
-        filters.statusChangeRange = values.statusChangeRange;
+        filters.startDate = values.statusChangeRange[0].format(DATE_FORMAT);
+        filters.endDate = values.statusChangeRange[1].format(DATE_FORMAT);
       }
-      if (values.billingType) {
-        filters.billingType = values.billingType;
+      if (values.billingType && values.billingType !== '-1') {
+        filters.paymentCycle = parseInt(values.billingType, 10);
       }
-      filters.pageSize = this.props.pageSize;
       this.props.onSearch(filters);
     });
   };
 
   handleReset = () => {
     this.props.form.resetFields();
-  }
+  };
 
-  handleCreate = () => {}
+  handleCreate = () => {};
 
   render() {
     const { getFieldDecorator } = this.props.form;
@@ -162,7 +158,7 @@ class TeacherSearchForm extends Component {
                     <Select.Option value="-1">全部</Select.Option>
                     {
                       BILLING_CYCLES.map(billingType => (
-                        <Select.Option key={billingType.value} value={billingType.value}>
+                        <Select.Option key={billingType.value} value={`${billingType.value}`}>
                           {billingType.name}
                         </Select.Option>
                       ))

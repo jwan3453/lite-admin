@@ -5,10 +5,13 @@ export function teacher(
   state = {
     loading: false,
     search: {
-      text: '',
-      result: [],
+      filters: {},
+      result: {},
     },
-    teachers: [],
+    teachers: {
+      filters: {},
+      result: {},
+    },
     resumes: [],
     total: 0,
     page: 1,
@@ -18,15 +21,7 @@ export function teacher(
   action = {},
 ) {
   switch (action.type) {
-    case Teacher.SEARCH: {
-      return assign({}, state, {
-        loading: true,
-        search: {
-          text: action.searchText,
-          result: [],
-        },
-      });
-    }
+    case Teacher.SEARCH:
     case Teacher.FETCH:
       return assign({}, state, {
         loading: true,
@@ -34,7 +29,10 @@ export function teacher(
     case Teacher.FETCH_SUCCESS:
       return assign({}, state, {
         loading: false,
-        teachers: action.response,
+        teachers: {
+          filters: action.filters,
+          result: action.response,
+        },
       });
     case Teacher.SEARCH_SUCCESS:
       return assign({}, state, {
