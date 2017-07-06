@@ -356,7 +356,7 @@ class RoomBasicInfo extends Component {
             >
               <Select defaultValue="2" onChange={this.handleSelectReason}>
                 {updateTeacherReasons.map(reason =>
-                  (<Select.Option key={String(reason.value)} value={reason.value}>
+                  (<Select.Option key={String(reason.value)} value={String(reason.value)}>
                     {reason.text}
                   </Select.Option>))}
               </Select>

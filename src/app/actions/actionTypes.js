@@ -65,6 +65,17 @@ export const Student = {
   FETCH_SIMPLE_LIST_SUCCESS: 'fetch_simple_list_success',
   FETCH_SIMPLE_LIST_FAIL: 'fetch_simple_list_fail',
 
+  FETCH_TAGS: 'fetch_tags',
+  FETCH_TAGS_SUCCESS: 'fetch_tags_success',
+  FETCH_TAGS_FAIL: 'fetch_tags_fail',
+
+  TAGS_SEARCH: 'tags_search',
+  TAGS_SEARCH_SUCCESS: 'tags_search_success',
+  TAGS_SEARCH_FAIL: 'tags_search_fail',
+
+  SEARCH_BY_TAGS: 'search_by_tags',
+  SEARCH_BY_TAGS_SUCCESS: 'search_by_tags_success',
+  SEARCH_BY_TAGS_FAIL: 'search_by_tags_fail',
 };
 
 export const StudentProduct = {
@@ -329,3 +340,34 @@ export const TeacherBill = {
   CANCEL_TEACHER_BILL_SUCCESS: 'cancel_teacher_bill_success',
   CANCEL_TEACHER_BILL_FAIL: 'cancel_teacher_bill_fail',
 };
+
+export const Tag = {
+  CREATE: ' create',
+  CREATE_SUCCESS: 'create_success',
+  CREATE_FAIL: 'create_fail',
+
+  SEARCH: 'search',
+  SEARCH_SUCCESS: 'search_success',
+  SEARCH_FAIL: 'search_fail',
+
+  SEARCH_BY_TAGS: 'search_by_tags',
+  SEARCH_BY_TAGS_SUCCESS: 'search_by_tags_success',
+  SEARCH_BY_TAGS_FAIL: 'search_by_tags_fail',
+
+  TAGS_SEARCH: 'tags_search',
+  TAGS_SEARCH_SUCCESS: 'tags_search_success',
+  TAGS_SEARCH_FAIL: 'tags_search_fail',
+
+  FETCH_MOBILE: 'fetch_mobile',
+  FETCH_MOBILE_SUCCESS: 'fetch_mobile_success',
+  FETCH_MOBILE_FAIL: 'fetch_mobile_fail',
+
+  ADD_STUDENTS: 'add_students',
+  ADD_STUDENTS_SUCCESS: 'add_students_success',
+  ADD_STUDENTS_FAIL: 'add_students_fail',
+
+  REMOVE_STUDENTS: 'remove_students',
+  REMOVE_STUDENTS_SUCCESS: 'remove_students_success',
+  REMOVE_STUDENTS_FAIL: 'remove_students_fail',
+};
+

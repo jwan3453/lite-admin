@@ -25,13 +25,28 @@ export function searchStudent(filters) {
   };
 }
 
-export function fetchStudent(studentId) {
+export function searchStudentsByTags(filters) {
   return {
-    studentId,
+    filters,
     [CALL_JQ_API]: {
-      types: [Student.FETCH, Student.FETCH_SUCCESS, Student.FETCH_FAIL],
-      uri: `/admin/students/${studentId}`,
+      types: [Student.SEARCH_BY_TAGS, Student.SEARCH_BY_TAGS_SUCCESS, Student.SEARCH_BY_TAGS_FAIL],
+      uri: '/admin/tags/students',
       method: 'GET',
+      body: filters,
+    },
+  };
+}
+
+export function simpleList(ids) {
+  return {
+    ids,
+    [CALL_JQ_API]: {
+      types: [Student.SEARCH_BY_TAGS, Student.SEARCH_BY_TAGS_SUCCESS, Student.SEARCH_BY_TAGS_FAIL],
+      uri: '/admin/students/simpleList',
+      method: 'GET',
+      body: {
+        ids,
+      },
     },
   };
 }
@@ -91,3 +106,13 @@ export function fetchSimpleList(studentIds) {
   };
 }
 
+export function fetchStudent(studentId) {
+  return {
+    studentId,
+    [CALL_JQ_API]: {
+      types: [Student.FETCH, Student.FETCH_SUCCESS, Student.FETCH_FAIL],
+      uri: `/admin/students/${studentId}`,
+      method: 'GET',
+    },
+  };
+}

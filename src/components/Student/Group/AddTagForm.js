@@ -14,8 +14,13 @@ class AddTag extends React.Component {
 
   static defaultProps = {
     style: {},
+    tagName: '',
   };
 
+  /**
+   * 提交
+   * @param { object } 事件对象
+   */
   handleSubmit = (eventArgs) => {
     eventArgs.preventDefault();
     const {
@@ -25,8 +30,18 @@ class AddTag extends React.Component {
 
     form.validateFields((errors) => {
       if (!errors) {
-        onSubmit();
+        onSubmit(this.state.tagName);
       }
+    });
+  };
+
+  /**
+   * 标签名称变化
+   * @param { object } 事件对象
+   */
+  handleTagNameChange = (eventArgs) => {
+    this.setState({
+      tagName: eventArgs.target.value,
     });
   };
 
@@ -53,12 +68,14 @@ class AddTag extends React.Component {
               rules: [
                 {
                   required: true,
+                  pattern: /(\w|\d){4,}/,
                 },
               ],
             })(
               <Input
                 size="default"
-                placeholder="请输入Tag名字"
+                placeholder="请输入Tag名称"
+                onChange={this.handleTagNameChange}
               />,
             )
           }

@@ -3,76 +3,210 @@ import { connect } from 'react-redux';
 import {
   Table,
   Input,
+  Message,
   Button,
   Tooltip,
   Modal,
+  Spin,
 } from 'antd';
 
 import AddTagForm from './AddTagForm';
 import StudentFinder from './StudentFinder';
 
+import {
+  search,
+  create,
+  addStudents,
+} from '../../../app/actions/tag';
+
 class TagList extends React.Component {
   static propTypes = {
-    tags: PropTypes.shape({
-      loading: PropTypes.bool,
-      page: PropTypes.number,
-      pageSize: PropTypes.number,
-      total: PropTypes.number,
-      result: PropTypes.array,
-    }).isRequired,
-
+    dispatch: React.PropTypes.func.isRequired,
     selectedRowKeys: PropTypes.array,
-    onSelectedRowsChange: PropTypes.func,
+    handleSelectedRowsChange: PropTypes.func,
   };
 
   static defaultProps = {
     selectedRowKeys: [],
-    onSelectedRowsChange: () => {},
+    handleSelectedRowsChange: () => {},
   };
+
 
   state = {
+    currentStudentId: 0,
+    tags: {
+      total: 0,
+      filters: {
+        current: 1,
+        pageSize: 100,
+        name: '',
+      },
+      result: [],
+      loading: false,
+    },
     groupMembersDialogVisible: false,
+    selectedStudentsIds: [],
+    currentTagId: '',
+    submitting: false,
   };
 
+  componentWillMount() {
+    const filters = this.state.tags.filters;
+    this.handleFetchTags(filters);
+  }
+
+  /**
+   * 查询tags
+   */
   searchTags = (e) => {
-    console.log('searchTags', e);
+    const { tags } = this.state;
+    this.setState({
+      tags: Object.assign({}, tags, {
+        filters: {
+          name: e.target.value,
+        },
+      }),
+    });
+
+    const filters = this.state.tags.filters;
+    filters.name = e.target.value;
+    this.handleFetchTags(filters);
   };
 
-  showDialog = () => {
+  /**
+   * 页码变化
+   * @param { number } 页码
+   */
+  handlePageChange = (page) => {
+    this.state.tags.filters.page = page;
+    const filters = this.state.tags.filters;
+    this.handleFetchTags(filters);
+  };
+
+  /**
+   * 根据name属性模糊查询tag
+   * @param { string } 属性
+   */
+  handleFetchTags = (filters) => {
+    const { dispatch } = this.props;
+    const { tags } = this.state;
+
+    this.setState({
+      tags: Object.assign({}, tags, {
+        loading: true,
+      }),
+    });
+
+    dispatch(search(filters)).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+      } else {
+        this.setState({
+          tags: Object.assign({}, tags, {
+            result: result.response.result,
+            total: result.response.total,
+            loading: false,
+          }),
+        });
+      }
+    });
+  };
+
+
+  /**
+   * 显示打标签弹窗
+   */
+  handleShowDialog = () => {
     this.setState({
       groupMembersDialogVisible: true,
     });
   };
 
-  hideDialog = () => {
+
+  /**
+   * 隐藏打标签窗口
+   */
+  handleHideDialog = () => {
     this.setState({
       groupMembersDialogVisible: false,
     });
   };
 
-  createTag = () => {
-    const tag = this.tagForm.getFieldsValue();
-    console.log('createTag', tag);
+
+  /**
+   * 打标签
+   */
+  handleTagStudents = () => {
+    const { dispatch } = this.props;
+    const { tags, currentTagId, selectedStudentsIds } = this.state;
+
+    if (selectedStudentsIds.length > 0) {
+      this.setState({
+        submitting: true,
+      });
+
+      dispatch(addStudents(currentTagId, selectedStudentsIds)).then((result) => {
+        if (result.code) {
+          Message.error(result.message);
+        } else {
+          this.handleFetchTags(tags.filters);
+          this.handleHideDialog();
+        }
+        this.setState({
+          submitting: false,
+        });
+      });
+    } else {
+      Message.warn('未选中学生');
+    }
   };
 
-  tagStudents = () => {
-    console.log('tag students');
-    this.hideDialog();
+  /**
+   * 选中学生
+   * @param { array } 选中的学生id数组
+   */
+  handleSelectedStudentsChange = (ids) => {
+    this.setState({
+      selectedStudentsIds: ids,
+    });
   };
 
-  handleSelectedStudentsChange = (selectedRowKeys, selectedRows) => {
-    console.log(selectedRowKeys, selectedRows);
+  /**
+   * 创建标签
+   * @param { string } 标签名称
+   */
+  handleCreateTag = (name) => {
+    const { dispatch } = this.props;
+
+    const { tags } = this.state;
+
+    this.setState({
+      students: Object.assign({}, tags, {
+        loading: true,
+      }),
+    });
+
+    dispatch(create(name)).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+        this.setState({
+          tags: Object.assign({}, tags, {
+            loading: false,
+          }),
+        });
+      } else {
+        this.handleFetchTags(tags.filters);
+      }
+    });
   };
 
   render() {
     const {
-      tags,
       selectedRowKeys,
-      onSelectedRowsChange,
+      handleSelectedRowsChange,
     } = this.props;
 
-    const { groupMembersDialogVisible } = this.state;
-
+    const { groupMembersDialogVisible, tags } = this.state;
     const tagColumns = [
       {
         title: '标签',
@@ -85,41 +219,47 @@ class TagList extends React.Component {
       {
         title: '操作',
         key: 'actions',
-        render: () => (
+        render: (text, tag) => (
           <Tooltip title="添加学生" placement="top">
             <Button
               icon="user-add"
               onClick={
-                () => { this.showDialog(); }
+                () => {
+                  this.handleShowDialog();
+                  this.setState({
+                    currentTagId: tag.id,
+                  });
+                }
               }
             />
           </Tooltip>
         ),
       },
     ];
-
     const tagPagination = {
       total: tags.total || 0,
-      pageSize: tags.pageSize,
-      current: tags.page || 1,
+      pageSize: tags.filters.pageSize,
+      current: tags.filters.page || 1,
       showSizeChanger: true,
       size: 'small',
       simple: true,
       showTotal: all => `总共${all}条`,
+      onChange: (page) => {
+        this.handlePageChange(page);
+      },
     };
 
     const tagSelection = {
       selectedRowKeys,
-      onChange: onSelectedRowsChange,
+      onChange: handleSelectedRowsChange,
       getCheckboxProps: record => ({
-        disabled: record.name === 'Disabled User', // Column configuration not to be checked
+        disabled: record.name === 'Disabled User',
       }),
     };
-
     return (
       <div>
         <AddTagForm
-          onSubmit={this.createTag}
+          onSubmit={this.handleCreateTag}
           ref={(node) => { this.tagForm = node; }}
           style={{ marginBottom: 16 }}
         />
@@ -144,12 +284,11 @@ class TagList extends React.Component {
           width={700}
           maskClosable={false}
           visible={groupMembersDialogVisible}
-          onOk={this.tagStudents}
-          onCancel={this.hideDialog}
+          onOk={this.handleTagStudents}
+          onCancel={this.handleHideDialog}
         >
-          <StudentFinder
-            onSelectedRowsChange={this.handleSelectedStudentsChange}
-          />
+          <Spin spinning={this.state.submitting} tip="正在提交..." />
+          <StudentFinder onSelectedRowsChange={this.handleSelectedStudentsChange} />
         </Modal>
       </div>
     );
@@ -157,31 +296,7 @@ class TagList extends React.Component {
 }
 
 function mapStateToProps() {
-  return {
-    tags: {
-      loading: false,
-      total: 200,
-      page: 1,
-      pageSize: 10,
-      result: [
-        {
-          id: 1,
-          name: 'tag1',
-          studentCount: 10,
-        },
-        {
-          id: 2,
-          name: 'tag2',
-          studentCount: 100,
-        },
-        {
-          id: 3,
-          name: 'tag3',
-          studentCount: 1000,
-        },
-      ],
-    },
-  };
+  return {};
 }
 
 export default connect(mapStateToProps)(TagList);

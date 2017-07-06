@@ -1,4 +1,4 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import {
   Table,
@@ -13,26 +13,22 @@ import _ from 'lodash';
 import moment from 'moment';
 
 import TagBar from './TagBar';
-import ActionBar from './ActionBar';
 import TagList from './TagList';
+
 import WechatTemplateMessage from './WechatTemplateMessage';
+import ActionBar from './ActionBar';
 
 import StudentInfo from '../../Common/StudentInfo';
 import StudentListModal from '../../Common/StudentListModal';
 
-import { fetchMobile } from '../../../app/actions/student';
+import {
+  fetchMobile,
+  searchStudentsByTags,
+} from '../../../app/actions/student';
 
 class Schedules extends React.Component {
   static propTypes = {
     mobile: React.PropTypes.object,
-    students: PropTypes.shape({
-      loading: PropTypes.bool,
-      page: PropTypes.number,
-      pageSize: PropTypes.number,
-      total: PropTypes.number,
-      tags: PropTypes.array,
-      result: PropTypes.array,
-    }).isRequired,
     dispatch: React.PropTypes.func.isRequired,
   };
 
@@ -43,6 +39,16 @@ class Schedules extends React.Component {
   state = {
     currentStudentId: 0,
     selectedTags: [],
+    students: {
+      loading: false,
+      total: 0,
+      filters: {
+        pageSize: 10,
+        current: 1,
+        tagIds: '',
+      },
+      result: [],
+    },
   };
 
   stduentColumns = [
@@ -98,11 +104,6 @@ class Schedules extends React.Component {
       width: 80,
     },
     {
-      title: '助教',
-      dataIndex: 'crmAssistantId',
-      key: 'crmAssistantId',
-    },
-    {
       title: '课程级别',
       dataIndex: 'level',
       key: 'level',
@@ -120,6 +121,34 @@ class Schedules extends React.Component {
     },
   ];
 
+  /**
+   * 选中行变化
+   * @param { array } 选中的列id
+   * @param { array } 选中的列
+   */
+  handleSelectedRowsChange = (selectedRowKeys, selectedRows) => {
+    const { students } = this.state;
+    const selectedRowsIds = [];
+
+    selectedRows.forEach((item) => {
+      selectedRowsIds.push(item.id);
+    });
+
+    this.setState({
+      selectedTags: selectedRows,
+      students: Object.assign({}, students, { filters: { tagIds: selectedRowsIds.join(',') } }),
+    });
+  };
+
+  handleFilterStudentsByTags = () => {
+    const filters = this.state.students.filters;
+    this.handleFetchStudentsByTags(filters);
+  };
+
+  /**
+   * 获取用户手机号码
+   * @param { number } 学生id
+   */
   handleFetchMobile = (studentId) => {
     const { dispatch } = this.props;
     dispatch(fetchMobile(studentId)).then((result) => {
@@ -127,6 +156,7 @@ class Schedules extends React.Component {
         Message.error(result.message);
       } else {
         const { mobile } = this.props;
+
         Modal.info({
           content: `用户${mobile.studentId}手机号为: ${mobile.result}`,
         });
@@ -134,28 +164,94 @@ class Schedules extends React.Component {
     });
   };
 
+  /**
+   * 根据tag id获取学生
+   * @param { number } 标签id
+   */
+  handleFetchStudentsByTags = (filters) => {
+    const { dispatch } = this.props;
+    const { students } = this.state;
+
+    this.setState({
+      students: Object.assign({}, students, {
+        loading: true,
+      }),
+    });
+
+    dispatch(searchStudentsByTags(filters)).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+
+        this.setState({
+          students: Object.assign({}, students, {
+            loading: false,
+          }),
+        });
+      } else {
+        this.setState({
+          students: Object.assign({}, students, {
+            total: result.response.total,
+            result: result.response.result,
+            loading: false,
+          }),
+        });
+      }
+    });
+  };
+
+  /**
+   * 根据name属性模糊查询tag
+   * @param { number } 页码
+   * @param { number } 页大小
+   */
+  handlePageChange = (page) => {
+    this.state.students.filters.page = page;
+    const filters = this.state.students.filters;
+    this.handleFilterStudentsByTags(filters);
+  };
+
+  /**
+   * 移除已经选中的tag
+   * @param { number } 标签index
+   */
   removeSelectedTag = (tagIndex) => {
     const { selectedTags } = this.state;
 
     selectedTags.splice(tagIndex, 1);
 
+    const selectedTagIds = [];
+    selectedTags.forEach((item) => {
+      selectedTagIds.push(item.id);
+    });
+
+    const selectedTagIdsStr = selectedTagIds.join(',');
+
     this.setState({
       selectedTags,
+      students: {
+        filters: {
+          tagIds: selectedTagIdsStr,
+        },
+      },
     });
   };
 
-  filterStudentsByTags = () => {
-    //  todo
-  };
-
+  /**
+   * 显示学生信息
+   */
   showStudentInfo = (studentId) => {
-    if (studentId <= 0) return;
+    if (studentId <= 0) {
+      return;
+    }
     this.setState({
       studentDialogVisible: true,
       currentStudentId: studentId,
     });
   };
 
+  /**
+   * 隐藏学生信息
+   */
   hideStudentInfo = () => {
     this.setState({
       studentDialogVisible: false,
@@ -176,16 +272,31 @@ class Schedules extends React.Component {
   };
 
   render() {
-    const { students } = this.props;
-
-    const { selectedTags } = this.state;
-
+    const { students, selectedTags } = this.state;
+    const { filters, result } = students;
+    const { loading } = this.state.students;
     const studentPagination = {
       total: students.total || 0,
-      pageSize: students.pageSize,
-      current: students.page || 1,
+      pageSize: filters.pageSize,
+      current: filters.page || 1,
       showSizeChanger: true,
       showTotal: all => `总共${all}条`,
+      onShowSizeChange: (current, size) => {
+        this.setState({
+          students: Object.assign({}, students, {
+            filters: {
+              pageSize: size,
+            },
+          }),
+        });
+
+        filters.pageSize = size;
+
+        this.handleFetchStudentsByTags(filters);
+      },
+      onChange: (page) => {
+        this.handlePageChange(page);
+      },
     };
 
     return (
@@ -193,13 +304,7 @@ class Schedules extends React.Component {
         <Col span={6}>
           <TagList
             selectedRowKeys={_.map(selectedTags, 'id')}
-            onSelectedRowsChange={
-              (selectedRowKeys, selectedRows) => {
-                this.setState({
-                  selectedTags: selectedRows,
-                });
-              }
-            }
+            handleSelectedRowsChange={this.handleSelectedRowsChange}
           />
         </Col>
         <Col span={18}>
@@ -209,16 +314,16 @@ class Schedules extends React.Component {
           />
           <ActionBar
             visible={selectedTags.length > 0}
-            onFilter={this.filterStudentsByTags}
+            onFilter={this.handleFilterStudentsByTags}
             onSendWechatMessage={this.showWechatMsgDialog}
           />
           <Table
             size="small"
             rowKey="id"
             pagination={studentPagination}
-            loading={students.loading}
+            loading={loading}
             columns={this.stduentColumns}
-            dataSource={students.result}
+            dataSource={result}
           />
           <StudentListModal
             multiSelect
@@ -258,26 +363,7 @@ class Schedules extends React.Component {
 }
 
 function mapStateToProps() {
-  return {
-    students: {
-      loading: false,
-      tags: [],
-      total: 10,
-      page: 1,
-      pageSize: 10,
-      result: [
-        {
-          id: 1,
-          nickname: 'user1',
-          mobileSuffix: '7251',
-          gender: 1,
-          age: 3,
-          city: 'mega city',
-          tags: ['tag1', 'tag2'],
-        },
-      ],
-    },
-  };
+  return {};
 }
 
 export default connect(mapStateToProps)(Schedules);
