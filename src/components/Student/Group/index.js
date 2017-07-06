@@ -15,6 +15,7 @@ import moment from 'moment';
 import TagBar from './TagBar';
 import ActionBar from './ActionBar';
 import TagList from './TagList';
+import WechatTemplateMessage from './WechatTemplateMessage';
 
 import StudentInfo from '../../Common/StudentInfo';
 import StudentListModal from '../../Common/StudentListModal';
@@ -162,6 +163,18 @@ class Schedules extends React.Component {
     });
   };
 
+  showWechatMsgDialog = () => {
+    this.setState({
+      wechatMsgDialogVisible: true,
+    });
+  };
+
+  hideWechatMsgDialog = () => {
+    this.setState({
+      wechatMsgDialogVisible: false,
+    });
+  };
+
   render() {
     const { students } = this.props;
 
@@ -197,6 +210,7 @@ class Schedules extends React.Component {
           <ActionBar
             visible={selectedTags.length > 0}
             onFilter={this.filterStudentsByTags}
+            onSendWechatMessage={this.showWechatMsgDialog}
           />
           <Table
             size="small"
@@ -227,6 +241,17 @@ class Schedules extends React.Component {
         >
           <StudentInfo studentId={this.state.currentStudentId} />
         </Modal>
+        <Modal
+          width={700}
+          title="微信模板消息"
+          footer={null}
+          maskClosable={false}
+          visible={this.state.wechatMsgDialogVisible}
+          onCancel={this.hideWechatMsgDialog}
+        >
+          <WechatTemplateMessage />
+        </Modal>
+
       </Row>
     );
   }

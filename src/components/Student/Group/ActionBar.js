@@ -7,17 +7,20 @@ export default class ActionBar extends React.Component {
   static propTypes = {
     visible: React.PropTypes.bool,
     onFilter: React.PropTypes.func,
+    onSendWechatMessage: React.PropTypes.func,
   };
 
   static defaultProps = {
     visible: true,
     onFilter: () => {},
+    onSendWechatMessage: () => {},
   };
 
   render() {
     const {
       visible,
       onFilter,
+      onSendWechatMessage,
     } = this.props;
 
     return (
@@ -33,7 +36,10 @@ export default class ActionBar extends React.Component {
           style={{ marginRight: 8 }}
           onClick={() => { onFilter(); }}
         >筛选</Button>
-        <Button icon="message">发送消息</Button>
+        <Button
+          icon="message"
+          onClick={onSendWechatMessage}
+        >发送消息</Button>
       </div>
     );
   }
