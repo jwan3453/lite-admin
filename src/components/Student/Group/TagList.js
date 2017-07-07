@@ -21,29 +21,23 @@ import {
 
 class TagList extends React.Component {
   static propTypes = {
+    loading: React.PropTypes.bool.isRequired,
     dispatch: React.PropTypes.func.isRequired,
+    tags: PropTypes.object,
+    filters: PropTypes.object,
     selectedRowKeys: PropTypes.array,
     handleSelectedRowsChange: PropTypes.func,
   };
 
   static defaultProps = {
+    tags: {},
+    filters: {},
     selectedRowKeys: [],
     handleSelectedRowsChange: () => {},
   };
 
-
   state = {
     currentStudentId: 0,
-    tags: {
-      total: 0,
-      filters: {
-        current: 1,
-        pageSize: 100,
-        name: '',
-      },
-      result: [],
-      loading: false,
-    },
     groupMembersDialogVisible: false,
     selectedStudentsIds: [],
     currentTagId: '',
@@ -51,26 +45,16 @@ class TagList extends React.Component {
   };
 
   componentWillMount() {
-    const filters = this.state.tags.filters;
-    this.handleFetchTags(filters);
+    this.handleFetchTags(this.props.filters);
   }
 
   /**
    * 查询tags
    */
-  searchTags = (e) => {
-    const { tags } = this.state;
-    this.setState({
-      tags: Object.assign({}, tags, {
-        filters: {
-          name: e.target.value,
-        },
-      }),
+  searchTags = (name) => {
+    this.handleFetchTags({
+      name,
     });
-
-    const filters = this.state.tags.filters;
-    filters.name = e.target.value;
-    this.handleFetchTags(filters);
   };
 
   /**
@@ -78,8 +62,8 @@ class TagList extends React.Component {
    * @param { number } 页码
    */
   handlePageChange = (page) => {
-    this.state.tags.filters.page = page;
-    const filters = this.state.tags.filters;
+    const { filters } = this.props;
+    filters.page = page;
     this.handleFetchTags(filters);
   };
 
@@ -89,29 +73,8 @@ class TagList extends React.Component {
    */
   handleFetchTags = (filters) => {
     const { dispatch } = this.props;
-    const { tags } = this.state;
-
-    this.setState({
-      tags: Object.assign({}, tags, {
-        loading: true,
-      }),
-    });
-
-    dispatch(search(filters)).then((result) => {
-      if (result.code) {
-        Message.error(result.message);
-      } else {
-        this.setState({
-          tags: Object.assign({}, tags, {
-            result: result.response.result,
-            total: result.response.total,
-            loading: false,
-          }),
-        });
-      }
-    });
+    dispatch(search(filters));
   };
-
 
   /**
    * 显示打标签弹窗
@@ -137,8 +100,8 @@ class TagList extends React.Component {
    * 打标签
    */
   handleTagStudents = () => {
-    const { dispatch } = this.props;
-    const { tags, currentTagId, selectedStudentsIds } = this.state;
+    const { filters, dispatch } = this.props;
+    const { currentTagId, selectedStudentsIds } = this.state;
 
     if (selectedStudentsIds.length > 0) {
       this.setState({
@@ -149,7 +112,7 @@ class TagList extends React.Component {
         if (result.code) {
           Message.error(result.message);
         } else {
-          this.handleFetchTags(tags.filters);
+          this.handleFetchTags(filters);
           this.handleHideDialog();
         }
         this.setState({
@@ -202,11 +165,14 @@ class TagList extends React.Component {
 
   render() {
     const {
+      loading,
+      tags,
       selectedRowKeys,
       handleSelectedRowsChange,
     } = this.props;
 
-    const { groupMembersDialogVisible, tags } = this.state;
+    const { groupMembersDialogVisible } = this.state;
+
     const tagColumns = [
       {
         title: '标签',
@@ -236,10 +202,11 @@ class TagList extends React.Component {
         ),
       },
     ];
+
     const tagPagination = {
       total: tags.total || 0,
-      pageSize: tags.filters.pageSize,
-      current: tags.filters.page || 1,
+      current: tags.page || 1,
+      pageSize: tags.pageSize,
       showSizeChanger: true,
       size: 'small',
       simple: true,
@@ -256,6 +223,9 @@ class TagList extends React.Component {
         disabled: record.name === 'Disabled User',
       }),
     };
+
+    const dataSource = tags.result || [];
+
     return (
       <div>
         <AddTagForm
@@ -266,17 +236,15 @@ class TagList extends React.Component {
         <Input.Search
           placeholder="Tag 关键字"
           style={{ marginBottom: 16 }}
-          onPressEnter={
-            (eventArgs) => { this.searchTags(eventArgs); }
-          }
+          onSearch={this.searchTags}
         />
         <Table
           size="small"
           rowKey="id"
           rowSelection={tagSelection}
-          loading={tags.loading}
+          loading={loading}
           columns={tagColumns}
-          dataSource={tags.result}
+          dataSource={dataSource}
           pagination={tagPagination}
         />
         <Modal
@@ -295,8 +263,15 @@ class TagList extends React.Component {
   }
 }
 
-function mapStateToProps() {
-  return {};
+function mapStateToProps(state) {
+  const { tag } = state;
+  const { loading, search: searchResult } = tag;
+
+  return {
+    loading,
+    filters: search.filters,
+    tags: searchResult.result,
+  };
 }
 
 export default connect(mapStateToProps)(TagList);
