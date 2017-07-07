@@ -1,11 +1,8 @@
 import React from 'react';
-import {
-  Input,
-  Tooltip,
-  Icon,
-} from 'antd';
+import { Input, Tooltip, Icon } from 'antd';
 
 import TeacherListModal from '../TeacherListModal';
+import TeacherName from '../Utils/TeacherName';
 
 export default class TeacherSearchInput extends React.Component {
   static propTypes = {
@@ -26,34 +23,16 @@ export default class TeacherSearchInput extends React.Component {
 
   state = {
     teacherSelectorVisible: false,
-    teacherId: '',
-    teacherName: '',
-    inputValue: !this.props.value || this.props.value < 0 ? '' : this.props.value,
   };
-
-  componentWillReceiveProps(nextProps) {
-    if (this.props.value !== nextProps.value) {
-      if (!nextProps.value) {
-        this.setState({
-          teacherId: nextProps.value,
-          inputValue: '',
-        });
-      }
-    }
-  }
 
   handleSelectChange = (selectedRowKeys, selectedRows) => {
     const selected = selectedRows[0];
     this.setState({
       teacherId: selected.id,
-      teacherName: selected.username,
     });
   };
 
   pickUpTeacher = () => {
-    this.setState({
-      inputValue: `${this.state.teacherId} - ${this.state.teacherName}`,
-    });
     this.props.onChange(this.state.teacherId);
     this.hideListModal();
   };
@@ -67,39 +46,46 @@ export default class TeacherSearchInput extends React.Component {
   hideListModal = () => {
     this.setState({
       teacherSelectorVisible: false,
+      teacherId: null,
     });
   };
 
+  formatInputValue(teacherId, teacherName) {
+    return teacherId ? `${teacherId} - ${teacherName}` : '';
+  }
+
   render() {
-    const {
-      inputValue,
-      teacherId,
-      teacherSelectorVisible,
-    } = this.state;
-    const { disabled, style } = this.props;
+    const { teacherSelectorVisible, teacherId } = this.state;
+    const { disabled, style, value } = this.props;
     const iconStyle = !disabled ? { cursor: 'pointer' } : null;
     const onIconClick = !disabled
-      ? () => { this.showListModal(); }
+      ? () => {
+        this.showListModal();
+      }
       : () => {};
-    const selectedRowKeys = !teacherId ? [] : [teacherId];
+    const selectedRowKeys = [teacherId || value].filter(Boolean);
 
     return (
       <div>
-        <Input
-          value={inputValue}
-          disabled={disabled}
-          placeholder="选择老师"
-          addonAfter={
-            <Tooltip title="选择老师" placement="top">
-              <Icon
-                type="user-add"
-                onClick={onIconClick}
-                style={iconStyle}
-              />
-            </Tooltip>
-          }
-          style={style}
-        />
+        <TeacherName teacherId={value}>
+          {teacherName => (
+            <Input
+              value={this.formatInputValue(value, teacherName)}
+              disabled={disabled}
+              placeholder="选择老师"
+              addonAfter={
+                <Tooltip title="选择老师" placement="top">
+                  <Icon
+                    type="user-add"
+                    onClick={onIconClick}
+                    style={iconStyle}
+                  />
+                </Tooltip>
+              }
+              style={style}
+            />
+          )}
+        </TeacherName>
         <TeacherListModal
           title="选择老师"
           visible={teacherSelectorVisible}
@@ -112,4 +98,3 @@ export default class TeacherSearchInput extends React.Component {
     );
   }
 }
-
