@@ -51,7 +51,7 @@ class Schedules extends React.Component {
     },
   };
 
-  stduentColumns = [
+  studentColumns = [
     {
       title: 'ID',
       dataIndex: 'id',
@@ -322,7 +322,7 @@ class Schedules extends React.Component {
             rowKey="id"
             pagination={studentPagination}
             loading={loading}
-            columns={this.stduentColumns}
+            columns={this.studentColumns}
             dataSource={result}
           />
           <StudentListModal
