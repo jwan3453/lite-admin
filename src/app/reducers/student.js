@@ -66,14 +66,6 @@ export function student(
           result: action.response,
         },
       });
-    case Student.TAGS_SEARCH_SUCCESS:
-      return assign({}, state, {
-        loading: false,
-        manage: {
-          filters: action.filters,
-          result: action.response,
-        },
-      });
     case Student.SEARCH_SUCCESS:
       return assign({}, state, {
         loading: false,
