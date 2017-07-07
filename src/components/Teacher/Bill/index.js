@@ -34,7 +34,6 @@ class TeacherBill extends React.Component {
   static propTypes = {
     dispatch: React.PropTypes.func.isRequired,
     loading: React.PropTypes.bool.isRequired,
-    readonly: React.PropTypes.bool,
     filters: React.PropTypes.object,
   };
 
@@ -42,7 +41,6 @@ class TeacherBill extends React.Component {
     loading: false,
     filters: {},
     teacherBillData: {},
-    readonly: false,
   };
 
   state = {
@@ -95,7 +93,6 @@ class TeacherBill extends React.Component {
   render() {
     const {
       loading,
-      readonly,
     } = this.props;
 
     const { teacherBillData } = this.state;
@@ -184,8 +181,6 @@ class TeacherBill extends React.Component {
         title: '操作',
         key: 'actions',
         render: (status, record) => {
-          if (readonly) { return null; }
-
           const showActionButtons = status === BILL_STATUS.CREATED;
 
           return !showActionButtons
