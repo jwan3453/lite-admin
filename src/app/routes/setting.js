@@ -2,6 +2,7 @@ import Profile from '../../components/Setting/Profile';
 import User from '../../components/Setting/User';
 import SourceQRCode from '../../components/Setting/SourceQRCode';
 import SystemException from '../../components/Setting/SystemException';
+import TaskList from '../../components/Setting/Task';
 
 export default [
   {
@@ -37,6 +38,13 @@ export default [
         navigatorIcon: 'exception',
         path: 'exception',
         component: SystemException,
+      },
+      {
+        breadcrumbName: '任务列表',
+        navigatorName: '任务列表',
+        navigatorIcon: 'code',
+        path: 'tasks',
+        component: TaskList,
       },
     ],
   },
