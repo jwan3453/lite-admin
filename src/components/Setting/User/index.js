@@ -22,29 +22,12 @@ import {
 import CreateUserForm from './CreateUserForm';
 import UpdatePasswordForm from './UpdatePasswordForm';
 import UpdateRoleForm from './UpdateRoleForm';
-
-const roles = [
-  { id: 10, name: '超级管理员' },
-  { id: 20, name: '管理员' },
-  { id: 30, name: '课程设计' },
-  { id: 100, name: '培训组长' },
-  { id: 110, name: '培训师' },
-  { id: 200, name: '招聘组织' },
-  { id: 210, name: '招聘员' },
-  { id: 300, name: '助教组长' },
-  { id: 310, name: '助教' },
-  { id: 400, name: '教务组长' },
-  { id: 410, name: '教务' },
-  { id: 500, name: 'IT支持' },
-  { id: 600, name: '财务' },
-  { id: 700, name: '市场营销' },
-  { id: 9999, name: '其他' },
-];
+import ADMIN_ROLES from '../../../common/adminRoles';
 
 const USER_STATUS_ENABLED = 2;
 
 function roleIdToName(id) {
-  const filtered = roles.filter(role => role.id === id);
+  const filtered = ADMIN_ROLES.filter(role => role.id === id);
   if (filtered.length > 0) {
     return filtered[0].name;
   }
@@ -273,7 +256,7 @@ class UserList extends Component {
           footer={null}
           onCancel={() => this.setState({ visible: false })}
         >
-          <CreateUserForm roles={roles} onSubmit={this.handleCreateUser} />
+          <CreateUserForm roles={ADMIN_ROLES} onSubmit={this.handleCreateUser} />
         </Modal>
         <Modal
           maskClosable={false}
