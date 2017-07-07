@@ -28,20 +28,10 @@ class AddTag extends React.Component {
       onSubmit,
     } = this.props;
 
-    form.validateFields((errors) => {
+    form.validateFields((errors, values) => {
       if (!errors) {
-        onSubmit(this.state.tagName);
+        onSubmit(values.tag);
       }
-    });
-  };
-
-  /**
-   * 标签名称变化
-   * @param { object } 事件对象
-   */
-  handleTagNameChange = (eventArgs) => {
-    this.setState({
-      tagName: eventArgs.target.value,
     });
   };
 
@@ -75,7 +65,6 @@ class AddTag extends React.Component {
               <Input
                 size="default"
                 placeholder="请输入Tag名称"
-                onChange={this.handleTagNameChange}
               />,
             )
           }
