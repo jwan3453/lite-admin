@@ -54,3 +54,18 @@ export function changeStatus(recordId, status) {
     },
   };
 }
+
+export function getSimpleList(ids) {
+  return {
+    [CALL_JQ_API]: {
+      types: [
+        Teacher.GET_SIMPLE_LIST,
+        Teacher.GET_SIMPLE_LIST_SUCCESS,
+        Teacher.GET_SIMPLE_LIST_FAIL],
+      uri: '/admin/teachers/simpleList',
+      method: 'POST',
+      body: { ids },
+    },
+  };
+}
+

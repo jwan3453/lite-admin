@@ -10,6 +10,7 @@ export function teacher(
     },
     teachers: [],
     resumes: [],
+    simpleList: [],
     total: 0,
     page: 1,
     pageSize: 10,
@@ -20,6 +21,7 @@ export function teacher(
   switch (action.type) {
     case Teacher.SEARCH:
     case Teacher.FETCH:
+    case Teacher.GET_SIMPLE_LIST:
       return assign({}, state, {
         loading: true,
       });
@@ -36,8 +38,14 @@ export function teacher(
           result: action.response,
         },
       });
+    case Teacher.GET_SIMPLE_LIST_SUCCESS:
+      return assign({}, state, {
+        loading: false,
+        simpleList: action.response,
+      });
     case Teacher.FETCH_FAIL:
     case Teacher.SEARCH_FAIL:
+    case Teacher.GET_SIMPLE_LIST_FAIL:
       return assign({}, state, {
         loading: false,
       });

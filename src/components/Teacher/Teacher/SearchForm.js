@@ -29,7 +29,7 @@ class TeacherSearchForm extends Component {
     this.props.form.validateFields((err, values) => {
       const filters = {};
       if (values.id) {
-        filters.userName = values.id;
+        filters.searchText = values.id;
       }
       if (values.status && values.status !== '-1') {
         filters.status = parseInt(values.status, 10);

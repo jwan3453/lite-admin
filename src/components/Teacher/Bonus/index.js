@@ -6,9 +6,17 @@ import {
   Tag,
   Tooltip,
   Popconfirm,
+  Modal,
+  Message,
 } from 'antd';
 import moment from 'moment';
+import _ from 'lodash';
+
 import SearchForm from './SearchForm';
+import BonusForm from './BonusForm';
+
+import { createTeacherBonuses, searchTeacherBonuses } from '../../../app/actions/teacherBonus';
+import { getSimpleList } from '../../../app/actions/teacher';
 
 import {
   TYPE_MAP as BONUS_TYPE_MAP,
@@ -22,17 +30,21 @@ import {
 
 class Bonus extends React.Component {
   static propTypes = {
-    list: React.PropTypes.object.isRequired,
+    dispatch: React.PropTypes.func.isRequired,
+    teacherBonusData: React.PropTypes.object.isRequired,
+    teachers: React.PropTypes.array.isRequired,
     loading: React.PropTypes.bool.isRequired,
-    page: React.PropTypes.number,
-    pageSize: React.PropTypes.number,
-    total: React.PropTypes.number,
   };
   static defaultProps = {
-    list: [],
-    page: 1,
-    pageSize: 10,
-    total: 0,
+    teacherBonusData: {},
+    teachers: [],
+  };
+
+  state = {
+    dialogVisible: false,
+    loading: false,
+    filters: {},
+    teacherBonusData: {},
   };
 
   cancelBonus = () => {
@@ -43,47 +55,82 @@ class Bonus extends React.Component {
     //  todo
   };
 
+  createBonus = (data) => {
+    const { dispatch } = this.props;
+    dispatch(createTeacherBonuses(data)).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+      } else {
+        Message.success('创建成功');
+        this.setState({ dialogVisible: false });
+      }
+    });
+  };
+
+  handleSearch = (data) => {
+    const { dispatch } = this.props;
+    dispatch(searchTeacherBonuses(data)).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+      } else {
+        const bonusData = result.response.result;
+        const teacherIds = _.chain(bonusData).map(item => item.teacherId).uniq().value();
+        dispatch(getSimpleList(teacherIds)).then(() => {
+          const { teacherBonusData, teachers } = this.props;
+          const combinedResultData = _.map(teacherBonusData.result, (ele) => {
+            const foundTeacher = _.find(teachers, teacher => teacher.id === ele.teacherId);
+            const teacherInfo = {};
+            if (foundTeacher) {
+              teacherInfo.teacherName = foundTeacher.username;
+              teacherInfo.teacherStatus = foundTeacher.status;
+            }
+            return _.assign({}, ele, teacherInfo);
+          });
+
+          const combinedBonusData = _.assign({},
+            teacherBonusData, { result: combinedResultData });
+
+          this.setState({ teacherBonusData: combinedBonusData });
+        });
+      }
+    });
+  };
+
   render() {
-    const {
-      loading,
-      list,
-      page,
-      pageSize,
-      total,
-    } = this.props;
+    const { loading } = this.props;
+    const { teacherBonusData } = this.state;
+    const { total, pageSize, page, result: bonusList } = teacherBonusData;
 
     const columns = [
       {
         title: '老师',
         key: 'teacherName',
-        dataIndex: 'teacher',
-        render: teacher => teacher.nickname,
+        dataIndex: 'teacherName',
       },
       {
         title: '老师状态',
         key: 'teacherStatus',
-        dataIndex: 'teacher',
-        render: teacher => TEACHER_STATUS_MAP[teacher.status].text,
+        dataIndex: 'teacherStatus',
+        render: teacherStatus => (teacherStatus ? TEACHER_STATUS_MAP[teacherStatus].text : ''),
       },
-
       {
         title: '奖励类型',
         key: 'bonusType',
-        dataIndex: 'bonus',
-        render: bonus => BONUS_TYPE_MAP[bonus.type].text,
+        dataIndex: 'awardType',
+        render: awardType => BONUS_TYPE_MAP[awardType].text,
       },
       {
         title: '时间',
         key: 'ctime',
-        dataIndex: 'ctime',
-        render: ctime => moment(ctime).format('YYYY-MM-DD hh:mm:ss'),
+        dataIndex: 'createdAt',
+        render: ctime => moment.unix(ctime).format('YYYY-MM-DD HH:mm:ss'),
       },
       {
         title: '状态',
         key: 'bonusStatus',
-        dataIndex: 'bonus',
-        render: (bonus) => {
-          const currentStatus = BONUS_STATUS_MAP[bonus.status];
+        dataIndex: 'status',
+        render: (status) => {
+          const currentStatus = BONUS_STATUS_MAP[status];
 
           return (
             <Tag
@@ -139,85 +186,40 @@ class Bonus extends React.Component {
 
     return (
       <div>
-        <SearchForm />
+        <SearchForm
+          onCreate={() => this.setState({ dialogVisible: true })}
+          onSearch={this.handleSearch}
+        />
         <Table
           rowKey="id"
           loading={loading}
           columns={columns}
-          dataSource={list}
+          dataSource={bonusList}
           pagination={pagination}
           style={{ marginTop: 16 }}
         />
+        <Modal
+          visible={this.state.dialogVisible}
+          title="老师奖金"
+          footer={null}
+          onCancel={() => this.setState({ dialogVisible: false })}
+        >
+          <BonusForm onSubmit={this.createBonus} />
+        </Modal>
       </div>
     );
   }
 }
 
-function mapStateToProps() {
+function mapStateToProps(state) {
+  const { loading, teacherBonus, teacher } = state;
+  const { filters, result: teacherBonusData } = teacherBonus;
+  const { simpleList: teachers } = teacher;
   return {
-    loading: false,
-    list: [
-      {
-        teacher: {
-          id: 0,
-          nickname: 'peter 1',
-          status: 1,
-        },
-        bonus: {
-          id: 0,
-          amount: 1,
-          type: 0,
-          status: 0,
-          comment: '2016-11-28-2016-12-04 Review Bonus',
-          ctime: 1496994684842,
-        },
-      },
-      {
-        teacher: {
-          id: 0,
-          nickname: 'peter 2',
-          status: 2,
-        },
-        bonus: {
-          id: 1,
-          amount: 1,
-          type: 1,
-          status: 1,
-          comment: '2016-11-28-2016-12-04 Review Bonus',
-          ctime: 1496994684842,
-        },
-      },
-      {
-        teacher: {
-          id: 0,
-          nickname: 'peter 3',
-          status: 3,
-        },
-        bonus: {
-          id: 2,
-          amount: 1,
-          type: 2,
-          status: 2,
-          comment: '2016-11-28-2016-12-04 Review Bonus',
-          ctime: 1496994684842,
-        },
-      },
-      {
-        teacher: {
-          id: 0,
-          nickname: 'peter 4',
-          status: 4,
-        },
-        bonus: {
-          id: 3,
-          amount: 1,
-          type: 0,
-          status: 0,
-          comment: '2016-11-28-2016-12-04 Review Bonus',
-          ctime: 1496994684842,
-        },
-      },
-    ],
+    loading,
+    filters,
+    teacherBonusData,
+    teachers,
   };
 }
 
