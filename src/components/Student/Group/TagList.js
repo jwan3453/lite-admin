@@ -85,7 +85,6 @@ class TagList extends React.Component {
     });
   };
 
-
   /**
    * 隐藏打标签窗口
    */
@@ -139,26 +138,14 @@ class TagList extends React.Component {
    * @param { string } 标签名称
    */
   handleCreateTag = (name) => {
-    const { dispatch } = this.props;
-
-    const { tags } = this.state;
-
-    this.setState({
-      students: Object.assign({}, tags, {
-        loading: true,
-      }),
-    });
+    const { filters, dispatch } = this.props;
 
     dispatch(create(name)).then((result) => {
       if (result.code) {
         Message.error(result.message);
-        this.setState({
-          tags: Object.assign({}, tags, {
-            loading: false,
-          }),
-        });
       } else {
-        this.handleFetchTags(tags.filters);
+        this.addTagForm.resetFields();
+        this.handleFetchTags(filters);
       }
     });
   };
@@ -229,8 +216,12 @@ class TagList extends React.Component {
     return (
       <div>
         <AddTagForm
+          ref={
+            (node) => {
+              this.addTagForm = node;
+            }
+          }
           onSubmit={this.handleCreateTag}
-          ref={(node) => { this.tagForm = node; }}
           style={{ marginBottom: 16 }}
         />
         <Input.Search
@@ -265,11 +256,14 @@ class TagList extends React.Component {
 
 function mapStateToProps(state) {
   const { tag } = state;
-  const { loading, search: searchResult } = tag;
+  const {
+    loading,
+    search: searchResult,
+  } = tag;
 
   return {
     loading,
-    filters: search.filters,
+    filters: searchResult.filters,
     tags: searchResult.result,
   };
 }

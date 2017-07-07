@@ -18,12 +18,9 @@ export function tag(
 ) {
   switch (action.type) {
     case Tag.SEARCH:
+    case Tag.CREATE:
       return assign({}, state, {
         loading: true,
-        search: {
-          filters: action.filters,
-          result: {},
-        },
       });
     case Tag.SEARCH_SUCCESS:
       return assign({}, state, {
@@ -34,6 +31,8 @@ export function tag(
         },
       });
     case Tag.SEARCH_FAIL:
+    case Tag.CREATE_SUCCESS:
+    case Tag.CREATE_FAIL:
       return assign({}, state, {
         loading: false,
       });
