@@ -28,8 +28,9 @@ import {
 
 class Schedules extends React.Component {
   static propTypes = {
-    mobile: React.PropTypes.object,
     dispatch: React.PropTypes.func.isRequired,
+    loading: React.PropTypes.bool.isRequired,
+    mobile: React.PropTypes.object,
   };
 
   static defaultProps = {
@@ -272,9 +273,11 @@ class Schedules extends React.Component {
   };
 
   render() {
+    const { loading } = this.props;
+
     const { students, selectedTags } = this.state;
     const { filters, result } = students;
-    const { loading } = this.state.students;
+    //  const { loading } = this.state.students;
     const studentPagination = {
       total: students.total || 0,
       pageSize: filters.pageSize,
@@ -362,8 +365,14 @@ class Schedules extends React.Component {
   }
 }
 
-function mapStateToProps() {
-  return {};
+function mapStateToProps(state) {
+  const { student } = state;
+  const { loading, mobile } = student;
+
+  return {
+    loading,
+    mobile,
+  };
 }
 
 export default connect(mapStateToProps)(Schedules);
