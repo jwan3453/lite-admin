@@ -60,7 +60,7 @@ export class TeacherList extends Component {
   };
 
   render() {
-    const { teachers, loading } = this.props;
+    const { teachers } = this.props;
     const dataSource = teachers.result || [];
     const pageSize = teachers.pageSize || 10;
     const pagination = {
@@ -71,6 +71,7 @@ export class TeacherList extends Component {
       showTotal: total => `总共${total}条`,
     };
 
+    console.log('loging...loading', this.props.loading);
     const columns = [
       {
         title: '编号',
@@ -177,7 +178,7 @@ export class TeacherList extends Component {
           onCancel={() => this.setState({ dialogVisible: false })}
           width={700}
         >
-          <Spin spinning={loading}>
+          <Spin spinning={this.props.loading}>
             <TeacherInfo
               teacherId={this.state.currentTeacherId}
             />
@@ -189,8 +190,8 @@ export class TeacherList extends Component {
 }
 
 function mapStateToProps(state) {
-  const { teacher, loading } = state;
-  const { search } = teacher;
+  const { teacher } = state;
+  const { search, loading } = teacher;
   return {
     loading,
     teachers: search.result,

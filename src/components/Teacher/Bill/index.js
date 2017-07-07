@@ -6,8 +6,10 @@ import {
   Tooltip,
   Button,
   Popconfirm,
+  Message,
 } from 'antd';
 import moment from 'moment';
+import _ from 'lodash';
 
 import SearchForm from './SearchForm';
 import {
@@ -23,45 +25,86 @@ import {
 import * as INCOME_CATEGORY from '../../../common/teacherIncomeCategories';
 import * as BILL_STATUS from '../../../common/teacherBillStatus';
 
-const TIME_FORMAT = 'YYYY-MM-DD hh:mm';
+import { searchTeacherBills, cancelTeacherBill } from '../../../app/actions/teacherBill';
+import { getSimpleList } from '../../../app/actions/teacher';
+
+const TIME_FORMAT = 'YYYY-MM-DD HH:mm';
 
 class TeacherBill extends React.Component {
   static propTypes = {
+    dispatch: React.PropTypes.func.isRequired,
     loading: React.PropTypes.bool.isRequired,
-    list: React.PropTypes.array,
-    page: React.PropTypes.number,
-    pageSize: React.PropTypes.number,
-    total: React.PropTypes.number,
     readonly: React.PropTypes.bool,
+    filters: React.PropTypes.object,
   };
 
   static defaultProps = {
-    page: 1,
-    pageSize: 10,
-    total: 0,
-    list: [],
+    loading: false,
+    filters: {},
+    teacherBillData: {},
     readonly: false,
   };
 
-  cancelBill = (bill) => {
-    //  todo dispatch action here
-    console.log('canceling bill, ', bill);
+  state = {
+    filters: {},
+    teacherBillData: {},
   };
+
+  cancelBill = (billId) => {
+    const { dispatch } = this.props;
+    dispatch(cancelTeacherBill(billId)).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+      } else {
+        this.retrieveBillData(this.props.filters);
+      }
+    });
+  };
+
+  handleSearch = (filters) => {
+    this.retrieveBillData(filters);
+  };
+
+  retrieveBillData(filters) {
+    const { dispatch } = this.props;
+    dispatch(searchTeacherBills(filters)).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+      } else {
+        const billData = result.response;
+        const ids = _.map(billData.result, ele => ele.teacherId);
+
+        dispatch(getSimpleList(ids)).then((teacherList) => {
+          const teachers = teacherList.response;
+          billData.result = _.map(billData.result, (ele) => {
+            const foundTeacher = _.find(teachers, teacher => teacher.id === ele.teacherId);
+            const teacherInfo = {};
+            if (foundTeacher) {
+              teacherInfo.teacherName = foundTeacher.username;
+              teacherInfo.teacherStatus = foundTeacher.status;
+            }
+            return _.assign({}, ele, teacherInfo);
+          });
+
+          this.setState({ teacherBillData: billData });
+        });
+      }
+    });
+  }
 
   render() {
     const {
       loading,
-      page,
-      pageSize,
-      total,
-      list,
       readonly,
     } = this.props;
 
+    const { teacherBillData } = this.state;
+    const { result: list } = teacherBillData;
+
     const pagination = {
-      total: total || 0,
-      pageSize,
-      current: page || 1,
+      total: teacherBillData.total || 0,
+      pageSize: teacherBillData.pageSize,
+      current: teacherBillData.page || 1,
       showSizeChanger: true,
       showTotal: all => `总共${all}条`,
     };
@@ -70,76 +113,65 @@ class TeacherBill extends React.Component {
       {
         title: '老师',
         key: 'teacherName',
-        dataIndex: 'teacher',
-        render: teacher => teacher.nickname,
+        dataIndex: 'teacherName',
       },
       {
         title: '老师状态',
         key: 'teacherStatus',
-        dataIndex: 'teacher',
-        render: (teacher) => {
-          const currentStatus = TEACHER_STATUS_MAP[teacher.status];
-          return currentStatus.text;
+        dataIndex: 'teacherStatus',
+        render: (teacherStatus) => {
+          const currentStatus = TEACHER_STATUS_MAP[teacherStatus];
+          return currentStatus ? currentStatus.text : '';
         },
       },
       {
         title: '金额',
         key: 'amount',
-        dataIndex: 'bill',
-        render: bill => bill.amount,
+        dataIndex: 'amount',
       },
       {
         title: '时间',
         key: 'ctime',
-        dataIndex: 'bill',
-        render: bill => moment(new Date(bill.ctime)).format(TIME_FORMAT),
+        dataIndex: 'billTime',
+        render: billTime => moment(new Date(billTime.date)).format(TIME_FORMAT),
       },
       {
         title: '状态',
         key: 'status',
-        dataIndex: 'bill',
-        render: (bill) => {
-          const currentStatus = BILL_STATUS.STATUS_MAP[bill.status];
+        dataIndex: 'status',
+        render: (status) => {
+          const currentStatus = BILL_STATUS.STATUS_MAP[status];
 
-          const tag = (
+          return (
             <Tag
               color={currentStatus.color}
             >{currentStatus.text}</Tag>
           );
-
-          const popConfirm = (
-            <Popconfirm
-              title="操作不可逆，确认继续？"
-              onConfirm={() => this.cancelBill(bill)}
-            >
-              <Tooltip title="取消账单">{tag}</Tooltip>
-            </Popconfirm>
-          );
-
-          return bill.status !== BILL_STATUS.CREATED
-          ? tag
-          : popConfirm;
         },
       },
       {
         title: '收入分类',
         key: 'category',
-        dataIndex: 'bill',
-        render: (bill) => {
-          const { category } = bill;
+        dataIndex: 'type',
+        render: (type, record) => {
+          const billInfo = JSON.parse(record.billInfo);
+          if (!billInfo) {
+            return null;
+          }
+
           let showcase;
-          switch (category.type) {
+          switch (type) {
             case INCOME_CATEGORY.CERTIFICATE:
-              showcase = <Certificate data={category} />;
+              showcase = <Certificate data={billInfo} />;
               break;
             case INCOME_CATEGORY.SCHEDULE:
-              showcase = <Schedule data={category} />;
+              showcase = <Schedule data={billInfo} />;
               break;
             case INCOME_CATEGORY.BONUS:
-              showcase = <Bonus data={category} />;
+              showcase = <Bonus data={{ bonus: billInfo }} />;
               break;
             case INCOME_CATEGORY.STANDBY:
-              showcase = <StandBy data={category} />;
+              showcase = <StandBy data={billInfo} />;
               break;
             default:
               showcase = null;
@@ -151,26 +183,22 @@ class TeacherBill extends React.Component {
       {
         title: '操作',
         key: 'actions',
-        render: (text, record) => {
-          if (readonly) {
-            return null;
-          }
+        render: (status, record) => {
+          if (readonly) { return null; }
 
-          const { bill } = record;
-
-          const showActionButtons = bill.status === BILL_STATUS.CREATED;
+          const showActionButtons = status === BILL_STATUS.CREATED;
 
           return !showActionButtons
-          ? null
-          : (
-            <Popconfirm
-              title="操作不可逆，确认继续？"
-              onConfirm={() => this.cancelBill(bill)}
-            >
-              <Tooltip title="取消账单">
-                <Button icon="close" />
-              </Tooltip>
-            </Popconfirm>
+            ? null
+            : (
+              <Popconfirm
+                title="操作不可逆，确认继续？"
+                onConfirm={() => this.cancelBill(record.id)}
+              >
+                <Tooltip title="取消账单">
+                  <Button icon="close" />
+                </Tooltip>
+              </Popconfirm>
             );
         },
       },
@@ -178,7 +206,7 @@ class TeacherBill extends React.Component {
 
     return (
       <div>
-        <SearchForm />
+        <SearchForm onSearch={this.handleSearch} />
         <Table
           rowKey="id"
           loading={loading}
@@ -192,96 +220,13 @@ class TeacherBill extends React.Component {
   }
 }
 
-function mapStateToProps() {
+function mapStateToProps(state) {
+  const { loading, teacherBill } = state;
+  const { filters, result: teacherBillData } = teacherBill;
   return {
-    loading: false,
-    page: 1,
-    pageSize: 10,
-    total: 20,
-    list: [
-      {
-        teacher: {
-          id: 1,
-          nickname: 'peter 1',
-          status: 1,
-        },
-        bill: {
-          id: 0,
-          amount: 8,
-          status: 0,
-          ctime: 1479657540000,
-          category: {
-            type: 'App\\Models\\TeacherCertificate',
-            certification: {
-              title: 'Milo Session CERT',
-              start: 1495590360000,
-            },
-          },
-        },
-      },
-      {
-        teacher: {
-          id: 2,
-          nickname: 'peter 2',
-          status: 2,
-        },
-        bill: {
-          id: 1,
-          amount: 8,
-          status: 1,
-          ctime: 1479657540000,
-          category: {
-            type: 'App\\Models\\TeacherSchedule',
-            course: {
-              name: 'G1',
-              lesson: {
-                name: '1-9',
-                begin_at: 1496980612150,
-              },
-            },
-          },
-        },
-      },
-      {
-        teacher: {
-          id: 3,
-          nickname: 'peter 3',
-          status: 3,
-        },
-        bill: {
-          id: 2,
-          amount: 8,
-          status: 2,
-          ctime: 1479657540000,
-          category: {
-            type: 'App\\Models\\TeacherBonus',
-            bonus: {
-              type: 0,
-              comment: '',
-            },
-          },
-        },
-      },
-      {
-        teacher: {
-          id: 4,
-          nickname: 'peter 4',
-          status: 4,
-        },
-        bill: {
-          id: 3,
-          amount: 8,
-          status: 3,
-          ctime: 1479657540000,
-          category: {
-            type: 'App\\Models\\Standby',
-            from: 1496880000000,
-            to: 1496980612150,
-            remark: '',
-          },
-        },
-      },
-    ],
+    loading,
+    filters,
+    teacherBillData,
   };
 }
 

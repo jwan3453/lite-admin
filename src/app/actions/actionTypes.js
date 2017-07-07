@@ -94,6 +94,9 @@ export const Teacher = {
   CHANGE_STATUS_SUCCESS: 'change_status_success',
   CHANGE_STATUS_FAIL: 'change_status_failed',
 
+  GET_SIMPLE_LIST: 'get_simple_list',
+  GET_SIMPLE_LIST_SUCCESS: 'get_simple_list_success',
+  GET_SIMPLE_LIST_FAIL: 'get_simple_list_fail',
 };
 
 export const Rooms = {
@@ -315,4 +318,14 @@ export const TeacherBonus = {
   CREATE_TEACHER_BONUS: 'create_teacher_bonus',
   CREATE_TEACHER_BONUS_SUCCESS: 'create_teacher_bonus_success',
   CREATE_TEACHER_BONUS_FAIL: 'create_teacher_bonus_fail',
+};
+
+export const TeacherBill = {
+  SEARCH_TEACHER_BILL: 'search_teacher_bill',
+  SEARCH_TEACHER_BILL_SUCCESS: 'search_teacher_bill_success',
+  SEARCH_TEACHER_BILL_FAIL: 'search_teacher_bill_fail',
+
+  CANCEL_TEACHER_BILL: 'cancel_teacher_bill',
+  CANCEL_TEACHER_BILL_SUCCESS: 'cancel_teacher_bill_success',
+  CANCEL_TEACHER_BILL_FAIL: 'cancel_teacher_bill_fail',
 };

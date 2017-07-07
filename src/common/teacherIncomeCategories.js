@@ -1,7 +1,7 @@
-export const CERTIFICATE = 'App\\Models\\TeacherCertificate';
-export const SCHEDULE = 'App\\Models\\TeacherSchedule';
-export const BONUS = 'App\\Models\\TeacherBonus';
-export const STANDBY = 'App\\Models\\Standby';
+export const SCHEDULE = 1;
+export const CERTIFICATE = 2;
+export const BONUS = 3;
+export const STANDBY = 4;
 
 const CATEGORIES = [
   {
