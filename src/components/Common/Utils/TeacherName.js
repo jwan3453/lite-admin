@@ -8,11 +8,11 @@ class TeacherName extends PureComponent {
   static propTypes = {
     dispatch: React.PropTypes.func.isRequired,
     teacher: React.PropTypes.object,
-    children: React.PropTypes.oneOf([
+    children: React.PropTypes.oneOfType([
       React.PropTypes.node,
       React.PropTypes.func,
     ]),
-    teacherId: React.PropTypes.oneOf([
+    teacherId: React.PropTypes.oneOfType([
       React.PropTypes.string,
       React.PropTypes.number,
     ]),

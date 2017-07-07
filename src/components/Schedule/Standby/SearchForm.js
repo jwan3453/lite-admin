@@ -39,9 +39,8 @@ class SearchForm extends React.Component {
     form.validateFields((err, values) => {
       const filters = {
         pageSize,
+        ...values,
       };
-
-      console.log(values);
 
       onSearch(filters);
     });
@@ -63,6 +62,12 @@ class SearchForm extends React.Component {
       labelCol: { span: 8 },
       wrapperCol: { span: 16 },
     };
+    let enableStartTimeSearch = false;
+    const dateRange = form.getFieldValue('dateRange');
+
+    if (dateRange && dateRange.length === 2 && dateRange[0].isSame(dateRange[1])) {
+      enableStartTimeSearch = true;
+    }
 
     return (
       <Form
@@ -100,10 +105,11 @@ class SearchForm extends React.Component {
                     },
                   ],
                 })(
-                  <Select>
+                  <Select disabled={!enableStartTimeSearch}>
                     <Select.Option
                       key="-1"
                       value="-1"
+                      disabled={!enableStartTimeSearch}
                     >全部</Select.Option>
                     {
                       _.map(

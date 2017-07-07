@@ -8,6 +8,7 @@ import {
 } from 'antd';
 
 import _ from 'lodash';
+import moment from 'moment';
 
 import * as STANDBY_STATUS from '../teacherStandbyStatus';
 import SCHEDULE_TIMES from '../../../../common/scheduleTimes';
@@ -19,9 +20,20 @@ const FormItem = Form.Item;
 class StandbyRecord extends React.Component {
   static propTypes = {
     form: React.PropTypes.object.isRequired,
+    standby: React.PropTypes.object,
   };
+  static defaultProps = {
+    standby: {},
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.standby !== nextProps.standby) {
+      nextProps.form.resetFields();
+    }
+  }
 
   render() {
+    const { standby } = this.props;
     const {
       getFieldDecorator,
     } = this.props.form;
@@ -30,6 +42,10 @@ class StandbyRecord extends React.Component {
       labelCol: { span: 5 },
       wrapperCol: { span: 16 },
     };
+    const fromDate = standby.fromTime ? moment.unix(standby.fromTime) : moment();
+    const fromTime = standby.fromTime ?
+      moment.unix(standby.fromTime).format('HH:mm')
+      : SCHEDULE_TIMES[0];
 
     return (
       <Form>
@@ -39,6 +55,7 @@ class StandbyRecord extends React.Component {
         >
           {
             getFieldDecorator('teacher', {
+              initialValue: standby.teacherId,
               rules: [
                 {
                   required: false,
@@ -53,7 +70,7 @@ class StandbyRecord extends React.Component {
         >
           {
             getFieldDecorator('status', {
-              initialValue: STANDBY_STATUS.CREATED,
+              initialValue: Number(standby.status) || STANDBY_STATUS.CREATED,
               rules: [
                 {
                   required: false,
@@ -82,6 +99,7 @@ class StandbyRecord extends React.Component {
         >
           {
             getFieldDecorator('theDate', {
+              initialValue: fromDate,
               rules: [
                 {
                   required: true,
@@ -96,6 +114,7 @@ class StandbyRecord extends React.Component {
         >
           {
             getFieldDecorator('time', {
+              initialValue: fromTime,
               rules: [
                 {
                   required: false,
@@ -124,7 +143,7 @@ class StandbyRecord extends React.Component {
         >
           {
             getFieldDecorator('fee', {
-              initialValue: 0,
+              initialValue: standby.free || 0,
               rules: [
                 {
                   required: false,
@@ -139,6 +158,7 @@ class StandbyRecord extends React.Component {
         >
           {
             getFieldDecorator('remark', {
+              initialValue: standby.remark || '',
               rules: [
                 {
                   required: false,

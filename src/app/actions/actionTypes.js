@@ -94,9 +94,6 @@ export const Teacher = {
   CHANGE_STATUS_SUCCESS: 'change_status_success',
   CHANGE_STATUS_FAIL: 'change_status_failed',
 
-  GET_SIMPLE_LIST: 'teacher_get_simple_list',
-  GET_SIMPLE_LIST_SUCCESS: 'teacher_get_simple_list_success',
-  GET_SIMPLE_LIST_FAIL: 'teacher_get_simple_list_fail',
 };
 
 export const Rooms = {
@@ -294,6 +291,20 @@ export const VerificationCode = {
   FETCH_VERIFICATION_CODE: 'verification_code_fetch',
   FETCH_VERIFICATION_CODE_SUCCESS: 'verification_code_fetch_success',
   FETCH_VERIFICATION_CODE_FAIL: 'verification_code_fetch_fail',
+};
+
+export const TeacherStandby = {
+  FETCH: 'fetch_teacher_standby',
+  FETCH_SUCCESS: 'fetch_teacher_standby_success',
+  FETCH_FAIL: 'fetch_teacher_standby_fail',
+
+  CREATE: 'create_teacher_standby',
+  CREATE_SUCCESS: 'create_teacher_standby_success',
+  CREATE_FAIL: 'create_teacher_standby_fail',
+
+  UPDATE: 'update_teacher_standby',
+  UPDATE_SUCCESS: 'update_teacher_standby_success',
+  UPDATE_FAIL: 'update_teacher_standby_fail',
 };
 
 export const TeacherBonus = {

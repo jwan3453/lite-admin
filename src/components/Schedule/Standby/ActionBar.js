@@ -8,42 +8,27 @@ import {
 export default class ActionBar extends React.Component {
   static propTypes = {
     onEdit: React.PropTypes.func.isRequired,
-    onRemove: React.PropTypes.func.isRequired,
     onConfirm: React.PropTypes.func.isRequired,
+    editEnable: React.PropTypes.bool.isRequired,
   };
 
   render() {
     const {
       onEdit,
-      onRemove,
       onConfirm,
+      editEnable,
     } = this.props;
 
     return (
       <div>
-        <Tooltip title="编辑" placement="top">
+        <Tooltip title={editEnable ? '编辑' : '待命已冻结'} placement="top">
           <Button
             icon="edit"
             onClick={onEdit}
             style={{ marginRight: 8 }}
+            disabled={!editEnable}
           />
         </Tooltip>
-        <Popconfirm
-          title="该操作不可逆，确定继续？"
-          okText="确定"
-          cancelText="取消"
-          onConfirm={onRemove}
-        >
-          <Tooltip
-            title="删除"
-            placement="top"
-          >
-            <Button
-              icon="delete"
-              style={{ marginRight: 8 }}
-            />
-          </Tooltip>
-        </Popconfirm>
         <Popconfirm
           title="该操作会产生计费，确定继续？"
           okText="确定"
@@ -51,10 +36,10 @@ export default class ActionBar extends React.Component {
           onConfirm={onConfirm}
         >
           <Tooltip
-            title="确认到岗"
+            title={editEnable ? '确认到岗' : '待命已冻结'}
             placement="top"
           >
-            <Button icon="check" />
+            <Button icon="check" disabled={!editEnable} />
           </Tooltip>
         </Popconfirm>
       </div>
