@@ -6,13 +6,14 @@ const THRESHOLD = 300000;
 // 1000 * 60 * 2;
 const REFRESH_INTERVAL = 120000;
 const MILLISECOND = 1000;
+const SYSTEM_PREFIX = 'a401';
 
 function toMillSecond(second) {
   return second * MILLISECOND;
 }
 
 function persistentToLocalStorage(token) {
-  global.localStorage.token = JSON.stringify(
+  global.localStorage[`token_${SYSTEM_PREFIX}`] = JSON.stringify(
     Object.assign(
       {
         expires: toMillSecond(token.expires_in) + Date.now(),
@@ -96,7 +97,7 @@ const auth = {
   },
 
   deSerializeToken() {
-    const { token } = global.localStorage;
+    const token = global.localStorage[`token_${SYSTEM_PREFIX}`];
 
     if (!token) {
       return null;
