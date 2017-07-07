@@ -37,20 +37,6 @@ export function searchStudentsByTags(filters) {
   };
 }
 
-export function simpleList(ids) {
-  return {
-    ids,
-    [CALL_JQ_API]: {
-      types: [Student.SEARCH_BY_TAGS, Student.SEARCH_BY_TAGS_SUCCESS, Student.SEARCH_BY_TAGS_FAIL],
-      uri: '/admin/students/simpleList',
-      method: 'GET',
-      body: {
-        ids,
-      },
-    },
-  };
-}
-
 export function fetchMobile(studentId) {
   return {
     studentId,
