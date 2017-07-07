@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import {
   Form,
   Select,
@@ -21,15 +22,7 @@ class TemplateMessage extends React.Component {
   };
 
   static defaultProps = {
-    wechatTemplates: {
-      result: [
-        {
-          id: 'Doclyl5uP7Aciu-qZ7mJNPtWkbkYnWBWVja26EGbNyk',
-          title: '购买成功通知',
-          content: '',
-        },
-      ],
-    },
+    wechatTemplates: {},
   };
 
   state = {
@@ -38,12 +31,25 @@ class TemplateMessage extends React.Component {
     studentId: -1,
   };
 
-  handleSubmit = (eventArgs) => {
+  testWechatTmplMessage = (eventArgs) => {
+    //  todo, send a wechat template message to a student for testing purpose
     eventArgs.preventDefault();
     const { form } = this.props;
     form.validateFields((errors, values) => {
       if (!errors) {
-        console.log('handleSubmit', values);
+        const studentId = values.studentId;
+        console.log('testWechatTmplMessage', studentId, values);
+      }
+    });
+  };
+
+  sendWechatTmplMessage = (eventArgs) => {
+    //  todo, call api to create a task for batch sending wechat template messages
+    eventArgs.preventDefault();
+    const { form } = this.props;
+    form.validateFields((errors, values) => {
+      if (!errors) {
+        console.log('sendWechatTmplMessage', values);
       }
     });
   };
@@ -59,6 +65,8 @@ class TemplateMessage extends React.Component {
       studentId,
       isTesting,
     } = this.state;
+
+    const templates = wechatTemplates.result || [];
 
     let currentTemplate = null;
     if (tid) {
@@ -83,7 +91,7 @@ class TemplateMessage extends React.Component {
     };
 
     return (
-      <Form onSubmit={this.handleSubmit}>
+      <Form>
         <FormItem
           label="消息模板"
           {...formItemLayout}
@@ -108,7 +116,7 @@ class TemplateMessage extends React.Component {
               >
                 {
                   _.map(
-                    wechatTemplates.result,
+                    templates,
                     item => (
                       <Select.Option
                         key={item.id}
@@ -201,8 +209,8 @@ class TemplateMessage extends React.Component {
                   >
                     <Button
                       type="primary"
-                      htmlType="submit"
-                    >发送</Button>
+                      onClick={this.sendWechatTmplMessage}
+                    >发送消息</Button>
                   </FormItem>
                   )
                 : (
@@ -227,8 +235,8 @@ class TemplateMessage extends React.Component {
                     >
                       <Button
                         type="primary"
-                        htmlType="submit"
-                      >测试</Button>
+                        onClick={this.testWechatTmplMessage}
+                      >发送测试消息</Button>
                     </FormItem>
                   </div>
                   )
@@ -241,5 +249,21 @@ class TemplateMessage extends React.Component {
   }
 }
 
-export default Form.create()(TemplateMessage);
+function mapStateToProps() {
+  //  todo, if I was right we are going to load templates by calling a specified
+  //  api
+  return {
+    wechatTemplates: {
+      result: [
+        {
+          id: 'Doclyl5uP7Aciu-qZ7mJNPtWkbkYnWBWVja26EGbNyk',
+          title: '购买成功通知',
+          content: '',
+        },
+      ],
+    },
+  };
+}
+
+export default connect(mapStateToProps)(Form.create()(TemplateMessage));
 
