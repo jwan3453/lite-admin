@@ -317,6 +317,10 @@ export const TeacherBonus = {
   CREATE_TEACHER_BONUS: 'create_teacher_bonus',
   CREATE_TEACHER_BONUS_SUCCESS: 'create_teacher_bonus_success',
   CREATE_TEACHER_BONUS_FAIL: 'create_teacher_bonus_fail',
+
+  CHANGE_BONUS_STATUS: 'change_bonus_status',
+  CHANGE_BONUS_STATUS_SUCCESS: 'change_bonus_status_success',
+  CHANGE_BONUS_STATUS_FAIL: 'change_bonus_status_fail',
 };
 
 export const TeacherBill = {

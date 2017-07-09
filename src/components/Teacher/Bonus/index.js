@@ -15,7 +15,11 @@ import _ from 'lodash';
 import SearchForm from './SearchForm';
 import BonusForm from './BonusForm';
 
-import { createTeacherBonuses, searchTeacherBonuses } from '../../../app/actions/teacherBonus';
+import {
+  createTeacherBonuses,
+  searchTeacherBonuses,
+  changeTeacherBonusStatus,
+} from '../../../app/actions/teacherBonus';
 import { getSimpleList } from '../../../app/actions/teacher';
 
 import {
@@ -26,6 +30,7 @@ import {
 } from '../../../common/teacherStatus';
 import {
   STATUS_MAP as BONUS_STATUS_MAP,
+  FAILED as BONUS_CANCELLED,
 } from '../../../common/bonusStatus';
 
 class Bonus extends React.Component {
@@ -34,21 +39,30 @@ class Bonus extends React.Component {
     teacherBonusData: React.PropTypes.object.isRequired,
     teachers: React.PropTypes.array.isRequired,
     loading: React.PropTypes.bool.isRequired,
+    filters: React.PropTypes.object,
   };
   static defaultProps = {
     teacherBonusData: {},
+    filters: {},
     teachers: [],
   };
 
   state = {
     dialogVisible: false,
     loading: false,
-    filters: {},
     teacherBonusData: {},
   };
 
-  cancelBonus = () => {
-    //  todo
+  cancelBonus = (bonusId) => {
+    const { dispatch } = this.props;
+    dispatch(changeTeacherBonusStatus(bonusId, { status: BONUS_CANCELLED })).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+      } else {
+        Message.success('取消成功');
+        this.searchBonuses(this.props.filters);
+      }
+    });
   };
 
   recalcBonus = () => {
@@ -67,9 +81,13 @@ class Bonus extends React.Component {
     });
   };
 
-  handleSearch = (data) => {
+  handleSearch = (filters) => {
+    this.searchBonuses(filters);
+  };
+
+  searchBonuses(filters) {
     const { dispatch } = this.props;
-    dispatch(searchTeacherBonuses(data)).then((result) => {
+    dispatch(searchTeacherBonuses(filters)).then((result) => {
       if (result.code) {
         Message.error(result.message);
       } else {
@@ -94,7 +112,7 @@ class Bonus extends React.Component {
         });
       }
     });
-  };
+  }
 
   render() {
     const { loading } = this.props;
@@ -162,7 +180,7 @@ class Bonus extends React.Component {
             </Popconfirm>
             <Popconfirm
               title="该操作不可逆，确定执行？"
-              onConfirm={() => this.cancelBonus(record)}
+              onConfirm={() => this.cancelBonus(record.id)}
             >
               <Tooltip
                 placement="top"

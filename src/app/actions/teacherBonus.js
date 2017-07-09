@@ -31,3 +31,18 @@ export function createTeacherBonuses(data) {
     },
   };
 }
+
+export function changeTeacherBonusStatus(id, data) {
+  return {
+    [CALL_JQ_API]: {
+      types: [
+        TeacherBonus.CHANGE_BONUS_STATUS,
+        TeacherBonus.CHANGE_BONUS_STATUS_FAIL,
+        TeacherBonus.CHANGE_BONUS_STATUS_SUCCESS,
+      ],
+      uri: `/admin/teacherBilling/bonuses/${id}`,
+      method: 'PUT',
+      body: data,
+    },
+  };
+}
