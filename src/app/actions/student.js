@@ -25,18 +25,6 @@ export function searchStudent(filters) {
   };
 }
 
-export function searchStudentsByTags(filters) {
-  return {
-    filters,
-    [CALL_JQ_API]: {
-      types: [Student.SEARCH_BY_TAGS, Student.SEARCH_BY_TAGS_SUCCESS, Student.SEARCH_BY_TAGS_FAIL],
-      uri: '/admin/tags/students',
-      method: 'GET',
-      body: filters,
-    },
-  };
-}
-
 export function fetchMobile(studentId) {
   return {
     studentId,

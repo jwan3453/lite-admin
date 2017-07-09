@@ -109,3 +109,21 @@ export function removeStudents(id, studentIds) {
     },
   };
 }
+
+/**
+ * 搜索包含指定tags的学生
+ * @param { string } 标签id
+ * @param { array } 学生id数组
+ */
+export function searchStudents(filters) {
+  return {
+    filters,
+    [CALL_JQ_API]: {
+      types: [Tag.SEARCH_STUDENTS, Tag.SEARCH_STUDENTS_SUCCESS, Tag.SEARCH_STUDENTS_FAIL],
+      uri: '/admin/tags/students',
+      method: 'GET',
+      body: filters,
+    },
+  };
+}
+

@@ -64,10 +64,6 @@ export const Student = {
   FETCH_SIMPLE_LIST: 'fetch_simple_list',
   FETCH_SIMPLE_LIST_SUCCESS: 'fetch_simple_list_success',
   FETCH_SIMPLE_LIST_FAIL: 'fetch_simple_list_fail',
-
-  SEARCH_BY_TAGS: 'search_by_tags',
-  SEARCH_BY_TAGS_SUCCESS: 'search_by_tags_success',
-  SEARCH_BY_TAGS_FAIL: 'search_by_tags_fail',
 };
 
 export const StudentProduct = {
@@ -341,6 +337,10 @@ export const Tag = {
   SEARCH: 'search',
   SEARCH_SUCCESS: 'search_success',
   SEARCH_FAIL: 'search_fail',
+
+  SEARCH_STUDENTS: 'search_students',
+  SEARCH_STUDENTS_SUCCESS: 'search_students_success',
+  SEARCH_STUDENTS_FAIL: 'search_students_fail',
 
   ADD_STUDENTS: 'add_students',
   ADD_STUDENTS_SUCCESS: 'add_students_success',
