@@ -32,7 +32,7 @@ export function remove(id) {
   return {
     id,
     [CALL_JQ_API]: {
-      types: [Tag.REMOVE, Tag.REMOVE_SUCCESS, Tag.REMOVE_FAIL],
+      types: [Tag.DELETE, Tag.DELETE_SUCCESS, Tag.DELETE_FAIL],
       uri: `/admin/tags/${id}`,
       method: 'DELETE',
     },

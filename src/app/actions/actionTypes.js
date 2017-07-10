@@ -338,9 +338,13 @@ export const TeacherBill = {
 };
 
 export const Tag = {
-  CREATE: ' create',
+  CREATE: 'create',
   CREATE_SUCCESS: 'create_success',
   CREATE_FAIL: 'create_fail',
+
+  DELETE: 'delete',
+  DELETE_SUCCESS: 'delete_success',
+  DELETE_FAIL: 'delete_fail',
 
   SEARCH: 'search',
   SEARCH_SUCCESS: 'search_success',

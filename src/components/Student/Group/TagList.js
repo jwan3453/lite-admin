@@ -8,6 +8,7 @@ import {
   Tooltip,
   Modal,
   Spin,
+  Popconfirm,
 } from 'antd';
 
 import AddTagForm from './AddTagForm';
@@ -16,6 +17,7 @@ import StudentFinder from './StudentFinder';
 import {
   search,
   create,
+  remove,
   addStudents,
 } from '../../../app/actions/tag';
 
@@ -154,6 +156,20 @@ class TagList extends React.Component {
     });
   };
 
+  handleDeleteTag = (tag) => {
+    const { dispatch, tags, filters } = this.props;
+    dispatch(remove(tag.id)).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+      } else {
+        const { page } = filters;
+        const totalPages = Math.floor((tags.total - 1) / tags.pageSize);
+        filters.page = Math.min(page, totalPages);
+        this.handleFetchTags(filters);
+      }
+    });
+  };
+
   render() {
     const {
       loading,
@@ -179,19 +195,33 @@ class TagList extends React.Component {
         title: '操作',
         key: 'actions',
         render: (text, tag) => (
-          <Tooltip title="添加学生" placement="top">
-            <Button
-              icon="user-add"
-              onClick={
-                () => {
-                  this.handleShowDialog();
-                  this.setState({
-                    currentTagId: tag.id,
-                  });
+          <div>
+            <Tooltip title="添加学生" placement="top">
+              <Button
+                icon="user-add"
+                onClick={
+                  () => {
+                    this.handleShowDialog();
+                    this.setState({
+                      currentTagId: tag.id,
+                    });
+                  }
                 }
+                style={{ marginRight: 8 }}
+              />
+            </Tooltip>
+            <Popconfirm
+              title="该操作不可逆，确定继续？"
+              placement="top"
+              onConfirm={
+                () => { this.handleDeleteTag(tag); }
               }
-            />
-          </Tooltip>
+            >
+              <Tooltip title="删除" placement="top">
+                <Button icon="delete" />
+              </Tooltip>
+            </Popconfirm>
+          </div>
         ),
       },
     ];
