@@ -26,6 +26,8 @@ class TagList extends React.Component {
     tags: PropTypes.object,
     filters: PropTypes.object,
     selectedRowKeys: PropTypes.array,
+    onSelect: PropTypes.func,
+    onSelectAll: PropTypes.func,
     handleSelectedRowsChange: PropTypes.func,
   };
 
@@ -33,6 +35,8 @@ class TagList extends React.Component {
     tags: {},
     filters: {},
     selectedRowKeys: [],
+    onSelect: () => {},
+    onSelectAll: () => {},
     handleSelectedRowsChange: () => {},
   };
 
@@ -155,6 +159,8 @@ class TagList extends React.Component {
       loading,
       tags,
       selectedRowKeys,
+      onSelect,
+      onSelectAll,
       handleSelectedRowsChange,
     } = this.props;
 
@@ -205,6 +211,8 @@ class TagList extends React.Component {
 
     const tagSelection = {
       selectedRowKeys,
+      onSelect,
+      onSelectAll,
       onChange: handleSelectedRowsChange,
       getCheckboxProps: record => ({
         disabled: record.name === 'Disabled User',

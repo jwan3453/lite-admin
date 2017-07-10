@@ -123,14 +123,48 @@ class Groups extends React.Component {
     },
   ];
 
-  /**
-   * 选中行变化
-   * @param { array } 选中的列id
-   * @param { array } 选中的列
-   */
-  handleSelectedRowsChange = (selectedRowKeys, selectedRows) => {
+  handleSelectTag = (record, selected) => {
+    const { selectedTags } = this.state;
+    const index = _.findIndex(
+      selectedTags,
+      item => item.id === record.id,
+    );
+
+    if (selected && index === -1) {
+      selectedTags.push(record);
+    }
+
+    if (!selected && index !== -1) {
+      selectedTags.splice(index, 1);
+    }
+
     this.setState({
-      selectedTags: selectedRows,
+      selectedTags,
+    });
+  };
+
+  handleSelectAllTags = (selected, selectedRows, changeRows) => {
+    const { selectedTags } = this.state;
+
+    _.forEach(
+      changeRows,
+      (record) => {
+        const index = _.findIndex(
+          selectedTags,
+          item => item.id === record.id,
+        );
+        if (selected && index === -1) {
+          selectedTags.push(record);
+        }
+
+        if (!selected && index !== -1) {
+          selectedTags.splice(index, 1);
+        }
+      },
+    );
+
+    this.setState({
+      selectedTags,
     });
   };
 
@@ -247,7 +281,8 @@ class Groups extends React.Component {
         <Col span={6}>
           <TagList
             selectedRowKeys={_.map(selectedTags, 'id')}
-            handleSelectedRowsChange={this.handleSelectedRowsChange}
+            onSelect={this.handleSelectTag}
+            onSelectAll={this.handleSelectAllTags}
           />
         </Col>
         <Col span={18}>
