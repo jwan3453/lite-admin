@@ -162,7 +162,7 @@ class TagList extends React.Component {
       if (result.code) {
         Message.error(result.message);
       } else {
-        const { page } = filters;
+        const page = filters.page || 1;
         const totalPages = Math.floor((tags.total - 1) / tags.pageSize);
         filters.page = Math.min(page, totalPages);
         this.handleFetchTags(filters);
