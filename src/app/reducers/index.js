@@ -21,6 +21,7 @@ import * as teacherStandbyReducers from './teacherStandby';
 import * as teacherBonusReducers from './teacherBonus';
 import * as teacherBillReducers from './teacherBill';
 import * as tagReducers from './tag';
+import * as teacherPaymentReducers from './teacherPayment';
 
 const rootReducer = combineReducers({
   routing,
@@ -44,6 +45,7 @@ const rootReducer = combineReducers({
   ...teacherBonusReducers,
   ...teacherBillReducers,
   ...tagReducers,
+  ...teacherPaymentReducers,
 });
 
 export default rootReducer;

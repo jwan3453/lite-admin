@@ -4,13 +4,17 @@ import {
   Table,
   Tag,
   Modal,
+  Message,
 } from 'antd';
 import moment from 'moment';
+import _ from 'lodash';
 import SearchForm from './SearchForm';
-
+//
 import { Created, Confirmed, Withdrawed } from './ActionBar/index';
 import { Paypal, BankUsa, WireTransfer } from './BankInfo/index';
 import Bill from '../../Common/TeacherBills';
+import { searchTeacherPayment } from '../../../app/actions/teacherPayment';
+import { getSimpleList } from '../../../app/actions/teacher';
 
 import {
   STATUS_MAP as TEACHER_STATUS_MAP,
@@ -21,22 +25,23 @@ import * as PAYMENT_STATUS from '../../../common/teacherPaymentStatus';
 
 class Payment extends React.Component {
   static propTypes = {
-    payments: React.PropTypes.object.isRequired,
+    dispatch: React.PropTypes.func.isRequired,
+    filters: React.PropTypes.object,
+    teacherPaymentData: React.PropTypes.object.isRequired,
+    teachers: React.PropTypes.array.isRequired,
     loading: React.PropTypes.bool.isRequired,
-    page: React.PropTypes.number,
-    pageSize: React.PropTypes.number,
-    total: React.PropTypes.number,
   };
 
   static defaultProps = {
-    payments: [],
-    page: 1,
-    pageSize: 10,
-    total: 0,
+    filters: {},
+    teacherPaymentData: {},
+    teachers: [],
   };
 
   state = {
     dialogVisible: false,
+    loading: false,
+    teacherPaymentData: {},
   };
 
   showPaymentDetails = () => {
@@ -59,7 +64,8 @@ class Payment extends React.Component {
   };
 
   cancelConfirmation = () => {
-    //  TODO
+    const { filters } = this.props;
+    console.log('loging...', filters);
   };
 
   completePayment = () => {
@@ -70,14 +76,43 @@ class Payment extends React.Component {
     console.log(pagination, filters, sorter);
   };
 
+  handleSearch = (filters) => {
+    this.searchPayment(filters);
+  };
+
+  searchPayment(filters) {
+    const { dispatch } = this.props;
+    dispatch(searchTeacherPayment(filters)).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+      } else {
+        const paymentData = result.response.result;
+        const teacherIds = _.chain(paymentData).map(item => item.teacherId).uniq().value();
+        dispatch(getSimpleList(teacherIds)).then(() => {
+          const { teacherPaymentData, teachers } = this.props;
+          const combinedResultData = _.map(teacherPaymentData.result, (ele) => {
+            const foundTeacher = _.find(teachers, teacher => teacher.id === ele.teacherId);
+            const teacherInfo = {};
+            if (foundTeacher) {
+              teacherInfo.teacherName = foundTeacher.username;
+              teacherInfo.teacherStatus = foundTeacher.status;
+            }
+            return _.assign({}, ele, teacherInfo);
+          });
+
+          const combinedPaymentData = _.assign({},
+            teacherPaymentData, { result: combinedResultData });
+
+          this.setState({ teacherPaymentData: combinedPaymentData });
+        });
+      }
+    });
+  }
+
   render() {
-    const {
-      loading,
-      payments,
-      page,
-      pageSize,
-      total,
-    } = this.props;
+    const { loading } = this.props;
+    const { teacherPaymentData } = this.state;
+    const { total, pageSize, page, result: paymentList } = teacherPaymentData;
 
     const pagination = {
       total,
@@ -93,35 +128,29 @@ class Payment extends React.Component {
       {
         title: '老师',
         key: 'teacherName',
-        dataIndex: 'teacher',
-        render: teacher => teacher.nickname,
+        dataIndex: 'teacherName',
       },
       {
         title: '老师状态',
         key: 'teacherStatus',
-        dataIndex: 'teacher',
-        render: (teacher) => {
-          const currentStatus = TEACHER_STATUS_MAP[teacher.status];
-          return currentStatus.text;
-        },
+        dataIndex: 'teacherStatus',
+        render: teacherStatus => (teacherStatus ? TEACHER_STATUS_MAP[teacherStatus].text : ''),
       },
       {
         title: '金额',
         key: 'amount',
-        dataIndex: 'payment',
-        render: payment => payment.amount,
+        dataIndex: 'amount',
       },
       {
         title: '结算周期',
         key: 'billingCycle',
-        dataIndex: 'payment',
-        render: (payment) => {
-          const { cycle } = payment;
-          if (cycle === BILLING_CYCLE.WEEKLY) {
+        dataIndex: 'paymentCycle',
+        render: (paymentCycle) => {
+          if (paymentCycle === BILLING_CYCLE.WEEKLY) {
             return '周结';
           }
 
-          if (cycle === BILLING_CYCLE.MONTHLY) {
+          if (paymentCycle === BILLING_CYCLE.MONTHLY) {
             return '月结';
           }
 
@@ -131,26 +160,45 @@ class Payment extends React.Component {
       {
         title: '银行信息',
         key: 'bankInfo',
-        dataIndex: 'payment',
-        render: (payment) => {
-          const { bankInfo } = payment;
-          if (bankInfo.type === BANK_TYPE.USA) {
-            return (<BankUsa account={bankInfo.account} />);
+        dataIndex: 'bankAccountInfo',
+        render: (bankAccountInfo) => {
+          const bankInfo = JSON.parse(bankAccountInfo);
+          if (bankInfo.bank_type === BANK_TYPE.USA) {
+            const account = {
+              number: bankInfo.account_number,
+              country: bankInfo.country,
+              bank: { name: bankInfo.bank_name },
+              type: bankInfo.account_type,
+              routing: bankInfo.routing_number,
+              holder: { name: bankInfo.holder_name },
+            };
+            return (<BankUsa account={account} />);
           }
 
-          if (bankInfo.type === BANK_TYPE.PAYPAL) {
-            return (<Paypal account={bankInfo.account} />);
+          if (bankInfo.bank_type === BANK_TYPE.PAYPAL) {
+            const account = { number: bankInfo.account_number };
+            return (<Paypal account={account} />);
           }
 
-          return (<WireTransfer account={bankInfo.account} />);
+          const account = {
+            number: bankInfo.account_number,
+            bank: {
+              name: bankInfo.bank_name,
+            },
+            country: bankInfo.country,
+            swiftCode: bankInfo.swift_code,
+            holder: { name: bankInfo.holder_name },
+            branch: bankInfo.bank_branch,
+            intermediarySwiftCode: bankInfo.intermediary_swift_code,
+          };
+          return (<WireTransfer account={account} />);
         },
       },
       {
         title: '状态',
         key: 'paymentStatus',
-        dataIndex: 'payment',
-        render: (payment) => {
-          const { status } = payment;
+        dataIndex: 'status',
+        render: (status) => {
           const currentStatus = PAYMENT_STATUS.STATUS_MAP[status];
 
           return (
@@ -163,17 +211,13 @@ class Payment extends React.Component {
       {
         title: '时间',
         key: 'ctime',
-        dataIndex: 'payment',
-        render: (payment) => {
-          const { ctime } = payment;
-          return moment(ctime).format('YYYY-MM-DD hh:mm:ss');
-        },
+        dataIndex: 'createdAt',
+        render: createdAt => (moment.unix(createdAt).format('YYYY-MM-DD HH:mm:ss')),
       },
       {
         title: '操作',
         key: 'actions',
-        render: (record) => {
-          const { payment } = record;
+        render: (payment) => {
           const { status } = payment;
           if (status === PAYMENT_STATUS.CREATED) {
             return (
@@ -212,14 +256,14 @@ class Payment extends React.Component {
 
     return (
       <div>
-        <SearchForm />
+        <SearchForm onSearch={this.handleSearch} />
         <Table
           rowKey="id"
           style={{ marginTop: 16 }}
           loading={loading}
           columns={columns}
           pagination={pagination}
-          dataSource={payments}
+          dataSource={paymentList}
           onChange={this.handleTableChange}
         />
         <Modal
@@ -238,125 +282,15 @@ class Payment extends React.Component {
   }
 }
 
-function mapStateToProps() {
+function mapStateToProps(state) {
+  const { loading, teacherPayment, teacher } = state;
+  const { filters, result: teacherPaymentData } = teacherPayment;
+  const { simpleList: teachers } = teacher;
   return {
-    loading: false,
-    page: 1,
-    pageSize: 10,
-    total: 4,
-    payments: [
-      {
-        teacher: {
-          id: 3,
-          nickname: 'peter 3',
-          status: 3,
-        },
-        payment: {
-          id: 1,
-          amount: 150,
-          billingCycle: 1,
-          bankInfo: {
-            account: {
-              number: '12312',
-              type: 'checking',
-              routing: '123123',
-              bank: {
-                name: '123123',
-                branch: '',
-              },
-              country: 'United States',
-              holder: {
-                name: 'holder name',
-              },
-            },
-            type: 1,
-          },
-          status: 0,
-          ctime: 1481080360000,
-        },
-      },
-      {
-        teacher: {
-          id: 3,
-          nickname: 'peter 3',
-          status: 3,
-        },
-        payment: {
-          id: 11,
-          amount: 151,
-          billingCycle: 2,
-          bankInfo: {
-            account: {
-              number: '123897@123.com',
-            },
-            type: 2,
-          },
-          status: 1,
-          ctime: '2016-12-04 23:59:59',
-        },
-      },
-      {
-        teacher: {
-          id: 3,
-          nickname: 'peter 3',
-          status: 3,
-        },
-        payment: {
-          id: 12,
-          amount: 152,
-          billingCycle: 0,
-          bankInfo: {
-            account: {
-              number: 'account number',
-              bank: {
-                name: 'bank name',
-                branch: 'bank branch',
-              },
-              swiftCode: 'swift code',
-              intermediarySwiftCode: '',
-              country: 'United States',
-              holder: {
-                name: 'holder name',
-              },
-            },
-            type: 3,
-          },
-          status: 2,
-          ctime: '2016-11-20 23:59:59',
-        },
-      },
-      {
-        teacher: {
-          id: 3,
-          nickname: 'peter 3',
-          status: 3,
-        },
-        payment: {
-          id: 13,
-          amount: 153,
-          billingCycle: 0,
-          bankInfo: {
-            account: {
-              number: '12312',
-              type: 'checking',
-              routing: '123123',
-              bank: {
-                name: '123123',
-                branch: '',
-              },
-              country: 'United States',
-              holder: {
-                name: 'holder name',
-              },
-            },
-            type: 1,
-          },
-
-          status: 3,
-          ctime: '2016-10-21 23:59:59',
-        },
-      },
-    ],
+    loading,
+    filters,
+    teacherPaymentData,
+    teachers,
   };
 }
 

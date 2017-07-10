@@ -355,3 +355,8 @@ export const Tag = {
   REMOVE_STUDENTS_FAIL: 'remove_students_fail',
 };
 
+export const TeacherPayment = {
+  SEARCH_TEACHER_PAYMENT: 'search_teacher_payment',
+  SEARCH_TEACHER_PAYMENT_SUCCESS: 'search_teacher_payment_success',
+  SEARCH_TEACHER_PAYMENT_FAIL: 'search_teacher_payment_fail',
+};

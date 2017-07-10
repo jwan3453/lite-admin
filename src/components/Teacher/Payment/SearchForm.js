@@ -6,26 +6,50 @@ import {
   Button,
   Select,
   DatePicker,
-  Input,
 } from 'antd';
 
 import _ from 'lodash';
-import TEACHER_STATUS from '../../../common/teacherStatus';
 import BILLING_CYCLES from '../../../common/teacherBillingCycle';
 import PAYMENT_STATUS from '../../../common/teacherPaymentStatus';
 
+import TeacherSearchInput from '../../Common/TeacherSearchInput';
+
 const FormItem = Form.Item;
+const DATE_FORMAT = 'YYYY-MM-DD';
 
 class SearchForm extends React.Component {
   static propTypes = {
     form: React.PropTypes.object.isRequired,
+    onSearch: React.PropTypes.func.isRequired,
   };
 
-  static defaultProps = {
-  };
+  static defaultProps = {};
 
-  search = () => {
-    //  todo search
+  search = (e) => {
+    e.preventDefault();
+    this.props.form.validateFieldsAndScroll((error, values) => {
+      if (!error) {
+        const filters = {};
+        if (values.teacherId) {
+          filters.teacherId = values.teacherId;
+        }
+
+        if (values.ctime) {
+          filters.startDate = values.ctime[0].format(DATE_FORMAT);
+          filters.endDate = values.ctime[1].format(DATE_FORMAT);
+        }
+
+        if (values.paymentStatus !== '-1') {
+          filters.status = parseInt(values.paymentStatus, 10);
+        }
+
+        if (values.paymentCycle !== '-1') {
+          filters.paymentCycle = parseInt(values.paymentCycle, 10);
+        }
+
+        this.props.onSearch(filters);
+      }
+    });
   };
 
   reset = () => {
@@ -49,45 +73,13 @@ class SearchForm extends React.Component {
               {...formItemLayout}
             >
               {
-                getFieldDecorator('teacherName', {
+                getFieldDecorator('teacherId', {
                   rules: [
                     {
                       required: false,
                     },
                   ],
-                })(<Input size="default" placeholder="老师账号" />)
-              }
-            </FormItem>
-          </Col>
-          <Col span={8}>
-            <FormItem
-              label="老师状态"
-              {...formItemLayout}
-            >
-              {
-                getFieldDecorator('teacherStatus', {
-                  initialValue: '-1',
-                  rules: [
-                    {
-                      required: false,
-                    },
-                  ],
-                })(
-                  <Select>
-                    <Select.Option
-                      key="-1"
-                      value="-1"
-                    >全部</Select.Option>
-                    {
-                      _.map(TEACHER_STATUS, item => (
-                        <Select.Option
-                          key={item.value}
-                          value={item.value}
-                        >{item.text}</Select.Option>
-                      ))
-                    }
-                  </Select>,
-                )
+                })(<TeacherSearchInput />)
               }
             </FormItem>
           </Col>
@@ -134,7 +126,7 @@ class SearchForm extends React.Component {
                       _.map(PAYMENT_STATUS, item => (
                         <Select.Option
                           key={item.value}
-                          value={item.value}
+                          value={`${item.value}`}
                         >{item.text}</Select.Option>
                       ))
                     }
@@ -149,7 +141,7 @@ class SearchForm extends React.Component {
               {...formItemLayout}
             >
               {
-                getFieldDecorator('billingCycle', {
+                getFieldDecorator('paymentCycle', {
                   initialValue: '-1',
                   rules: [
                     {
@@ -166,7 +158,7 @@ class SearchForm extends React.Component {
                       _.map(BILLING_CYCLES, item => (
                         <Select.Option
                           key={item.value}
-                          value={item.value}
+                          value={`${item.value}`}
                         >{item.name}</Select.Option>
                       ))
                     }
@@ -178,7 +170,7 @@ class SearchForm extends React.Component {
           <Col span={8} style={{ textAlign: 'right' }}>
             <Button
               type="primary"
-              onClick={() => this.search()}
+              onClick={this.search}
               style={{ marginRight: 8 }}
             >搜索</Button>
             <Button
