@@ -14,48 +14,74 @@ import { Bonus, Certificate, Schedule, StandBy } from '../TeacherIncomeDetails';
 
 import * as INCOME_CATEGORY from '../../../common/teacherIncomeCategories';
 import * as BILL_STATUS from '../../../common/teacherBillStatus';
+import { searchTeacherBills } from '../../../app/actions/teacherBill';
 
 const TIME_FORMAT = 'YYYY-MM-DD hh:mm';
 
 class Bill extends React.Component {
   static propTypes = {
+    dispatch: React.PropTypes.func.isRequired,
     loading: React.PropTypes.bool.isRequired,
-    bills: React.PropTypes.array,
-    page: React.PropTypes.number,
-    pageSize: React.PropTypes.number,
-    total: React.PropTypes.number,
-    readonly: React.PropTypes.bool,
+    filters: React.PropTypes.object,
+    teacherBill: React.PropTypes.object,
+    teacherId: React.PropTypes.number.isRequired,
   };
 
   static defaultProps = {
-    page: 1,
-    pageSize: 10,
-    total: 0,
-    bills: [],
-    readonly: false,
+    loading: false,
+    filters: {},
+    teacherBill: {},
   };
+
+  componentWillMount() {
+    const { dispatch, loading, filters, teacherId } = this.props;
+    if (!loading) {
+      dispatch(searchTeacherBills(Object.assign(filters, { teacherId })));
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { dispatch, teacherId, filters } = this.props;
+    if (nextProps.teacherId > 0 && nextProps.teacherId !== teacherId) {
+      dispatch(searchTeacherBills(Object.assign(filters, { teacherId: nextProps.teacherId })));
+    }
+  }
 
   cancelBill = (bill) => {
     //  todo dispatch action here
     console.log('canceling bill, ', bill);
   };
 
-  render() {
-    const {
-      loading,
-      page,
-      pageSize,
-      total,
-      bills,
-      readonly,
-    } = this.props;
+  handleSearch = (filters) => {
+    this.retrieveBillData(filters);
+  };
 
+  retrieveBillData(filters) {
+    const { dispatch } = this.props;
+    dispatch(searchTeacherBills(Object.assign(this.props.filters, { ...filters })));
+  }
+
+  handleChange = (pagination) => {
+    const { dispatch, filters } = this.props;
+    dispatch(
+      searchTeacherBills(Object.assign(filters, {
+        page: pagination.current,
+        pageSize: pagination.pageSize,
+      }),
+      ),
+    );
+  }
+
+  render() {
+    const { loading, teacherBill } = this.props;
+    const dataSource = teacherBill.result || [];
+    const pageSize = teacherBill.pageSize || 10;
     const pagination = {
-      total: total || 0,
+      total: teacherBill.total || 0,
       pageSize,
-      current: page || 1,
+      current: teacherBill.page || 1,
       showSizeChanger: true,
-      showTotal: all => `总共${all}条`,
+      showTotal: total => `总共${total}条`,
     };
 
     const columns = [
@@ -71,9 +97,9 @@ class Bill extends React.Component {
       },
       {
         title: '时间',
-        key: 'ctime',
-        dataIndex: 'ctime',
-        render: ctime => moment(new Date(ctime)).format(TIME_FORMAT),
+        key: 'billTime',
+        dataIndex: 'billTime',
+        render: begin => (begin ? moment.unix(begin).format(TIME_FORMAT) : '--'),
       },
       {
         title: '状态',
@@ -104,8 +130,8 @@ class Bill extends React.Component {
       },
       {
         title: '收入分类',
-        key: 'category',
-        dataIndex: 'category',
+        key: 'type',
+        dataIndex: 'type',
         render: (category) => {
           let showcase;
           switch (category.type) {
@@ -132,10 +158,6 @@ class Bill extends React.Component {
         title: '操作',
         key: 'actions',
         render: (text, record) => {
-          if (readonly) {
-            return null;
-          }
-
           const showActionButtons = record.status === BILL_STATUS.CREATED;
 
           return !showActionButtons
@@ -156,14 +178,15 @@ class Bill extends React.Component {
 
     return (
       <div>
-        <SearchForm />
+        <SearchForm onSearch={this.handleSearch} />
         <Table
           rowKey="id"
           size="small"
           loading={loading}
           columns={columns}
           pagination={pagination}
-          dataSource={bills}
+          dataSource={dataSource}
+          onChange={this.handleChange}
           style={{ marginTop: 16 }}
         />
       </div>
@@ -171,69 +194,13 @@ class Bill extends React.Component {
   }
 }
 
-function mapStateToProps() {
+function mapStateToProps(state) {
+  const { loading, teacherBill } = state;
+  const { filters, result } = teacherBill;
   return {
-    loading: false,
-    page: 1,
-    pageSize: 10,
-    total: 20,
-    bills: [
-      {
-        id: 0,
-        amount: 8,
-        status: 0,
-        ctime: 1479657540000,
-        category: {
-          type: 'App\\Models\\TeacherCertificate',
-          certification: {
-            title: 'Milo Session CERT',
-            start: 1495590360000,
-          },
-        },
-      },
-      {
-        id: 1,
-        amount: 8,
-        status: 0,
-        ctime: 1479657540000,
-        category: {
-          type: 'App\\Models\\TeacherSchedule',
-          course: {
-            name: 'G1',
-            lesson: {
-              name: '1-9',
-              begin_at: 1496980612150,
-            },
-          },
-        },
-      },
-      {
-        id: 2,
-        amount: 8,
-        status: 0,
-        ctime: 1479657540000,
-        category: {
-          type: 'App\\Models\\TeacherBonus',
-          bonus: {
-            type: 0,
-            comment: '',
-          },
-        },
-      },
-      {
-        id: 3,
-        amount: 8,
-        status: 0,
-        ctime: 1479657540000,
-        category: {
-          type: 'App\\Models\\Standby',
-          from: 1496880000000,
-          to: 1496980612150,
-          remark: '',
-        },
-      },
-
-    ],
+    loading,
+    filters,
+    teacherBill: result,
   };
 }
 

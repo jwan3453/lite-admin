@@ -28,7 +28,7 @@ class TeacherInfo extends Component {
           <Certification />
         </Tabs.TabPane>
         <Tabs.TabPane tab="账单" key="bill">
-          <Bill />
+          <Bill teacherId={teacherId} />
         </Tabs.TabPane>
         <Tabs.TabPane tab="奖金" key="bonus">
           <Bonus />

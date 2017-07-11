@@ -12,17 +12,43 @@ import INCOME_CATEGORIES from '../../../common/teacherIncomeCategories';
 import BILL_STATUS from '../../../common/teacherBillStatus';
 
 const FormItem = Form.Item;
+const DATE_FORMAT = 'YYYY-MM-DD';
 
 class SearchForm extends React.Component {
   static propTypes = {
     form: React.PropTypes.object.isRequired,
+    onSearch: React.PropTypes.func.isRequired,
   };
 
   static defaultProps = {
   };
 
-  search = () => {
-    //  todo search
+  search = (e) => {
+    e.preventDefault();
+    this.props.form.validateFieldsAndScroll((error, values) => {
+      if (!error) {
+        const filters = {};
+
+        if (values.teacherId) {
+          filters.teacherId = values.teacherId;
+        }
+
+        if (values.ctime) {
+          filters.startDate = values.ctime[0].format(DATE_FORMAT);
+          filters.endDate = values.ctime[1].format(DATE_FORMAT);
+        }
+
+        if (values.status !== '-1') {
+          filters.status = parseInt(values.status, 10);
+        }
+
+        if (values.category !== '-1') {
+          filters.type = parseInt(values.category, 10);
+        }
+
+        this.props.onSearch(filters);
+      }
+    });
   };
 
   reset = () => {
@@ -83,7 +109,7 @@ class SearchForm extends React.Component {
                       BILL_STATUS.map(item => (
                         <Select.Option
                           key={item.value}
-                          value={item.value}
+                          value={`${item.value}`}
                         >{item.text}</Select.Option>
                       ))
                     }
@@ -99,7 +125,7 @@ class SearchForm extends React.Component {
             >
               {
                 getFieldDecorator('category', {
-                  initialValue: 'all',
+                  initialValue: '-1',
                   rules: [
                     {
                       required: false,
@@ -108,14 +134,14 @@ class SearchForm extends React.Component {
                 })(
                   <Select>
                     <Select.Option
-                      key="all"
-                      value="all"
+                      key="-1"
+                      value="-1"
                     >全部</Select.Option>
                     {
                       INCOME_CATEGORIES.map(item => (
                         <Select.Option
                           key={item.value}
-                          value={item.value}
+                          value={`${item.value}`}
                         >{item.text}</Select.Option>
                       ))
                     }
@@ -129,7 +155,7 @@ class SearchForm extends React.Component {
           <Col span={24} style={{ textAlign: 'right' }}>
             <Button
               type="primary"
-              onClick={() => { this.search(); }}
+              onClick={this.search}
               style={{ marginRight: 8 }}
             >搜索</Button>
             <Button
