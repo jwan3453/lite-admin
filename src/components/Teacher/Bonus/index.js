@@ -77,6 +77,8 @@ class Bonus extends React.Component {
       } else {
         Message.success('创建成功');
         this.setState({ dialogVisible: false });
+        const { filters } = this.props;
+        this.searchBonuses(filters);
       }
     });
   };

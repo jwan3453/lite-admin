@@ -9,11 +9,12 @@ import {
 import moment from 'moment';
 import _ from 'lodash';
 import SearchForm from './SearchForm';
+import PaymentForm from './PaymentForm';
 //
 import { Created, Confirmed, Withdrawed } from './ActionBar/index';
 import { Paypal, BankUsa, WireTransfer } from './BankInfo/index';
-import Bill from '../../Common/TeacherBills';
-import { searchTeacherPayment } from '../../../app/actions/teacherPayment';
+import PaymentBills from './PaymentBills';
+import { searchTeacherPayment, createTeacherPayment } from '../../../app/actions/teacherPayment';
 import { getSimpleList } from '../../../app/actions/teacher';
 
 import {
@@ -36,23 +37,26 @@ class Payment extends React.Component {
     filters: {},
     teacherPaymentData: {},
     teachers: [],
+    loading: false,
   };
 
   state = {
-    dialogVisible: false,
+    paymentDetailDialogVisible: false,
+    createPaymentDialogVisible: false,
     loading: false,
     teacherPaymentData: {},
+    selectPaymentId: -1,
   };
 
-  showPaymentDetails = () => {
-    //  TODO
+  showPaymentDetails = (payment) => {
     this.setState({
-      dialogVisible: true,
+      paymentDetailDialogVisible: true,
+      selectPaymentId: payment.id,
     });
   };
 
   closePaymentDetails = () => {
-    this.setState({ dialogVisible: false });
+    this.setState({ paymentDetailDialogVisible: false });
   };
 
   confirmBill = () => {
@@ -78,6 +82,20 @@ class Payment extends React.Component {
 
   handleSearch = (filters) => {
     this.searchPayment(filters);
+  };
+
+  createPayment = (data) => {
+    const { dispatch } = this.props;
+    dispatch(createTeacherPayment(data)).then((result) => {
+      this.setState({ createPaymentDialogVisible: false });
+      if (result.code) {
+        Message.error(result.message);
+      } else {
+        Message.success('创建提现成功');
+        const { filters } = this.props;
+        this.searchPayment(filters);
+      }
+    });
   };
 
   searchPayment(filters) {
@@ -111,8 +129,9 @@ class Payment extends React.Component {
 
   render() {
     const { loading } = this.props;
-    const { teacherPaymentData } = this.state;
+    const { teacherPaymentData, selectPaymentId } = this.state;
     const { total, pageSize, page, result: paymentList } = teacherPaymentData;
+
 
     const pagination = {
       total,
@@ -256,7 +275,12 @@ class Payment extends React.Component {
 
     return (
       <div>
-        <SearchForm onSearch={this.handleSearch} />
+        <SearchForm
+          onSearch={this.handleSearch}
+          onCreate={() => {
+            this.setState({ createPaymentDialogVisible: true });
+          }}
+        />
         <Table
           rowKey="id"
           style={{ marginTop: 16 }}
@@ -267,7 +291,7 @@ class Payment extends React.Component {
           onChange={this.handleTableChange}
         />
         <Modal
-          visible={this.state.dialogVisible}
+          visible={this.state.paymentDetailDialogVisible}
           title="提现明细"
           okText="确定"
           cancelText="取消"
@@ -275,7 +299,18 @@ class Payment extends React.Component {
           onCancel={this.closePaymentDetails}
           width={700}
         >
-          <Bill readonly />
+          <PaymentBills
+            paymentId={selectPaymentId}
+          />
+        </Modal>
+        <Modal
+          visible={this.state.createPaymentDialogVisible}
+          title="创建提现"
+          footer={null}
+          onCancel={() => this.setState({ createPaymentDialogVisible: false })}
+          width={700}
+        >
+          <PaymentForm onSubmit={this.createPayment} />
         </Modal>
       </div>
     );

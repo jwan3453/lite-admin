@@ -367,4 +367,12 @@ export const TeacherPayment = {
   SEARCH_TEACHER_PAYMENT: 'search_teacher_payment',
   SEARCH_TEACHER_PAYMENT_SUCCESS: 'search_teacher_payment_success',
   SEARCH_TEACHER_PAYMENT_FAIL: 'search_teacher_payment_fail',
+
+  CREATE_TEACHER_PAYMENT: 'create_teacher_payment',
+  CREATE_TEACHER_PAYMENT_SUCCESS: 'create_teacher_payment_success',
+  CREATE_TEACHER_PAYMENT_FAIL: 'create_teacher_payment_fail',
+
+  FETCH_PAYMENT_BILL: 'fetch_payment_bill',
+  FETCH_PAYMENT_BILL_SUCCESS: 'fetch_payment_bill_success',
+  FETCH_PAYMENT_BILL_FAIL: 'fetch_payment_bill_fail',
 };

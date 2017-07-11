@@ -70,7 +70,7 @@ class Bill extends React.Component {
       }),
       ),
     );
-  }
+  };
 
   render() {
     const { loading, teacherBill } = this.props;

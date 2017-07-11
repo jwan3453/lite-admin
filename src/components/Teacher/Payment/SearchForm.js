@@ -21,6 +21,7 @@ class SearchForm extends React.Component {
   static propTypes = {
     form: React.PropTypes.object.isRequired,
     onSearch: React.PropTypes.func.isRequired,
+    onCreate: React.PropTypes.func.isRequired,
   };
 
   static defaultProps = {};
@@ -50,6 +51,10 @@ class SearchForm extends React.Component {
         this.props.onSearch(filters);
       }
     });
+  };
+
+  create = () => {
+    this.props.onCreate();
   };
 
   reset = () => {
@@ -175,7 +180,13 @@ class SearchForm extends React.Component {
             >搜索</Button>
             <Button
               onClick={() => this.reset()}
+              style={{ marginRight: 8 }}
             >清除条件</Button>
+            <Button
+              onClick={() => {
+                this.create();
+              }}
+            >创建提现</Button>
           </Col>
         </Row>
       </Form>

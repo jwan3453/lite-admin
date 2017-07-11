@@ -130,7 +130,7 @@ class TeacherBill extends React.Component {
         title: '时间',
         key: 'ctime',
         dataIndex: 'billTime',
-        render: billTime => moment(new Date(billTime.date)).format(TIME_FORMAT),
+        render: billTime => moment.unix(billTime).format(TIME_FORMAT),
       },
       {
         title: '状态',
