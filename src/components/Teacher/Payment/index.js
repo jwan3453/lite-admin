@@ -76,8 +76,16 @@ class Payment extends React.Component {
     //  TODO
   };
 
-  handleTableChange = (pagination, filters, sorter) => {
-    console.log(pagination, filters, sorter);
+  handleTableChange = (pagination) => {
+    const { dispatch, filters } = this.props;
+    dispatch(
+      this.searchPayment(
+        Object.assign(filters, {
+          page: pagination.current,
+          pageSize: pagination.pageSize,
+        }),
+      ),
+    );
   };
 
   handleSearch = (filters) => {

@@ -116,6 +116,18 @@ class Bonus extends React.Component {
     });
   }
 
+  handlePaginationChange = (pagination) => {
+    const { dispatch, filters } = this.props;
+    dispatch(
+      this.searchBonuses(
+        Object.assign(filters, {
+          page: pagination.current,
+          pageSize: pagination.pageSize,
+        }),
+      ),
+    );
+  };
+
   render() {
     const { loading } = this.props;
     const { teacherBonusData } = this.state;
@@ -140,6 +152,11 @@ class Bonus extends React.Component {
         render: awardType => BONUS_TYPE_MAP[awardType].text,
       },
       {
+        title: '金额',
+        key: 'amount',
+        dataIndex: 'amount',
+      },
+      {
         title: '时间',
         key: 'ctime',
         dataIndex: 'createdAt',
@@ -151,7 +168,6 @@ class Bonus extends React.Component {
         dataIndex: 'status',
         render: (status) => {
           const currentStatus = BONUS_STATUS_MAP[status];
-
           return (
             <Tag
               color={currentStatus.color}
@@ -216,6 +232,7 @@ class Bonus extends React.Component {
           columns={columns}
           dataSource={bonusList}
           pagination={pagination}
+          onChange={this.handlePaginationChange}
           style={{ marginTop: 16 }}
         />
         <Modal

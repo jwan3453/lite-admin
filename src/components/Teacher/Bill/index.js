@@ -90,6 +90,18 @@ class TeacherBill extends React.Component {
     });
   }
 
+  handlePaginationChange = (pagination) => {
+    const { dispatch, filters } = this.props;
+    dispatch(
+      this.retrieveBillData(
+        Object.assign(filters, {
+          page: pagination.current,
+          pageSize: pagination.pageSize,
+        }),
+      ),
+    );
+  };
+
   render() {
     const {
       loading,
@@ -207,6 +219,7 @@ class TeacherBill extends React.Component {
           loading={loading}
           columns={columns}
           pagination={pagination}
+          onChange={this.handlePaginationChange}
           dataSource={list}
           style={{ marginTop: 16 }}
         />
