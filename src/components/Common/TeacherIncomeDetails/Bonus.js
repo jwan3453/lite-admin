@@ -29,8 +29,8 @@ export default class Bonus extends React.Component {
 
     const { data } = this.props;
     const { bonus } = data;
-    const currentType = BONUS_TYPE_MAP[bonus.type];
-
+    const currentTypefText =
+      bonus.type ? BONUS_TYPE_MAP[bonus.type].text : '';
     return (
       <div>
         <Row>
@@ -39,7 +39,7 @@ export default class Bonus extends React.Component {
         </Row>
         <Row>
           <Col {...leftColProps}>奖金类型:</Col>
-          <Col {...rightColProps}>{currentType.text}</Col>
+          <Col {...rightColProps}>{currentTypefText}</Col>
         </Row>
         <Row>
           <Col {...leftColProps}>备注:</Col>
