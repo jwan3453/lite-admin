@@ -16,7 +16,7 @@ import * as INCOME_CATEGORY from '../../../common/teacherIncomeCategories';
 import * as BILL_STATUS from '../../../common/teacherBillStatus';
 import { searchTeacherBills } from '../../../app/actions/teacherBill';
 
-const TIME_FORMAT = 'YYYY-MM-DD hh:mm';
+const TIME_FORMAT = 'YYYY-MM-DD HH:mm';
 
 class Bill extends React.Component {
   static propTypes = {
@@ -132,20 +132,25 @@ class Bill extends React.Component {
         title: '收入分类',
         key: 'type',
         dataIndex: 'type',
-        render: (category) => {
+        render: (type, record) => {
+          const billInfo = JSON.parse(record.billInfo);
+          if (!billInfo) {
+            return null;
+          }
+
           let showcase;
-          switch (category.type) {
+          switch (type) {
             case INCOME_CATEGORY.CERTIFICATE:
-              showcase = <Certificate data={category} />;
+              showcase = <Certificate data={billInfo} />;
               break;
             case INCOME_CATEGORY.SCHEDULE:
-              showcase = <Schedule data={category} />;
+              showcase = <Schedule data={billInfo} />;
               break;
             case INCOME_CATEGORY.BONUS:
-              showcase = <Bonus data={category} />;
+              showcase = <Bonus data={{ bonus: billInfo }} />;
               break;
             case INCOME_CATEGORY.STANDBY:
-              showcase = <StandBy data={category} />;
+              showcase = <StandBy data={billInfo} />;
               break;
             default:
               showcase = null;
