@@ -2,6 +2,7 @@ import React from 'react';
 import {
   Form,
   Select,
+  Button,
 } from 'antd';
 
 import _ from 'lodash';
@@ -17,10 +18,24 @@ class AppointmentStatus extends React.Component {
   static propTypes = {
     status: React.PropTypes.number,
     form: React.PropTypes.object.isRequired,
+    onSubmit: React.PropTypes.func.isRequired,
   };
 
   static defaultProps = {
     status: TEACHER_APPOINTMENT_CREATED,
+  };
+
+  handleSubmit = (e) => {
+    e.preventDefault();
+    this.props.form.validateFieldsAndScroll((error, values) => {
+      if (!error) {
+        let status = -1;
+        if (values.status !== '-1') {
+          status = parseInt(values.status, 10);
+        }
+        this.props.onSubmit(status);
+      }
+    });
   };
 
   render() {
@@ -32,14 +47,14 @@ class AppointmentStatus extends React.Component {
     };
 
     return (
-      <Form>
+      <Form onSubmit={this.handleSubmit}>
         <FormItem
           label="老师状态"
           {...formItemLayout}
         >
           {
             getFieldDecorator('status', {
-              initialValue: status,
+              initialValue: `${status}`,
               rules: [
                 {
                   required: true,
@@ -53,7 +68,7 @@ class AppointmentStatus extends React.Component {
                     item => (
                       <Select.Option
                         key={item.value}
-                        value={item.value}
+                        value={`${item.value}`}
                       >{item.text}</Select.Option>
                     ),
                   )
@@ -61,6 +76,9 @@ class AppointmentStatus extends React.Component {
               </Select>,
             )
           }
+        </FormItem>
+        <FormItem>
+          <Button type="primary" htmlType="submit" size="large">提交</Button>
         </FormItem>
       </Form>
     );

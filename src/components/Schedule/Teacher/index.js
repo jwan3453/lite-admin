@@ -6,6 +6,7 @@ import {
   Button,
   Modal,
   Spin,
+  Message,
 } from 'antd';
 import _ from 'lodash';
 import moment from 'moment';
@@ -20,7 +21,7 @@ import {
 } from '../../../common/teacherAppointment';
 
 import { fetchCourses } from '../../../app/actions/course';
-import { fetchTeacherAppointments } from '../../../app/actions/teacherAppointment';
+import { fetchTeacherAppointments, updateTeacherAppointment } from '../../../app/actions/teacherAppointment';
 
 const DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
@@ -46,6 +47,7 @@ class TeacherAppointments extends React.Component {
     appointmentStatusDialogVisible: false,
     teacherId: -1,
     teacherInfoDialogVisible: false,
+    currentAppointmentId: -1,
   };
 
   componentDidMount() {
@@ -85,14 +87,27 @@ class TeacherAppointments extends React.Component {
     dispatch(fetchTeacherAppointments(filters));
   };
 
-  updateAppointmentStatus = () => {
-    //  todo
+  updateAppointmentStatus = (status) => {
+    const { dispatch } = this.props;
+    const { currentAppointmentId } = this.state;
+    dispatch(updateTeacherAppointment(currentAppointmentId, status)).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+      } else {
+        Message.info('更改成功');
+        dispatch(fetchTeacherAppointments(this.props.filters));
+      }
+    });
+    this.setState({
+      appointmentStatusDialogVisible: false,
+    });
   };
 
-  showStatusDialog = (appointmentStatus) => {
+  showStatusDialog = (appointment) => {
     this.setState({
-      appointmentStatus,
+      appointmentStatus: appointment.status,
       appointmentStatusDialogVisible: true,
+      currentAppointmentId: appointment.id,
     });
   };
 
@@ -183,7 +198,7 @@ class TeacherAppointments extends React.Component {
           <Tooltip title="修改状态" placement="top">
             <Button
               icon="edit"
-              onClick={() => { this.showStatusDialog(record.status); }}
+              onClick={() => { this.showStatusDialog(record); }}
             />
           </Tooltip>
         ),
@@ -218,10 +233,13 @@ class TeacherAppointments extends React.Component {
         <Modal
           title="修改老师上课状态"
           visible={appointmentStatusDialogVisible}
-          onOk={this.updateAppointmentStatus}
+          footer={null}
           onCancel={this.hideStatusDialog}
         >
-          <AppointmentStatusForm status={appointmentStatus} />
+          <AppointmentStatusForm
+            status={appointmentStatus}
+            onSubmit={this.updateAppointmentStatus}
+          />
         </Modal>
         <Modal
           visible={teacherInfoDialogVisible}
