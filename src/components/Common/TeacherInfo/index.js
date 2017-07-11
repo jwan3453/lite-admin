@@ -15,6 +15,7 @@ class TeacherInfo extends Component {
   };
 
   render() {
+    const { teacherId } = this.props;
     return (
       <Tabs
         size="small"
@@ -36,7 +37,7 @@ class TeacherInfo extends Component {
           <Payment />
         </Tabs.TabPane>
         <Tabs.TabPane tab="银行账号" key="bankAccount">
-          <BankAccounts />
+          <BankAccounts teacherId={teacherId} />
         </Tabs.TabPane>
       </Tabs>
     );

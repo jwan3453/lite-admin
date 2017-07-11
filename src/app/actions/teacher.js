@@ -44,7 +44,7 @@ export function fetchResumes(filter = {}, page = 1, pageSize = 10) {
 export function changeStatus(recordId, status) {
   return {
     [CALL_JQ_API]: {
-      types: [Teacher.CHANGE_STATUS, Teacher.CHANGE_STATUS_SUCCESS, Teacher.CHANGE_STATUS_FAILED],
+      types: [Teacher.CHANGE_STATUS, Teacher.CHANGE_STATUS_SUCCESS, Teacher.CHANGE_STATUS_FAIL],
       uri: `/admin/teachers/resumes/${recordId}`,
       method: 'POST',
       body: {
@@ -65,6 +65,19 @@ export function getSimpleList(ids) {
       uri: '/admin/teachers/simpleList',
       method: 'POST',
       body: { ids },
+    },
+  };
+}
+
+export function fetchBankAccount(id) {
+  return {
+    [CALL_JQ_API]: {
+      types: [
+        Teacher.FETCH_BANK_ACCOUNT,
+        Teacher.FETCH_BANK_ACCOUNT_SUCCESS,
+        Teacher.FETCH_BANK_ACCOUNT_FAIL],
+      uri: `/admin/teacherBilling/bankAccount/${id}`,
+      method: 'GET',
     },
   };
 }

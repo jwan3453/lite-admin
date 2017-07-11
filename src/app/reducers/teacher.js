@@ -11,6 +11,7 @@ export function teacher(
     teachers: [],
     resumes: [],
     simpleList: [],
+    bankAccounts: [],
     total: 0,
     page: 1,
     pageSize: 10,
@@ -22,6 +23,7 @@ export function teacher(
     case Teacher.SEARCH:
     case Teacher.FETCH:
     case Teacher.GET_SIMPLE_LIST:
+    case Teacher.FETCH_BANK_ACCOUNT:
       return assign({}, state, {
         loading: true,
       });
@@ -43,6 +45,11 @@ export function teacher(
         loading: false,
         simpleList: action.response,
       });
+    case Teacher.FETCH_BANK_ACCOUNT_SUCCESS:
+      return assign({}, state, {
+        loading: false,
+        bankAccounts: action.response,
+      });
     case Teacher.FETCH_FAIL:
     case Teacher.SEARCH_FAIL:
     case Teacher.GET_SIMPLE_LIST_FAIL:
@@ -62,7 +69,8 @@ export function teacher(
         pageSize: action.response.pageSize,
         filter: action.response.filter,
       });
-    case Teacher.FETCH_ReSUME_FAIL:
+    case Teacher.FETCH_RESUME_FAIL:
+    case Teacher.FETCH_BANK_ACCOUNT_FAIL:
       return assign({}, state, {
         loading: false,
       });

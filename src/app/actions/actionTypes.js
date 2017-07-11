@@ -96,6 +96,10 @@ export const Teacher = {
   GET_SIMPLE_LIST: 'get_simple_list',
   GET_SIMPLE_LIST_SUCCESS: 'get_simple_list_success',
   GET_SIMPLE_LIST_FAIL: 'get_simple_list_fail',
+
+  FETCH_BANK_ACCOUNT: 'teacher_fetch_bank_account',
+  FETCH_BANK_ACCOUNT_SUCCESS: 'teacher_fetch_bank_account_success',
+  FETCH_BANK_ACCOUNT_FAIL: 'teacher_fetch_bank_account_fail',
 };
 
 export const Rooms = {

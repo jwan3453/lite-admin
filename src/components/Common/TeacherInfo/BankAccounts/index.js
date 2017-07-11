@@ -5,35 +5,51 @@ import {
 } from 'antd';
 
 import * as BANK_TYPE from '../../../../common/teacherBankTypes';
+import { fetchBankAccount } from '../../../../app/actions/teacher';
 
 class BankAccounts extends React.Component {
   static propTypes = {
+    dispatch: React.PropTypes.func.isRequired,
     loading: React.PropTypes.bool.isRequired,
-    bankinfo: React.PropTypes.array,
+    bankAccounts: React.PropTypes.array,
+    teacherId: React.PropTypes.number.isRequired,
   };
 
   static defaultProps = {
     loading: false,
-    bankinfo: [],
+    bankAccounts: [],
   };
+
+  componentWillMount() {
+    const { dispatch, loading, teacherId } = this.props;
+    if (!loading) {
+      dispatch(fetchBankAccount(teacherId));
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { dispatch, teacherId } = this.props;
+    if (nextProps.teacherId > 0 && nextProps.teacherId !== teacherId) {
+      dispatch(fetchBankAccount(nextProps.teacherId));
+    }
+  }
 
   render() {
     const {
       loading,
-      bankinfo,
+      bankAccounts,
     } = this.props;
 
     const columns = [
       {
         title: '账号',
         key: 'number',
-        dataIndex: 'account',
-        render: account => account.number,
+        dataIndex: 'accountNumber',
       },
       {
         title: '类型',
-        key: 'type',
-        dataIndex: 'type',
+        key: 'bankType',
+        dataIndex: 'bankType',
         render: (type) => {
           if (type === BANK_TYPE.USA) {
             return '美国银行';
@@ -50,16 +66,16 @@ class BankAccounts extends React.Component {
         title: '账号详情',
         key: 'details',
         render: (text, record) => {
-          const { account } = record;
-          const bankType = record.type;
+          const { accountInfo } = record;
+          const bankType = record.bankType;
           if (bankType === BANK_TYPE.USA) {
             return (
               <div>
-                <div>账户类型：{account.type}</div>
-                <div>银行：{account.bank.name}</div>
-                <div>国家：{account.country}</div>
-                <div>汇款路线号码：{account.routing}</div>
-                <div>持有人：{account.holder.name}</div>
+                <div>账户类型：{accountInfo.accountType}</div>
+                <div>银行：{accountInfo.bankName}</div>
+                <div>国家：{accountInfo.country}</div>
+                <div>汇款路线号码：{accountInfo.routingNumber}</div>
+                <div>持有人：{accountInfo.holderName}</div>
               </div>
             );
           }
@@ -67,11 +83,11 @@ class BankAccounts extends React.Component {
           if (bankType === BANK_TYPE.WIRE_TRANSFER) {
             return (
               <div>
-                <div>SWIFT: {account.swiftCode}</div>
-                <div>持有人: {account.holder.name}</div>
-                <div>银行：{account.bank.name}</div>
-                <div>分行: {account.bank.branch}</div>
-                <div>分行SWIFT: {account.intermediarySwiftCode}</div>
+                <div>SWIFT: {accountInfo.swiftCode}</div>
+                <div>持有人: {accountInfo.holderName}</div>
+                <div>银行：{accountInfo.bankName}</div>
+                <div>分行: {accountInfo.bankBranch}</div>
+                <div>分行SWIFT: {accountInfo.intermediarySwiftCode}</div>
               </div>
             );
           }
@@ -87,55 +103,17 @@ class BankAccounts extends React.Component {
         loading={loading}
         pagination={false}
         columns={columns}
-        dataSource={bankinfo}
+        dataSource={bankAccounts}
       />
     );
   }
 }
 
-function mapStateToProps() {
+function mapStateToProps(state) {
+  const { teacher } = state;
   return {
-    loading: false,
-    bankinfo: [
-      {
-        account: {
-          number: '12312',
-          type: 'checking',
-          routing: '123123',
-          bank: {
-            name: '123123',
-            branch: '',
-          },
-          country: 'United States',
-          holder: {
-            name: 'holder name',
-          },
-        },
-        type: 1,
-      },
-      {
-        account: {
-          number: '123897@123.com',
-        },
-        type: 2,
-      },
-      {
-        account: {
-          number: 'account number',
-          bank: {
-            name: 'bank name',
-            branch: 'bank branch',
-          },
-          swiftCode: 'swift code',
-          intermediarySwiftCode: '',
-          country: 'United States',
-          holder: {
-            name: 'holder name',
-          },
-        },
-        type: 3,
-      },
-    ],
+    loading: teacher.loading,
+    bankAccounts: teacher.bankAccounts,
   };
 }
 
