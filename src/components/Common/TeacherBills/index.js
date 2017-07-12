@@ -6,6 +6,7 @@ import {
   Tooltip,
   Button,
   Popconfirm,
+  Message,
 } from 'antd';
 import moment from 'moment';
 
@@ -14,7 +15,7 @@ import { Bonus, Certificate, Schedule, StandBy } from '../TeacherIncomeDetails';
 
 import * as INCOME_CATEGORY from '../../../common/teacherIncomeCategories';
 import * as BILL_STATUS from '../../../common/teacherBillStatus';
-import { searchTeacherBills } from '../../../app/actions/teacherBill';
+import { searchTeacherBills, cancelTeacherBill } from '../../../app/actions/teacherBill';
 
 const TIME_FORMAT = 'YYYY-MM-DD HH:mm';
 
@@ -47,9 +48,15 @@ class Bill extends React.Component {
     }
   }
 
-  cancelBill = (bill) => {
-    //  todo dispatch action here
-    console.log('canceling bill, ', bill);
+  cancelBill = (billId) => {
+    const { dispatch } = this.props;
+    dispatch(cancelTeacherBill(billId)).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+      } else {
+        this.retrieveBillData(this.props.filters);
+      }
+    });
   };
 
   handleSearch = (filters) => {
@@ -170,7 +177,7 @@ class Bill extends React.Component {
           : (
             <Popconfirm
               title="操作不可逆，确认继续？"
-              onConfirm={() => this.cancelBill(record)}
+              onConfirm={() => this.cancelBill(record.id)}
             >
               <Tooltip title="取消账单">
                 <Button icon="close" />
