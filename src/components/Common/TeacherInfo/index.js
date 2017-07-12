@@ -22,19 +22,19 @@ class TeacherInfo extends Component {
         style={{ paddingBottom: '40px' }}
       >
         <Tabs.TabPane tab="基础信息" key="basic">
-          <BasicInfo />
+          <BasicInfo teacherId={teacherId} />
         </Tabs.TabPane>
         <Tabs.TabPane tab="资质" key="qualification">
-          <Certification />
+          <Certification teacherId={teacherId} />
         </Tabs.TabPane>
         <Tabs.TabPane tab="账单" key="bill">
           <Bill teacherId={teacherId} />
         </Tabs.TabPane>
         <Tabs.TabPane tab="奖金" key="bonus">
-          <Bonus />
+          <Bonus teacherId={teacherId} />
         </Tabs.TabPane>
         <Tabs.TabPane tab="提现" key="withdraw">
-          <Payment />
+          <Payment teacherId={teacherId} />
         </Tabs.TabPane>
         <Tabs.TabPane tab="银行账号" key="bankAccount">
           <BankAccounts teacherId={teacherId} />

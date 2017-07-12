@@ -14,17 +14,36 @@ import BONUS_TYPE from '../../../../common/bonusTypes';
 import BONUS_STATUS from '../../../../common/bonusStatus';
 
 const FormItem = Form.Item;
+const DATE_FORMAT = 'YYYY-MM-DD';
 
 class SearchForm extends React.Component {
   static propTypes = {
     form: React.PropTypes.object.isRequired,
+    onSearch: React.PropTypes.func.isRequired,
   };
 
   static defaultProps = {
   };
 
-  search = () => {
-    //  todo search
+  search = (e) => {
+    e.preventDefault();
+    this.props.form.validateFieldsAndScroll((err, values) => {
+      if (!err) {
+        const filters = {};
+        if (values.ctime) {
+          filters.startDate = values.ctime[0].format(DATE_FORMAT);
+          filters.endDate = values.ctime[1].format(DATE_FORMAT);
+        }
+        if (values.status !== '-1') {
+          filters.status = parseInt(values.status, 10);
+        }
+
+        if (values.type !== '-1') {
+          filters.awardType = parseInt(values.type, 10);
+        }
+        this.props.onSearch(filters);
+      }
+    });
   };
 
   reset = () => {
@@ -85,7 +104,7 @@ class SearchForm extends React.Component {
                       _.map(BONUS_STATUS, item => (
                         <Select.Option
                           key={item.value}
-                          value={item.value}
+                          value={`${item.value}`}
                         >{item.text}</Select.Option>
                       ))
                     }
@@ -117,7 +136,7 @@ class SearchForm extends React.Component {
                       _.map(BONUS_TYPE, item => (
                         <Select.Option
                           key={item.value}
-                          value={item.value}
+                          value={`${item.value}`}
                         >{item.text}</Select.Option>
                       ))
                     }
@@ -131,7 +150,7 @@ class SearchForm extends React.Component {
           <Col span={24} style={{ textAlign: 'right' }}>
             <Button
               type="primary"
-              onClick={() => this.search()}
+              onClick={this.search}
               style={{ marginRight: 8 }}
             >搜索</Button>
             <Button

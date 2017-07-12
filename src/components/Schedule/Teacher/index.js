@@ -246,7 +246,7 @@ class TeacherAppointments extends React.Component {
           title="老师信息"
           footer={null}
           onCancel={this.hideTeacherInfo}
-          width={700}
+          width={740}
         >
           <Spin spinning={loading}>
             <TeacherInfo teacherId={teacherId} />

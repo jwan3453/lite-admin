@@ -46,3 +46,18 @@ export function changeTeacherBonusStatus(id, data) {
     },
   };
 }
+
+export function recalculateTeacherBonus(data) {
+  return {
+    [CALL_JQ_API]: {
+      types: [
+        TeacherBonus.RECALCULATE_TEACHER_BONUS,
+        TeacherBonus.RECALCULATE_TEACHER_BONUS_SUCCESS,
+        TeacherBonus.RECALCULATE_TEACHER_BONUS_FAIL,
+      ],
+      uri: '/admin/schedules/teachers/billing/recalculate',
+      method: 'POST',
+      body: data,
+    },
+  };
+}

@@ -6,45 +6,125 @@ import {
   Tag,
   Tooltip,
   Popconfirm,
+  Message,
 } from 'antd';
 import moment from 'moment';
 import SearchForm from './SearchForm';
 import {
+  TYPE_MAP as BONUS_TYPE_MAP,
+  SYSTEM as BONUS_TYPE_SYSTEM,
+} from '../../../../common/bonusTypes';
+import {
   STATUS_MAP as BONUS_STATUS_MAP,
+  FAILED as BONUS_CANCELLED,
+  CREATED as BONUS_CREATED,
 } from '../../../../common/bonusStatus';
+import {
+  searchTeacherBonuses,
+  changeTeacherBonusStatus,
+  recalculateTeacherBonus,
+} from '../../../../app/actions/teacherBonus';
 
 class Bonus extends React.Component {
   static propTypes = {
-    bonus: React.PropTypes.object.isRequired,
+    dispatch: React.PropTypes.func.isRequired,
+    bonus: React.PropTypes.object,
     loading: React.PropTypes.bool.isRequired,
-    page: React.PropTypes.number,
-    pageSize: React.PropTypes.number,
-    total: React.PropTypes.number,
+    teacherId: React.PropTypes.number.isRequired,
+    filters: React.PropTypes.object,
+
   };
   static defaultProps = {
     bonus: [],
-    page: 1,
-    pageSize: 10,
-    total: 0,
+    loading: false,
+    filters: {},
   };
 
-  cancelBonus = () => {
-    //  todo
+  componentWillMount() {
+    const { dispatch, loading, filters, teacherId } = this.props;
+    if (!loading) {
+      dispatch(searchTeacherBonuses(Object.assign(filters, { teacherId })));
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { dispatch, teacherId, filters } = this.props;
+    if (nextProps.teacherId > 0 && nextProps.teacherId !== teacherId) {
+      dispatch(searchTeacherBonuses(Object.assign(filters, { teacherId: nextProps.teacherId })));
+    }
+  }
+  handleSearch = (filters) => {
+    const { dispatch } = this.props;
+    delete this.props.filters.status;
+    delete this.props.filters.awardType;
+    delete this.props.filters.startDate;
+    delete this.props.filters.endDate;
+    dispatch(searchTeacherBonuses(Object.assign(this.props.filters, { ...filters })));
   };
 
-  recalcBonus = () => {
-    //  todo
+  cancelBonus = (bonusId) => {
+    const { dispatch } = this.props;
+    dispatch(changeTeacherBonusStatus(bonusId, { status: BONUS_CANCELLED })).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+      } else {
+        Message.success('取消成功');
+        dispatch(searchTeacherBonuses(this.props.filters));
+      }
+    });
   };
+
+  recalcBonus = (record) => {
+    const { dispatch } = this.props;
+
+    const data = {
+      teacherId: this.props.teacherId,
+      fromTime: record.fromTime,
+      toTime: record.toTime,
+      type: record.awardType,
+    };
+    // 首先在bonus删除这条记录
+    dispatch(changeTeacherBonusStatus(record.id, { status: BONUS_CANCELLED })).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+      } else {
+       // 重新计算奖金
+        dispatch(recalculateTeacherBonus(data)).then((res) => {
+          if (res.code) {
+            Message.error(res.message);
+          } else {
+            Message.info('重新计算成功');
+            dispatch(searchTeacherBonuses(this.props.filters));
+          }
+        });
+      }
+    });
+  };
+
+  handleChange = (pagination) => {
+    const { dispatch, filters } = this.props;
+    dispatch(
+      searchTeacherBonuses(Object.assign(filters, {
+        page: pagination.current,
+        pageSize: pagination.pageSize,
+      }),
+      ),
+    );
+  }
 
   render() {
     const {
       loading,
       bonus,
-      page,
-      pageSize,
-      total,
     } = this.props;
-
+    const { total, pageSize, page } = bonus;
+    const pagination = {
+      total,
+      pageSize,
+      current: page,
+      showSizeChanger: true,
+      showTotal: all => `总共${all}条`,
+    };
     const columns = [
       {
         title: 'ID',
@@ -52,16 +132,21 @@ class Bonus extends React.Component {
         dataIndex: 'id',
       },
       {
+        title: '金额',
+        key: 'amount',
+        dataIndex: 'amount',
+      },
+      {
         title: '奖励类型',
         key: 'type',
-        dataIndex: 'type',
-        render: type => type,
+        dataIndex: 'awardType',
+        render: awardType => BONUS_TYPE_MAP[awardType].text,
       },
       {
         title: '时间',
         key: 'ctime',
-        dataIndex: 'ctime',
-        render: ctime => moment(ctime).format('YYYY-MM-DD hh:mm:ss'),
+        dataIndex: 'createdAt',
+        render: ctime => moment.unix(ctime).format('YYYY-MM-DD HH:mm:ss'),
       },
       {
         title: '状态',
@@ -85,53 +170,51 @@ class Bonus extends React.Component {
       {
         title: '操作',
         key: 'actions',
-        render: (text, record) => (
-          <div>
-            <Popconfirm
-              title="该操作不可逆，确定执行？"
-              onConfirm={() => this.recalcBonus(record)}
-            >
-              <Tooltip
-                placement="top"
-                title="重新计算"
-              >
-                <Button icon="calculator" style={{ marginRight: 8 }} />
-              </Tooltip>
-            </Popconfirm>
-            <Popconfirm
-              title="该操作不可逆，确定执行？"
-              onConfirm={() => this.cancelBonus(record)}
-            >
-              <Tooltip
-                placement="top"
-                title="取消奖金"
-              >
-                <Button icon="close" />
-              </Tooltip>
-            </Popconfirm>
-          </div>
-        ),
+        render: (text, record) => {
+          const showActionButtons = record.status === BONUS_CREATED;
+          const showRecalulate = record.awardType === BONUS_TYPE_SYSTEM;
+          return !showActionButtons ? null
+            : (
+              <div>
+                <Popconfirm
+                  title="该操作不可逆，确定执行？"
+                  onConfirm={() => this.recalcBonus(record)}
+                >
+                  <Tooltip
+                    placement="top"
+                    title="重新计算"
+                  >
+                    <Button icon="calculator" style={{ marginRight: 8 }} disabled={showRecalulate} />
+                  </Tooltip>
+                </Popconfirm>
+                <Popconfirm
+                  title="该操作不可逆，确定执行？"
+                  onConfirm={() => this.cancelBonus(record.id)}
+                >
+                  <Tooltip
+                    placement="top"
+                    title="取消奖金"
+                  >
+                    <Button icon="close" />
+                  </Tooltip>
+                </Popconfirm>
+              </div>
+            );
+        },
       },
     ];
 
-    const pagination = {
-      total,
-      pageSize,
-      current: page,
-      showSizeChanger: true,
-      showTotal: all => `总共${all}条`,
-    };
-
     return (
       <div>
-        <SearchForm />
+        <SearchForm onSearch={this.handleSearch} />
         <Table
           rowKey="id"
           size="small"
           loading={loading}
           columns={columns}
-          dataSource={bonus}
+          dataSource={bonus.result}
           pagination={pagination}
+          onChange={this.handleChange}
           style={{ marginTop: 16 }}
         />
       </div>
@@ -139,43 +222,12 @@ class Bonus extends React.Component {
   }
 }
 
-function mapStateToProps() {
+function mapStateToProps(state) {
+  const { teacherBonus } = state;
+  const { filters, result } = teacherBonus;
   return {
-    loading: false,
-    bonus: [
-      {
-        id: 0,
-        amount: 1,
-        type: 0,
-        status: 0,
-        comment: '2016-11-28-2016-12-04 Review Bonus',
-        ctime: 1496994684842,
-      },
-      {
-        id: 1,
-        amount: 1,
-        type: 0,
-        status: 1,
-        comment: '2016-11-28-2016-12-04 Review Bonus',
-        ctime: 1496994684842,
-      },
-      {
-        id: 2,
-        amount: 1,
-        type: 0,
-        status: 2,
-        comment: '2016-11-28-2016-12-04 Review Bonus',
-        ctime: 1496994684842,
-      },
-      {
-        id: 3,
-        amount: 1,
-        type: 0,
-        status: 0,
-        comment: '2016-11-28-2016-12-04 Review Bonus',
-        ctime: 1496994684842,
-      },
-    ],
+    filters,
+    bonus: result,
   };
 }
 

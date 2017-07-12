@@ -19,6 +19,7 @@ import {
   createTeacherBonuses,
   searchTeacherBonuses,
   changeTeacherBonusStatus,
+  recalculateTeacherBonus,
 } from '../../../app/actions/teacherBonus';
 import { getSimpleList } from '../../../app/actions/teacher';
 
@@ -65,8 +66,31 @@ class Bonus extends React.Component {
     });
   };
 
-  recalcBonus = () => {
-    //  todo
+  recalcBonus = (record) => {
+    const { dispatch } = this.props;
+
+    const data = {
+      teacherId: record.teacherId,
+      fromTime: record.fromTime,
+      toTime: record.toTime,
+      type: record.awardType,
+    };
+    // 首先在bonus删除这条记录
+    dispatch(changeTeacherBonusStatus(record.id, { status: BONUS_CANCELLED })).then((result) => {
+      if (result.code) {
+        Message.error(result.message);
+      } else {
+        // 重新计算奖金
+        dispatch(recalculateTeacherBonus(data)).then((res) => {
+          if (res.code) {
+            Message.error(res.message);
+          } else {
+            Message.info('重新计算成功');
+            this.searchBonuses(this.props.filters);
+          }
+        });
+      }
+    });
   };
 
   createBonus = (data) => {
@@ -144,6 +168,11 @@ class Bonus extends React.Component {
         key: 'teacherStatus',
         dataIndex: 'teacherStatus',
         render: teacherStatus => (teacherStatus ? TEACHER_STATUS_MAP[teacherStatus].text : ''),
+      },
+      {
+        title: '金额',
+        key: 'amount',
+        dataIndex: 'amount',
       },
       {
         title: '奖励类型',

@@ -12,6 +12,7 @@ export function teacherBonus(
     case TeacherBonus.SEARCH_TEACHER_BONUS:
     case TeacherBonus.CREATE_TEACHER_BONUS:
     case TeacherBonus.CHANGE_BONUS_STATUS:
+    case TeacherBonus.RECALCULATE_TEACHER_BONUS:
       return assign({}, state, { loading: true });
     case TeacherBonus.SEARCH_TEACHER_BONUS_SUCCESS:
       return assign({}, state,
@@ -26,6 +27,8 @@ export function teacherBonus(
     case TeacherBonus.CHANGE_BONUS_STATUS_FAIL:
     case TeacherBonus.SEARCH_TEACHER_BONUS_FAIL:
     case TeacherBonus.CREATE_TEACHER_BONUS_FAIL:
+    case TeacherBonus.RECALCULATE_TEACHER_BONUS_FAIL:
+    case TeacherBonus.RECALCULATE_TEACHER_BONUS_SUCCESS:
       return assign({}, state, { loading: false });
     default:
       return state;
